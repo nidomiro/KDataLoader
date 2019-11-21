@@ -3,8 +3,11 @@
  */
 package nidomiro.kdataloader
 
-class Library {
-    fun someLibraryMethod(): Boolean {
-        return true
+import kotlin.test.Test
+
+class DataLoaderTest {
+    @Test
+    fun testSomeLibraryMethod() {
+
     }
 }
