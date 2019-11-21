@@ -3,11 +3,35 @@
  */
 package nidomiro.kdataloader
 
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 
 class DataLoaderTest {
+
     @Test
     fun testSomeLibraryMethod() {
 
+        val dataLoader = DataLoader { keys: List<Long> ->
+            delay(200)
+            keys
+        }
+
+        val deferedOne = dataLoader.load(1)
+        val deferedTwo = dataLoader.load(2)
+        val deferedThree = dataLoader.load(3)
+
+        assertFalse(deferedOne.isCompleted)
+        assertFalse(deferedTwo.isCompleted)
+        assertFalse(deferedThree.isCompleted)
+
+        runBlocking {
+            dataLoader.dispatch()
+            assertEquals(deferedOne.await(), 1)
+            assertEquals(deferedTwo.await(), 2)
+            assertEquals(deferedThree.await(), 3)
+        }
     }
 }
