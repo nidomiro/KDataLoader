@@ -1,24 +1,48 @@
 package nidomiro.kdataloader
 
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.runBlocking
 
 
 @Suppress("RedundantVisibilityModifier")
-public class DataLoader<T, R>(val batchLoader: suspend (ids: List<T>) -> List<R>) {
+public class DataLoader<K, R>(
+    @Suppress("MemberVisibilityCanBePrivate") val options: DataLoaderOptions<K, R> = DataLoaderOptions(),
+    private val batchLoader: suspend (ids: List<K>) -> List<R>
+) {
 
-    private val batch: MutableMap<T, Pair<T, CompletableDeferred<R>>> = mutableMapOf()
+    private val queue: LoaderQueue<K, R> = DafaultLoaderQueueImpl()
 
-
-    public fun load(key: T): CompletableDeferred<R> {
-        val completableDeferredMapping = batch.computeIfAbsent(key) { key to CompletableDeferred() }
-        return completableDeferredMapping.second
+    /**
+     * Loads the value for the given Key.
+     * The returned [Deferred] completes with the finish of [dispatch]
+     */
+    public suspend fun loadAsync(key: K): Deferred<R> {
+        val deferred = options.cache.getOrCreate(key) { CompletableDeferred() }
+        queue.enqueue(key, deferred)
+        return deferred
     }
 
+    /**
+     * The functionality is equivalent to [loadAsync] but encapsulated in a [runBlocking]-Block for internal resource access.
+     *
+     * Use [loadAsync] to call from a coroutine.
+     */
+    @Suppress("DeferredIsResult")
+    public fun load(key: K): Deferred<R> =
+        runBlocking { loadAsync(key) }
+
+
+    /**
+     * Executes all stored requests via the given [batchLoader].
+     * After this function finishes all [Deferred] created before are completed.
+     */
     public suspend fun dispatch() {
-        val entries = batch.values.toList()
-        val completables = entries.map { it.second }
+        val values = queue.getAllItemsAsList().distinctBy { it.key }
 
-        batchLoader(entries.map { it.first })
-            .forEachIndexed { i, result -> completables[i].complete(result) }
+        batchLoader(values.map { it.key })
+            .forEachIndexed { i, result -> values[i].value.complete(result) }
     }
+
+
 }
