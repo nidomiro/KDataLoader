@@ -393,5 +393,51 @@ class DataLoaderTest {
         assertThat(loadCalls).isEqualTo(listOf(listOf(1)))
     }
 
+    @Test
+    fun `failed requests are not cached if told not to`() = runBlockingWithTimeout {
+        val loadCalls = mutableListOf<List<Int>>()
+        val dataLoader = DataLoader(
+            DataLoaderOptions(cacheExceptions = false),
+            identityBatchLoaderThatThrowsOnOddNumber(loadCalls)
+        )
+
+        val deferred1 = dataLoader.loadAsync(1)
+        dataLoader.dispatch()
+
+        assertThat {
+            deferred1.await()
+        }.isFailure()
+            .hasClass(IllegalStateException::class)
+
+        val deferred1a = dataLoader.loadAsync(1)
+        dataLoader.dispatch()
+
+        assertThat {
+            deferred1a.await()
+        }.isFailure()
+            .hasClass(IllegalStateException::class)
+
+        assertThat(deferred1).isNotEqualTo(deferred1a)
+        assertThat(loadCalls).isEqualTo(listOf(listOf(1), listOf(1)))
+    }
+
+    @Test
+    fun `prime cache with error`() = runBlockingWithTimeout {
+        val loadCalls = mutableListOf<List<Int>>()
+        val dataLoader = DataLoader(identityBatchLoader(loadCalls))
+
+        dataLoader.prime(1 to IllegalStateException("Prime"))
+
+        val deferred1 = dataLoader.loadAsync(1)
+        dataLoader.dispatch()
+
+        assertThat {
+            deferred1.await()
+        }.isFailure()
+            .hasClass(IllegalStateException::class)
+
+        assertThat(loadCalls).isEqualTo(listOf<List<Int>>())
+    }
+
 
 }

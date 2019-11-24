@@ -6,10 +6,10 @@ typealias BatchLoader<K, R> = suspend (ids: List<K>) -> List<ExecutionResult<R>>
 
 @Suppress("RedundantVisibilityModifier")
 public class DataLoader<K, R : Any>(
-    private val batchLoader: BatchLoader<K, R>,
-    @Suppress("MemberVisibilityCanBePrivate") val options: DataLoaderOptions<K, R>
+    @Suppress("MemberVisibilityCanBePrivate") val options: DataLoaderOptions<K, R>,
+    private val batchLoader: BatchLoader<K, R>
 ) {
-    constructor(batchLoader: BatchLoader<K, R>) : this(batchLoader, DataLoaderOptions())
+    constructor(batchLoader: BatchLoader<K, R>) : this(DataLoaderOptions(), batchLoader)
 
     val dataLoaderScope = CoroutineScope(Dispatchers.Default)
 
@@ -43,23 +43,50 @@ public class DataLoader<K, R : Any>(
      * After this function finishes all [Deferred] created before are completed.
      */
     public suspend fun dispatch() {
-        val values = queue.getAllItemsAsList().distinctBy { it.key }
-        val keys = values.map { it.key }
+        val queueEntries = queue.getAllItemsAsList().distinctBy { it.key }
+        val keys = queueEntries.map { it.key }
         if (keys.isNotEmpty()) {
-            try {
-                batchLoader(keys).forEachIndexed { i, result ->
-                    val deferred = values[i].value
-                    when (result) {
-                        is ExecutionResult.Success -> deferred.complete(result.value)
-                        is ExecutionResult.Failure -> deferred.completeExceptionally(result.throwable)
-                    }
-                }
-            } catch (e: Throwable) {
-                values.forEach {
-                    clear(it.key)
-                    it.value.completeExceptionally(e)
+            executeBatchLoader(keys, queueEntries)
+        }
+    }
+
+    private suspend fun executeBatchLoader(
+        keys: List<K>,
+        queueEntries: List<LoaderQueueEntry<K, CompletableDeferred<R>>>
+    ) {
+        try {
+            batchLoader(keys).forEachIndexed { i, result ->
+                val queueEntry = queueEntries[i]
+                handleSingleBatchLoaderResult(result, queueEntry)
+            }
+        } catch (e: Throwable) {
+            handleCompleteBatchLoaderFailure(queueEntries, e)
+        }
+    }
+
+    private suspend fun handleSingleBatchLoaderResult(
+        result: ExecutionResult<R>,
+        queueEntry: LoaderQueueEntry<K, CompletableDeferred<R>>
+    ) {
+        when (result) {
+            is ExecutionResult.Success -> queueEntry.value.complete(result.value)
+            is ExecutionResult.Failure -> {
+                queueEntry.value.completeExceptionally(result.throwable)
+                if (!options.cacheExceptions) {
+                    clear(queueEntry.key)
                 }
             }
+
+        }
+    }
+
+    private suspend fun handleCompleteBatchLoaderFailure(
+        queueEntries: List<LoaderQueueEntry<K, CompletableDeferred<R>>>,
+        e: Throwable
+    ) {
+        queueEntries.forEach {
+            clear(it.key)
+            it.value.completeExceptionally(e)
         }
     }
 
@@ -74,6 +101,15 @@ public class DataLoader<K, R : Any>(
     suspend fun prime(cacheEntry: Pair<K, R>) {
         options.cache.getOrCreate(cacheEntry.first) {
             CompletableDeferred(cacheEntry.second)
+        }
+    }
+
+    @JvmName("primeFailure")
+    suspend fun prime(cacheEntry: Pair<K, Throwable>) {
+        options.cache.getOrCreate(cacheEntry.first) {
+            CompletableDeferred<R>().apply {
+                completeExceptionally(cacheEntry.second)
+            }
         }
     }
 
