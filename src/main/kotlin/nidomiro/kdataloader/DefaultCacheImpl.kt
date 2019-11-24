@@ -23,9 +23,16 @@ class DefaultCacheImpl<K, V> : Cache<K, V> {
         }
 
 
-    override suspend fun getOrCreate(key: K, generator: (key: K) -> V): V =
+    override suspend fun getOrCreate(key: K, generator: suspend (key: K) -> V): V =
         mutex.withLock {
-            cacheMap.computeIfAbsent(key, generator)
+            val currentVal = cacheMap[key]
+            if (currentVal == null) {
+                val generated = generator(key)
+                cacheMap[key] = generated
+                return@withLock generated
+            } else {
+                return@withLock currentVal
+            }
         }
 
 

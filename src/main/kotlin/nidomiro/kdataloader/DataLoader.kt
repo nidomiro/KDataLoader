@@ -1,15 +1,18 @@
 package nidomiro.kdataloader
 
-import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 
+typealias BatchLoader<K, R> = suspend (ids: List<K>) -> List<R>
 
 @Suppress("RedundantVisibilityModifier")
 public class DataLoader<K, R>(
-    @Suppress("MemberVisibilityCanBePrivate") val options: DataLoaderOptions<K, R> = DataLoaderOptions(),
-    private val batchLoader: suspend (ids: List<K>) -> List<R>
+    private val batchLoader: BatchLoader<K, R>,
+    @Suppress("MemberVisibilityCanBePrivate") val options: DataLoaderOptions<K, R>
 ) {
+    constructor(batchLoader: BatchLoader<K, R>) : this(batchLoader, DataLoaderOptions())
+
+    val dataLoaderScope = CoroutineScope(Dispatchers.Default)
+
 
     private val queue: LoaderQueue<K, R> = DafaultLoaderQueueImpl()
 
@@ -18,19 +21,21 @@ public class DataLoader<K, R>(
      * The returned [Deferred] completes with the finish of [dispatch]
      */
     public suspend fun loadAsync(key: K): Deferred<R> {
-        val deferred = options.cache.getOrCreate(key) { CompletableDeferred() }
-        queue.enqueue(key, deferred)
-        return deferred
+        return options.cache.getOrCreate(key) {
+            val newDeferred = CompletableDeferred<R>()
+            queue.enqueue(key, newDeferred)
+            return@getOrCreate newDeferred
+        }
     }
 
-    /**
-     * The functionality is equivalent to [loadAsync] but encapsulated in a [runBlocking]-Block for internal resource access.
-     *
-     * Use [loadAsync] to call from a coroutine.
-     */
-    @Suppress("DeferredIsResult")
-    public fun load(key: K): Deferred<R> =
-        runBlocking { loadAsync(key) }
+
+    public suspend fun loadManyAsync(vararg keys: K): Deferred<List<R>> {
+        val deferreds = keys.map { loadAsync(it) }
+
+        return dataLoaderScope.async {
+            return@async deferreds.map { it.await() }
+        }
+    }
 
 
     /**
@@ -39,9 +44,11 @@ public class DataLoader<K, R>(
      */
     public suspend fun dispatch() {
         val values = queue.getAllItemsAsList().distinctBy { it.key }
-
-        batchLoader(values.map { it.key })
-            .forEachIndexed { i, result -> values[i].value.complete(result) }
+        val keys = values.map { it.key }
+        if (keys.isNotEmpty()) {
+            batchLoader(keys)
+                .forEachIndexed { i, result -> values[i].value.complete(result) }
+        }
     }
 
 
