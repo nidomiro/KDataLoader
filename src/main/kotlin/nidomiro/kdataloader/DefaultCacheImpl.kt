@@ -36,7 +36,7 @@ class DefaultCacheImpl<K, V> : Cache<K, V> {
         }
 
 
-    override suspend fun remove(key: K): V? =
+    override suspend fun clear(key: K): V? =
         mutex.withLock {
             cacheMap.remove(key)
         }

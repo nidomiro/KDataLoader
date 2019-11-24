@@ -11,7 +11,7 @@ interface Cache<K, V> {
 
     suspend fun getOrCreate(key: K, generator: suspend (key: K) -> V): V
 
-    suspend fun remove(key: K): V?
+    suspend fun clear(key: K): V?
 
     suspend fun clear()
 }

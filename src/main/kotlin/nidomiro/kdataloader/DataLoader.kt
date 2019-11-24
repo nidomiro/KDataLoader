@@ -46,8 +46,29 @@ public class DataLoader<K, R>(
         val values = queue.getAllItemsAsList().distinctBy { it.key }
         val keys = values.map { it.key }
         if (keys.isNotEmpty()) {
-            batchLoader(keys)
-                .forEachIndexed { i, result -> values[i].value.complete(result) }
+            try {
+                batchLoader(keys)
+                    .forEachIndexed { i, result -> values[i].value.complete(result) }
+            } catch (e: Throwable) {
+                values.forEach {
+                    clear(it.key)
+                    it.value.completeExceptionally(e)
+                }
+            }
+        }
+    }
+
+    suspend fun clear(key: K) {
+        options.cache.clear(key)
+    }
+
+    suspend fun clearAll() {
+        options.cache.clear()
+    }
+
+    suspend fun prime(cacheEntry: Pair<K, R>) {
+        options.cache.getOrCreate(cacheEntry.first) {
+            CompletableDeferred(cacheEntry.second)
         }
     }
 
