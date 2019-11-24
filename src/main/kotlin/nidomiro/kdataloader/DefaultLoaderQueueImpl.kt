@@ -4,7 +4,7 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
-class DafaultLoaderQueueImpl<K, V> : LoaderQueue<K, V> {
+class DefaultLoaderQueueImpl<K, V> : LoaderQueue<K, V> {
 
     private val mutex = Mutex()
     private var queue: MutableList<LoaderQueueEntry<K, CompletableDeferred<V>>> = mutableListOf()

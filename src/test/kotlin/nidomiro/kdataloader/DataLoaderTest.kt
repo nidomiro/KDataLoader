@@ -325,7 +325,7 @@ class DataLoaderTest {
     }
 
     @Test
-    fun `failed requests are not permanent`() = runBlockingWithTimeout {
+    fun `failed requests are not permanent if complete failure`() = runBlockingWithTimeout {
         val loadCalls = mutableListOf<List<Int>>()
         val dataLoader = DataLoader(identityBatchLoaderThatThrowsOnOddNumber(loadCalls))
 
@@ -343,6 +343,54 @@ class DataLoaderTest {
         assertThat(deferred2.await()).isEqualTo(2)
 
         assertThat(loadCalls).isEqualTo(listOf(listOf(1), listOf(2)))
+    }
+
+    @Test
+    fun `failed and successful requests are returned`() = runBlockingWithTimeout {
+        val loadCalls = mutableListOf<List<Int>>()
+        val dataLoader = DataLoader(identityBatchLoaderThatThrowsOnOddNumber(loadCalls))
+
+        val deferrts = (1..4).map { dataLoader.loadAsync(it) }
+        dataLoader.dispatch()
+
+        deferrts.forEachIndexed { index, deferred ->
+            val num = index + 1
+            if (num.isEven()) {
+                assertThat(deferred.await()).isEqualTo(num)
+            } else {
+                assertThat {
+                    deferred.await()
+                }.isFailure()
+                    .hasClass(IllegalStateException::class)
+            }
+        }
+
+        assertThat(loadCalls).isEqualTo(listOf(listOf(1, 2, 3, 4)))
+    }
+
+    @Test
+    fun `failed requests are cached`() = runBlockingWithTimeout {
+        val loadCalls = mutableListOf<List<Int>>()
+        val dataLoader = DataLoader(identityBatchLoaderThatThrowsOnOddNumber(loadCalls))
+
+        val deferred1 = dataLoader.loadAsync(1)
+        dataLoader.dispatch()
+
+        assertThat {
+            deferred1.await()
+        }.isFailure()
+            .hasClass(IllegalStateException::class)
+
+        val deferred1a = dataLoader.loadAsync(1)
+        dataLoader.dispatch()
+
+        assertThat {
+            deferred1a.await()
+        }.isFailure()
+            .hasClass(IllegalStateException::class)
+
+        assertThat(deferred1).isEqualTo(deferred1a)
+        assertThat(loadCalls).isEqualTo(listOf(listOf(1)))
     }
 
 

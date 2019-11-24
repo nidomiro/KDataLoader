@@ -9,3 +9,6 @@ fun runBlockingWithTimeout(millis: Long = 1000L, block: suspend CoroutineScope.(
         block()
     }
 }
+
+fun Int.isEven() = this % 2 == 0
+fun Long.isEven() = this % 2 == 0L

@@ -1,11 +1,12 @@
 package nidomiro.kdataloader
 
-fun <K> identityBatchLoader(loadCalls: MutableList<List<K>> = mutableListOf()): BatchLoader<K, K> = { ids ->
+fun <K : Any> identityBatchLoader(loadCalls: MutableList<List<K>> = mutableListOf()): BatchLoader<K, K> = { ids ->
     loadCalls.add(ids)
-    ids
+    ids.map { ExecutionResult.Success(it) }
 }
 
-fun <K> identityBatchLoaderThatThrows(loadCalls: MutableList<List<K>> = mutableListOf()): BatchLoader<K, K> = { ids ->
+fun <K : Any> identityBatchLoaderThatThrows(loadCalls: MutableList<List<K>> = mutableListOf()): BatchLoader<K, K> =
+    { ids ->
     loadCalls.add(ids)
     throw IllegalStateException("Test")
 }
@@ -15,9 +16,9 @@ fun identityBatchLoaderThatThrowsOnOddNumber(loadCalls: MutableList<List<Int>> =
         loadCalls.add(ids)
         ids.map {
             if (it % 2 == 1) {
-                throw IllegalStateException("Test")
+                ExecutionResult.Failure(IllegalStateException("Test"))
             } else {
-                it
+                ExecutionResult.Success(it)
             }
         }
 

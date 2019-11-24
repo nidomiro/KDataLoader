@@ -2,10 +2,10 @@ package nidomiro.kdataloader
 
 import kotlinx.coroutines.*
 
-typealias BatchLoader<K, R> = suspend (ids: List<K>) -> List<R>
+typealias BatchLoader<K, R> = suspend (ids: List<K>) -> List<ExecutionResult<R>>
 
 @Suppress("RedundantVisibilityModifier")
-public class DataLoader<K, R>(
+public class DataLoader<K, R : Any>(
     private val batchLoader: BatchLoader<K, R>,
     @Suppress("MemberVisibilityCanBePrivate") val options: DataLoaderOptions<K, R>
 ) {
@@ -14,7 +14,7 @@ public class DataLoader<K, R>(
     val dataLoaderScope = CoroutineScope(Dispatchers.Default)
 
 
-    private val queue: LoaderQueue<K, R> = DafaultLoaderQueueImpl()
+    private val queue: LoaderQueue<K, R> = DefaultLoaderQueueImpl()
 
     /**
      * Loads the value for the given Key.
@@ -47,8 +47,13 @@ public class DataLoader<K, R>(
         val keys = values.map { it.key }
         if (keys.isNotEmpty()) {
             try {
-                batchLoader(keys)
-                    .forEachIndexed { i, result -> values[i].value.complete(result) }
+                batchLoader(keys).forEachIndexed { i, result ->
+                    val deferred = values[i].value
+                    when (result) {
+                        is ExecutionResult.Success -> deferred.complete(result.value)
+                        is ExecutionResult.Failure -> deferred.completeExceptionally(result.throwable)
+                    }
+                }
             } catch (e: Throwable) {
                 values.forEach {
                     clear(it.key)
