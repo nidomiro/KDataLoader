@@ -300,7 +300,7 @@ class DataLoaderTest {
     @Test
     fun `failed requests are not cached on complete failure`() = runBlockingWithTimeout {
         val loadCalls = mutableListOf<List<String>>()
-        val dataLoader = DataLoader(identityBatchLoaderThatThrows(loadCalls))
+        val dataLoader = DataLoader(identityBatchLoaderThatFailsCompletly(loadCalls))
 
         val deferredA = dataLoader.loadAsync("A")
         dataLoader.dispatch()
@@ -437,6 +437,45 @@ class DataLoaderTest {
             .hasClass(IllegalStateException::class)
 
         assertThat(loadCalls).isEqualTo(listOf<List<Int>>())
+    }
+
+    @Test
+    fun `complete failures are propagated to every load`() = runBlockingWithTimeout {
+        val loadCalls = mutableListOf<List<String>>()
+        val dataLoader = DataLoader(identityBatchLoaderThatFailsCompletly(loadCalls))
+
+        val deferredA = dataLoader.loadAsync("A")
+        val deferredB = dataLoader.loadAsync("B")
+        dataLoader.dispatch()
+
+        assertThat {
+            deferredA.await()
+        }.isFailure()
+            .hasClass(IllegalStateException::class)
+
+        assertThat {
+            deferredB.await()
+        }.isFailure()
+            .hasClass(IllegalStateException::class)
+
+        assertThat(loadCalls).isEqualTo(listOf(listOf("A", "B")))
+    }
+
+    @Test
+    fun `accepts any object as key`() = runBlockingWithTimeout {
+        val loadCalls = mutableListOf<List<Any>>()
+        val dataLoader = DataLoader(identityBatchLoader(loadCalls))
+
+        val keyA = Any()
+        val keyB = Any()
+
+        val deferredA = dataLoader.loadAsync(keyA)
+        val deferredB = dataLoader.loadAsync(keyB)
+        dataLoader.dispatch()
+
+        assertThat(deferredA.await()).isEqualTo(keyA)
+        assertThat(deferredB.await()).isEqualTo(keyB)
+        assertThat(loadCalls).isEqualTo(listOf(listOf(keyA, keyB)))
     }
 
 
