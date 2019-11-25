@@ -5,7 +5,8 @@ package nidomiro.kdataloader
 
 import assertk.assertThat
 import assertk.assertions.*
-import kotlin.test.Test
+import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Test
 
 /**
  * Tests for [DataLoader].
@@ -19,7 +20,7 @@ import kotlin.test.Test
 class DataLoaderTest {
 
     @Test
-    fun `get One to test basic functionality`() = runBlockingWithTimeout {
+    fun `load One to test basic functionality`() = runBlockingWithTimeout {
 
         val dataLoader = DataLoader(identityBatchLoader<Int>())
 
@@ -224,244 +225,6 @@ class DataLoaderTest {
     }
 
     @Test
-    fun `prime cache is working`() = runBlockingWithTimeout {
-        val loadCalls = mutableListOf<List<String>>()
-        val dataLoader = DataLoader(identityBatchLoader(loadCalls))
-
-        dataLoader.prime("A" to "A")
-
-        val deferredA = dataLoader.loadAsync("A")
-        val deferredB = dataLoader.loadAsync("B")
-        dataLoader.dispatch()
-
-        assertThat(deferredA.await()).isEqualTo("A")
-        assertThat(deferredB.await()).isEqualTo("B")
-        assertThat(loadCalls).isEqualTo(listOf(listOf("B")))
-
-
-    }
-
-    @Test
-    fun `prime cache does not override`() = runBlockingWithTimeout {
-        val loadCalls = mutableListOf<List<String>>()
-        val dataLoader = DataLoader(identityBatchLoader(loadCalls))
-
-        dataLoader.prime("A" to "A")
-
-        val deferredA = dataLoader.loadAsync("A")
-        val deferredB = dataLoader.loadAsync("B")
-        dataLoader.dispatch()
-
-        assertThat(deferredA.await()).isEqualTo("A")
-        assertThat(deferredB.await()).isEqualTo("B")
-        assertThat(loadCalls).isEqualTo(listOf(listOf("B")))
-
-        dataLoader.prime("A" to "X")
-        dataLoader.prime("B" to "X")
-
-        val deferredA1 = dataLoader.loadAsync("A")
-        val deferredB1 = dataLoader.loadAsync("B")
-
-        assertThat(deferredA1.await()).isEqualTo("A")
-        assertThat(deferredB1.await()).isEqualTo("B")
-        assertThat(loadCalls).isEqualTo(listOf(listOf("B")))
-
-
-    }
-
-    @Test
-    fun `force prime cache does override`() = runBlockingWithTimeout {
-        val loadCalls = mutableListOf<List<String>>()
-        val dataLoader = DataLoader(identityBatchLoader(loadCalls))
-
-        dataLoader.prime("A" to "A")
-
-        val deferredA = dataLoader.loadAsync("A")
-        val deferredB = dataLoader.loadAsync("B")
-        dataLoader.dispatch()
-
-        assertThat(deferredA.await()).isEqualTo("A")
-        assertThat(deferredB.await()).isEqualTo("B")
-        assertThat(loadCalls).isEqualTo(listOf(listOf("B")))
-
-        dataLoader.clear("A")
-        dataLoader.prime("A" to "X")
-        dataLoader.clear("B")
-        dataLoader.prime("B" to "X")
-
-        val deferredA1 = dataLoader.loadAsync("A")
-        val deferredB1 = dataLoader.loadAsync("B")
-
-        assertThat(deferredA1.await()).isEqualTo("X")
-        assertThat(deferredB1.await()).isEqualTo("X")
-        assertThat(loadCalls).isEqualTo(listOf(listOf("B")))
-    }
-
-    @Test
-    fun `failed requests are not cached on complete failure`() = runBlockingWithTimeout {
-        val loadCalls = mutableListOf<List<String>>()
-        val dataLoader = DataLoader(identityBatchLoaderThatFailsCompletly(loadCalls))
-
-        val deferredA = dataLoader.loadAsync("A")
-        dataLoader.dispatch()
-
-        assertThat {
-            deferredA.await()
-        }.isFailure()
-            .hasClass(IllegalStateException::class)
-
-        val deferredA1 = dataLoader.loadAsync("A")
-        dataLoader.dispatch()
-
-        assertThat {
-            deferredA1.await()
-        }.isFailure()
-            .hasClass(IllegalStateException::class)
-
-        assertThat(deferredA).isNotEqualTo(deferredA1)
-        assertThat(loadCalls).isEqualTo(listOf(listOf("A"), listOf("A")))
-
-
-    }
-
-    @Test
-    fun `failed requests are not permanent if complete failure`() = runBlockingWithTimeout {
-        val loadCalls = mutableListOf<List<Int>>()
-        val dataLoader = DataLoader(identityBatchLoaderThatThrowsOnOddNumber(loadCalls))
-
-        val deferred1 = dataLoader.loadAsync(1)
-        dataLoader.dispatch()
-
-        assertThat {
-            deferred1.await()
-        }.isFailure()
-            .hasClass(IllegalStateException::class)
-
-        val deferred2 = dataLoader.loadAsync(2)
-        dataLoader.dispatch()
-
-        assertThat(deferred2.await()).isEqualTo(2)
-
-        assertThat(loadCalls).isEqualTo(listOf(listOf(1), listOf(2)))
-    }
-
-    @Test
-    fun `failed and successful requests are returned`() = runBlockingWithTimeout {
-        val loadCalls = mutableListOf<List<Int>>()
-        val dataLoader = DataLoader(identityBatchLoaderThatThrowsOnOddNumber(loadCalls))
-
-        val deferrts = (1..4).map { dataLoader.loadAsync(it) }
-        dataLoader.dispatch()
-
-        deferrts.forEachIndexed { index, deferred ->
-            val num = index + 1
-            if (num.isEven()) {
-                assertThat(deferred.await()).isEqualTo(num)
-            } else {
-                assertThat {
-                    deferred.await()
-                }.isFailure()
-                    .hasClass(IllegalStateException::class)
-            }
-        }
-
-        assertThat(loadCalls).isEqualTo(listOf(listOf(1, 2, 3, 4)))
-    }
-
-    @Test
-    fun `failed requests are cached`() = runBlockingWithTimeout {
-        val loadCalls = mutableListOf<List<Int>>()
-        val dataLoader = DataLoader(identityBatchLoaderThatThrowsOnOddNumber(loadCalls))
-
-        val deferred1 = dataLoader.loadAsync(1)
-        dataLoader.dispatch()
-
-        assertThat {
-            deferred1.await()
-        }.isFailure()
-            .hasClass(IllegalStateException::class)
-
-        val deferred1a = dataLoader.loadAsync(1)
-        dataLoader.dispatch()
-
-        assertThat {
-            deferred1a.await()
-        }.isFailure()
-            .hasClass(IllegalStateException::class)
-
-        assertThat(deferred1).isEqualTo(deferred1a)
-        assertThat(loadCalls).isEqualTo(listOf(listOf(1)))
-    }
-
-    @Test
-    fun `failed requests are not cached if told not to`() = runBlockingWithTimeout {
-        val loadCalls = mutableListOf<List<Int>>()
-        val dataLoader = DataLoader(
-            DataLoaderOptions(cacheExceptions = false),
-            identityBatchLoaderThatThrowsOnOddNumber(loadCalls)
-        )
-
-        val deferred1 = dataLoader.loadAsync(1)
-        dataLoader.dispatch()
-
-        assertThat {
-            deferred1.await()
-        }.isFailure()
-            .hasClass(IllegalStateException::class)
-
-        val deferred1a = dataLoader.loadAsync(1)
-        dataLoader.dispatch()
-
-        assertThat {
-            deferred1a.await()
-        }.isFailure()
-            .hasClass(IllegalStateException::class)
-
-        assertThat(deferred1).isNotEqualTo(deferred1a)
-        assertThat(loadCalls).isEqualTo(listOf(listOf(1), listOf(1)))
-    }
-
-    @Test
-    fun `prime cache with error`() = runBlockingWithTimeout {
-        val loadCalls = mutableListOf<List<Int>>()
-        val dataLoader = DataLoader(identityBatchLoader(loadCalls))
-
-        dataLoader.prime(1 to IllegalStateException("Prime"))
-
-        val deferred1 = dataLoader.loadAsync(1)
-        dataLoader.dispatch()
-
-        assertThat {
-            deferred1.await()
-        }.isFailure()
-            .hasClass(IllegalStateException::class)
-
-        assertThat(loadCalls).isEqualTo(listOf<List<Int>>())
-    }
-
-    @Test
-    fun `complete failures are propagated to every load`() = runBlockingWithTimeout {
-        val loadCalls = mutableListOf<List<String>>()
-        val dataLoader = DataLoader(identityBatchLoaderThatFailsCompletly(loadCalls))
-
-        val deferredA = dataLoader.loadAsync("A")
-        val deferredB = dataLoader.loadAsync("B")
-        dataLoader.dispatch()
-
-        assertThat {
-            deferredA.await()
-        }.isFailure()
-            .hasClass(IllegalStateException::class)
-
-        assertThat {
-            deferredB.await()
-        }.isFailure()
-            .hasClass(IllegalStateException::class)
-
-        assertThat(loadCalls).isEqualTo(listOf(listOf("A", "B")))
-    }
-
-    @Test
     fun `accepts any object as key`() = runBlockingWithTimeout {
         val loadCalls = mutableListOf<List<Any>>()
         val dataLoader = DataLoader(identityBatchLoader(loadCalls))
@@ -477,6 +240,362 @@ class DataLoaderTest {
         assertThat(deferredB.await()).isEqualTo(keyB)
         assertThat(loadCalls).isEqualTo(listOf(listOf(keyA, keyB)))
     }
+
+
+    @Nested
+    inner class PrimeTests {
+        @Test
+        fun `prime cache is working`() = runBlockingWithTimeout {
+            val loadCalls = mutableListOf<List<String>>()
+            val dataLoader = DataLoader(identityBatchLoader(loadCalls))
+
+            dataLoader.prime("A" to "A")
+
+            val deferredA = dataLoader.loadAsync("A")
+            val deferredB = dataLoader.loadAsync("B")
+            dataLoader.dispatch()
+
+            assertThat(deferredA.await()).isEqualTo("A")
+            assertThat(deferredB.await()).isEqualTo("B")
+            assertThat(loadCalls).isEqualTo(listOf(listOf("B")))
+
+
+        }
+
+        @Test
+        fun `prime cache does not override`() = runBlockingWithTimeout {
+            val loadCalls = mutableListOf<List<String>>()
+            val dataLoader = DataLoader(identityBatchLoader(loadCalls))
+
+            dataLoader.prime("A" to "A")
+
+            val deferredA = dataLoader.loadAsync("A")
+            val deferredB = dataLoader.loadAsync("B")
+            dataLoader.dispatch()
+
+            assertThat(deferredA.await()).isEqualTo("A")
+            assertThat(deferredB.await()).isEqualTo("B")
+            assertThat(loadCalls).isEqualTo(listOf(listOf("B")))
+
+            dataLoader.prime("A" to "X")
+            dataLoader.prime("B" to "X")
+
+            val deferredA1 = dataLoader.loadAsync("A")
+            val deferredB1 = dataLoader.loadAsync("B")
+
+            assertThat(deferredA1.await()).isEqualTo("A")
+            assertThat(deferredB1.await()).isEqualTo("B")
+            assertThat(loadCalls).isEqualTo(listOf(listOf("B")))
+
+
+        }
+
+        @Test
+        fun `force prime cache does override`() = runBlockingWithTimeout {
+            val loadCalls = mutableListOf<List<String>>()
+            val dataLoader = DataLoader(identityBatchLoader(loadCalls))
+
+            dataLoader.prime("A" to "A")
+
+            val deferredA = dataLoader.loadAsync("A")
+            val deferredB = dataLoader.loadAsync("B")
+            dataLoader.dispatch()
+
+            assertThat(deferredA.await()).isEqualTo("A")
+            assertThat(deferredB.await()).isEqualTo("B")
+            assertThat(loadCalls).isEqualTo(listOf(listOf("B")))
+
+            dataLoader.clear("A")
+            dataLoader.prime("A" to "X")
+            dataLoader.clear("B")
+            dataLoader.prime("B" to "X")
+
+            val deferredA1 = dataLoader.loadAsync("A")
+            val deferredB1 = dataLoader.loadAsync("B")
+
+            assertThat(deferredA1.await()).isEqualTo("X")
+            assertThat(deferredB1.await()).isEqualTo("X")
+            assertThat(loadCalls).isEqualTo(listOf(listOf("B")))
+        }
+
+        @Test
+        fun `prime cache with error`() = runBlockingWithTimeout {
+            val loadCalls = mutableListOf<List<Int>>()
+            val dataLoader = DataLoader(identityBatchLoader(loadCalls))
+
+            dataLoader.prime(1 to IllegalStateException("Prime"))
+
+            val deferred1 = dataLoader.loadAsync(1)
+            dataLoader.dispatch()
+
+            assertThat {
+                deferred1.await()
+            }.isFailure()
+                .hasClass(IllegalStateException::class)
+
+            assertThat(loadCalls).isEqualTo(listOf<List<Int>>())
+        }
+    }
+
+    @Nested
+    inner class ErrorHandling {
+
+        @Test
+        fun `failed requests are not cached on complete failure`() = runBlockingWithTimeout {
+            val loadCalls = mutableListOf<List<String>>()
+            val dataLoader = DataLoader(identityBatchLoaderThatFailsCompletly(loadCalls))
+
+            val deferredA = dataLoader.loadAsync("A")
+            dataLoader.dispatch()
+
+            assertThat {
+                deferredA.await()
+            }.isFailure()
+                .hasClass(IllegalStateException::class)
+
+            val deferredA1 = dataLoader.loadAsync("A")
+            dataLoader.dispatch()
+
+            assertThat {
+                deferredA1.await()
+            }.isFailure()
+                .hasClass(IllegalStateException::class)
+
+            assertThat(deferredA).isNotEqualTo(deferredA1)
+            assertThat(loadCalls).isEqualTo(listOf(listOf("A"), listOf("A")))
+
+
+        }
+
+        @Test
+        fun `failed requests are not permanent if complete failure`() = runBlockingWithTimeout {
+            val loadCalls = mutableListOf<List<Int>>()
+            val dataLoader = DataLoader(identityBatchLoaderThatThrowsOnOddNumber(loadCalls))
+
+            val deferred1 = dataLoader.loadAsync(1)
+            dataLoader.dispatch()
+
+            assertThat {
+                deferred1.await()
+            }.isFailure()
+                .hasClass(IllegalStateException::class)
+
+            val deferred2 = dataLoader.loadAsync(2)
+            dataLoader.dispatch()
+
+            assertThat(deferred2.await()).isEqualTo(2)
+
+            assertThat(loadCalls).isEqualTo(listOf(listOf(1), listOf(2)))
+        }
+
+        @Test
+        fun `failed and successful requests are returned`() = runBlockingWithTimeout {
+            val loadCalls = mutableListOf<List<Int>>()
+            val dataLoader = DataLoader(identityBatchLoaderThatThrowsOnOddNumber(loadCalls))
+
+            val deferrts = (1..4).map { dataLoader.loadAsync(it) }
+            dataLoader.dispatch()
+
+            deferrts.forEachIndexed { index, deferred ->
+                val num = index + 1
+                if (num.isEven()) {
+                    assertThat(deferred.await()).isEqualTo(num)
+                } else {
+                    assertThat {
+                        deferred.await()
+                    }.isFailure()
+                        .hasClass(IllegalStateException::class)
+                }
+            }
+
+            assertThat(loadCalls).isEqualTo(listOf(listOf(1, 2, 3, 4)))
+        }
+
+        @Test
+        fun `failed requests are cached`() = runBlockingWithTimeout {
+            val loadCalls = mutableListOf<List<Int>>()
+            val dataLoader = DataLoader(identityBatchLoaderThatThrowsOnOddNumber(loadCalls))
+
+            val deferred1 = dataLoader.loadAsync(1)
+            dataLoader.dispatch()
+
+            assertThat {
+                deferred1.await()
+            }.isFailure()
+                .hasClass(IllegalStateException::class)
+
+            val deferred1a = dataLoader.loadAsync(1)
+            dataLoader.dispatch()
+
+            assertThat {
+                deferred1a.await()
+            }.isFailure()
+                .hasClass(IllegalStateException::class)
+
+            assertThat(deferred1).isEqualTo(deferred1a)
+            assertThat(loadCalls).isEqualTo(listOf(listOf(1)))
+        }
+
+        @Test
+        fun `failed requests are not cached if told not to`() = runBlockingWithTimeout {
+            val loadCalls = mutableListOf<List<Int>>()
+            val dataLoader = DataLoader(
+                DataLoaderOptions(cacheExceptions = false),
+                identityBatchLoaderThatThrowsOnOddNumber(loadCalls)
+            )
+
+            val deferred1 = dataLoader.loadAsync(1)
+            dataLoader.dispatch()
+
+            assertThat {
+                deferred1.await()
+            }.isFailure()
+                .hasClass(IllegalStateException::class)
+
+            val deferred1a = dataLoader.loadAsync(1)
+            dataLoader.dispatch()
+
+            assertThat {
+                deferred1a.await()
+            }.isFailure()
+                .hasClass(IllegalStateException::class)
+
+            assertThat(deferred1).isNotEqualTo(deferred1a)
+            assertThat(loadCalls).isEqualTo(listOf(listOf(1), listOf(1)))
+        }
+
+        @Test
+        fun `complete failures are propagated to every load`() = runBlockingWithTimeout {
+            val loadCalls = mutableListOf<List<String>>()
+            val dataLoader = DataLoader(identityBatchLoaderThatFailsCompletly(loadCalls))
+
+            val deferredA = dataLoader.loadAsync("A")
+            val deferredB = dataLoader.loadAsync("B")
+            dataLoader.dispatch()
+
+            assertThat {
+                deferredA.await()
+            }.isFailure()
+                .hasClass(IllegalStateException::class)
+
+            assertThat {
+                deferredB.await()
+            }.isFailure()
+                .hasClass(IllegalStateException::class)
+
+            assertThat(loadCalls).isEqualTo(listOf(listOf("A", "B")))
+        }
+
+    }
+
+    @Nested
+    inner class CacheEnableFlag {
+
+        @Test
+        fun `caching is disableable with load`() = runBlockingWithTimeout {
+            val loadCalls = mutableListOf<List<String>>()
+            val dataLoader = DataLoader(
+                DataLoaderOptions(cacheEnabled = false),
+                identityBatchLoader(loadCalls)
+            )
+
+            val deferredA = dataLoader.loadAsync("A")
+            val deferredB = dataLoader.loadAsync("B")
+            dataLoader.dispatch()
+
+            assertThat(deferredA.await()).isEqualTo("A")
+            assertThat(deferredB.await()).isEqualTo("B")
+            assertThat(loadCalls).isEqualTo(listOf(listOf("A", "B")))
+
+            val deferredA1 = dataLoader.loadAsync("A")
+            val deferredC = dataLoader.loadAsync("C")
+            dataLoader.dispatch()
+
+            assertThat(deferredA1.await()).isEqualTo("A")
+            assertThat(deferredC.await()).isEqualTo("C")
+            assertThat(loadCalls).isEqualTo(listOf(listOf("A", "B"), listOf("A", "C")))
+
+            val deferredA2 = dataLoader.loadAsync("A")
+            val deferredB1 = dataLoader.loadAsync("B")
+            val deferredC1 = dataLoader.loadAsync("C")
+            dataLoader.dispatch()
+
+            assertThat(deferredA2.await()).isEqualTo("A")
+            assertThat(deferredB1.await()).isEqualTo("B")
+            assertThat(deferredC1.await()).isEqualTo("C")
+            assertThat(loadCalls).isEqualTo(listOf(listOf("A", "B"), listOf("A", "C"), listOf("A", "B", "C")))
+        }
+
+        @Test
+        fun `caching is disableable with loadMany`() = runBlockingWithTimeout {
+            val loadCalls = mutableListOf<List<String>>()
+            val dataLoader = DataLoader(
+                DataLoaderOptions(cacheEnabled = false),
+                identityBatchLoader(loadCalls)
+            )
+
+            val deferreds1 = dataLoader.loadManyAsync("A", "B")
+            dataLoader.dispatch()
+
+            assertThat(deferreds1.await()).isEqualTo(listOf("A", "B"))
+            assertThat(loadCalls).isEqualTo(listOf(listOf("A", "B")))
+
+            val deferreds2 = dataLoader.loadManyAsync("A", "C")
+            dataLoader.dispatch()
+
+            assertThat(deferreds2.await()).isEqualTo(listOf("A", "C"))
+            assertThat(loadCalls).isEqualTo(listOf(listOf("A", "B"), listOf("A", "C")))
+
+            val deferreds3 = dataLoader.loadManyAsync("A", "B", "C")
+            dataLoader.dispatch()
+
+            assertThat(deferreds3.await()).isEqualTo(listOf("A", "B", "C"))
+            assertThat(loadCalls).isEqualTo(listOf(listOf("A", "B"), listOf("A", "C"), listOf("A", "B", "C")))
+        }
+
+        @Test
+        fun `caching is disableable with load and duplicates`() = runBlockingWithTimeout {
+            val loadCalls = mutableListOf<List<String>>()
+            val dataLoader = DataLoader(
+                DataLoaderOptions(cacheEnabled = false),
+                identityBatchLoader(loadCalls)
+            )
+
+            val deferredA = dataLoader.loadAsync("A")
+            val deferredB = dataLoader.loadAsync("B")
+            val deferredA1 = dataLoader.loadAsync("A")
+            dataLoader.dispatch()
+
+            assertThat(deferredA.await()).isEqualTo("A")
+            assertThat(deferredB.await()).isEqualTo("B")
+            assertThat(deferredA1.await()).isEqualTo("A")
+            assertThat(loadCalls).isEqualTo(listOf(listOf("A", "B", "A")))
+        }
+
+        @Test
+        fun `caching is enableable with load and duplicates`() = runBlockingWithTimeout {
+            val loadCalls = mutableListOf<List<String>>()
+            val dataLoader = DataLoader(
+                DataLoaderOptions(cacheEnabled = true),
+                identityBatchLoader(loadCalls)
+            )
+
+            val deferredA = dataLoader.loadAsync("A")
+            val deferredB = dataLoader.loadAsync("B")
+            val deferredA1 = dataLoader.loadAsync("A")
+            dataLoader.dispatch()
+
+            assertThat(deferredA.await()).isEqualTo("A")
+            assertThat(deferredB.await()).isEqualTo("B")
+            assertThat(deferredA1.await()).isEqualTo("A")
+            assertThat(loadCalls).isEqualTo(listOf(listOf("A", "B")))
+        }
+
+
+
+    }
+
+
 
 
 }

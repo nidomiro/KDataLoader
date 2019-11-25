@@ -21,10 +21,16 @@ public class DataLoader<K, R : Any>(
      * The returned [Deferred] completes with the finish of [dispatch]
      */
     public suspend fun loadAsync(key: K): Deferred<R> {
-        return options.cache.getOrCreate(key) {
+        val block: suspend (key: K) -> CompletableDeferred<R> = {
             val newDeferred = CompletableDeferred<R>()
             queue.enqueue(key, newDeferred)
-            return@getOrCreate newDeferred
+            newDeferred
+        }
+
+        return if (options.cacheEnabled) {
+            options.cache.getOrCreate(key, block)
+        } else {
+            block(key)
         }
     }
 
@@ -43,7 +49,11 @@ public class DataLoader<K, R : Any>(
      * After this function finishes all [Deferred] created before are completed.
      */
     public suspend fun dispatch() {
-        val queueEntries = queue.getAllItemsAsList().distinctBy { it.key }
+        val queueEntries = if (options.cacheEnabled) {
+            queue.getAllItemsAsList().distinctBy { it.key }
+        } else {
+            queue.getAllItemsAsList()
+        }
         val keys = queueEntries.map { it.key }
         if (keys.isNotEmpty()) {
             executeBatchLoader(keys, queueEntries)

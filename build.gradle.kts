@@ -24,6 +24,8 @@ dependencies {
     // Use the Kotlin JUnit integration.
     testImplementation(kotlin("test-junit"))
 
+    testImplementation("org.junit.jupiter:junit-jupiter:5.5.2")
+
     testImplementation("com.willowtreeapps.assertk:assertk-jvm:0.20")
 
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.3.0")
