@@ -591,6 +591,66 @@ class DataLoaderTest {
             assertThat(loadCalls).isEqualTo(listOf(listOf("A", "B")))
         }
 
+        @Test
+        fun `batching can be disabled`() = runBlockingWithTimeout {
+            val loadCalls = mutableListOf<List<String>>()
+            val dataLoader = DataLoader(
+                DataLoaderOptions(batchLoadEnabled = false),
+                identityBatchLoader(loadCalls)
+            )
+
+            val deferredA = dataLoader.loadAsync("A")
+            val deferredB = dataLoader.loadAsync("B")
+            val deferredC = dataLoader.loadAsync("C")
+
+            assertThat(deferredA.await()).isEqualTo("A")
+            assertThat(deferredB.await()).isEqualTo("B")
+            assertThat(deferredC.await()).isEqualTo("C")
+            assertThat(loadCalls).isEqualTo(listOf(listOf("A"), listOf("B"), listOf("C")))
+        }
+
+        @Test
+        fun `batching and caching can be disabled together`() = runBlockingWithTimeout {
+            val loadCalls = mutableListOf<List<String>>()
+            val dataLoader = DataLoader(
+                DataLoaderOptions(
+                    batchLoadEnabled = false,
+                    cacheEnabled = false
+                ),
+                identityBatchLoader(loadCalls)
+            )
+
+            val deferredA = dataLoader.loadAsync("A")
+            val deferredB = dataLoader.loadAsync("B")
+            val deferredA1 = dataLoader.loadAsync("A")
+
+            assertThat(deferredA.await()).isEqualTo("A")
+            assertThat(deferredB.await()).isEqualTo("B")
+            assertThat(deferredA1.await()).isEqualTo("A")
+            assertThat(loadCalls).isEqualTo(listOf(listOf("A"), listOf("B"), listOf("A")))
+        }
+
+        @Test
+        fun `batching is honoring batchsize`() = runBlockingWithTimeout {
+            val loadCalls = mutableListOf<List<String>>()
+            val dataLoader = DataLoader(
+                DataLoaderOptions(batchSize = 2),
+                identityBatchLoader(loadCalls)
+            )
+
+            val deferredA = dataLoader.loadAsync("A")
+            val deferredB = dataLoader.loadAsync("B")
+            val deferredC = dataLoader.loadAsync("C")
+            dataLoader.dispatch()
+
+            assertThat(deferredA.await()).isEqualTo("A")
+            assertThat(deferredB.await()).isEqualTo("B")
+            assertThat(deferredC.await()).isEqualTo("C")
+
+
+            assertThat(loadCalls).isEqualTo(listOf(listOf("A", "B"), listOf("C")))
+        }
+
 
 
     }

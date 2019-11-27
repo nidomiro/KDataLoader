@@ -11,9 +11,7 @@ public class DataLoader<K, R : Any>(
 ) {
     constructor(batchLoader: BatchLoader<K, R>) : this(DataLoaderOptions(), batchLoader)
 
-    val dataLoaderScope = CoroutineScope(Dispatchers.Default)
-
-
+    private val dataLoaderScope = CoroutineScope(Dispatchers.Default)
     private val queue: LoaderQueue<K, R> = DefaultLoaderQueueImpl()
 
     /**
@@ -24,6 +22,9 @@ public class DataLoader<K, R : Any>(
         val block: suspend (key: K) -> CompletableDeferred<R> = {
             val newDeferred = CompletableDeferred<R>()
             queue.enqueue(key, newDeferred)
+            if (!options.batchLoadEnabled) {
+                dispatch()
+            }
             newDeferred
         }
 
@@ -54,6 +55,12 @@ public class DataLoader<K, R : Any>(
         } else {
             queue.getAllItemsAsList()
         }
+        queueEntries.chunked(options.batchSize).forEach {
+            executeDispatchOnQueueEntries(it)
+        }
+    }
+
+    private suspend fun executeDispatchOnQueueEntries(queueEntries: List<LoaderQueueEntry<K, CompletableDeferred<R>>>) {
         val keys = queueEntries.map { it.key }
         if (keys.isNotEmpty()) {
             executeBatchLoader(keys, queueEntries)
