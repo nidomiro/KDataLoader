@@ -39,7 +39,7 @@ public class DataLoader<K, R : Any>(
     public suspend fun loadManyAsync(vararg keys: K): Deferred<List<R>> {
         val deferreds = keys.map { loadAsync(it) }
 
-        return dataLoaderScope.async {
+        return dataLoaderScope.async(Dispatchers.Default) {
             return@async deferreds.map { it.await() }
         }
     }

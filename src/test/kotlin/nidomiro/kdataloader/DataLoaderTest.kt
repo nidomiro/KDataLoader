@@ -5,6 +5,9 @@ package nidomiro.kdataloader
 
 import assertk.assertThat
 import assertk.assertions.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
@@ -647,8 +650,44 @@ class DataLoaderTest {
             assertThat(deferredB.await()).isEqualTo("B")
             assertThat(deferredC.await()).isEqualTo("C")
 
-
             assertThat(loadCalls).isEqualTo(listOf(listOf("A", "B"), listOf("C")))
+        }
+
+        @Test
+        fun `batching is occurring in async`() = runBlockingWithTimeout {
+            val loadCalls = mutableListOf<List<String>>()
+            val dataLoader = DataLoader(
+                identityBatchLoader(loadCalls)
+            )
+
+            @Suppress("RedundantAsync", "DeferredResultUnused")
+            async(Dispatchers.IO) {
+                async { dataLoader.loadAsync("A") }.await()
+                async { dataLoader.loadAsync("B") }.await()
+                async { dataLoader.loadAsync("C") }.await()
+
+            }.await()
+            dataLoader.dispatch()
+
+            assertThat(loadCalls).isEqualTo(listOf(listOf("A", "B", "C")))
+        }
+
+        @Test
+        fun `parallel batching is possible`() = runBlockingWithTimeout {
+            val loadCalls = mutableListOf<List<Int>>()
+            val dataLoader = DataLoader(
+                identityBatchLoader(loadCalls)
+            )
+
+            val deferredList = (0..50).map {
+                it to GlobalScope.async(Dispatchers.IO) { dataLoader.loadAsync(it) }
+            }
+                .map { it.first to it.second.await() }
+            dataLoader.dispatch()
+            deferredList.forEach { (index, deferred) -> assertThat(deferred.await()).isEqualTo(index) }
+
+            assertThat(loadCalls).hasSize(1)
+            assertThat(loadCalls[0]).hasSize(deferredList.size)
         }
 
 
