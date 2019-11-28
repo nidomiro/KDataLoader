@@ -1,5 +1,6 @@
 package nidomiro.kdataloader.dsl
 
+import kotlinx.coroutines.runBlocking
 import nidomiro.kdataloader.BatchLoader
 import nidomiro.kdataloader.DataLoader
 
@@ -24,7 +25,11 @@ class DataLoaderDSL<K, R : Any> {
 
     fun toDataLoader(): DataLoader<K, R> {
         val batchLoader = this.batchLoader ?: throw IllegalStateException("You have do define a BatchLoader!")
-        return DataLoader(options.toDataLoaderOptions(), batchLoader)
+        val dataLoader = DataLoader(options.toDataLoaderOptions(), batchLoader)
+        runBlocking {
+            primes.forEach { (key, value) -> dataLoader.prime(key, value) }
+        }
+        return dataLoader
     }
 }
 

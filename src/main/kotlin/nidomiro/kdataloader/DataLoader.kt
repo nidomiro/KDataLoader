@@ -115,10 +115,14 @@ public class DataLoader<K, R : Any>(
         options.cache.clear()
     }
 
-    suspend fun prime(cacheEntry: Pair<K, R>) {
-        options.cache.getOrCreate(cacheEntry.first) {
-            CompletableDeferred(cacheEntry.second)
+    suspend fun prime(key: K, value: R) {
+        options.cache.getOrCreate(key) {
+            CompletableDeferred(value)
         }
+    }
+
+    suspend fun prime(cacheEntry: Pair<K, R>) {
+        prime(cacheEntry.first, cacheEntry.second)
     }
 
     @JvmName("primeFailure")

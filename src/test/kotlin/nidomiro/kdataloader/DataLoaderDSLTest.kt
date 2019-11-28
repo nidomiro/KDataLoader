@@ -20,8 +20,6 @@ class DataLoaderDSLTest {
             dataLoader.dispatch()
             assertThat(deferred1.await()).isEqualTo("1")
         }
-
-
     }
 
     @Test
@@ -43,6 +41,46 @@ class DataLoaderDSLTest {
             assertThat(deferred1.await()).isEqualTo("1")
             assertThat(deferred2.await()).isEqualTo("2")
         }
+    }
+
+    /*@Test
+    fun `create DataLoader with prime trowables`() {
+
+        val dataLoader = dataLoader<Int, String> {
+            batchLoader = { keys -> keys.map { ExecutionResult.Success(it.toString()) } }
+
+            prime(
+                1 to IllegalArgumentException("1"),
+                2 to IllegalArgumentException("2")
+            )
+
+        }
+
+        runBlockingWithTimeout {
+            val deferred1 = dataLoader.loadAsync(1)
+            val deferred2 = dataLoader.loadAsync(2)
+            assertThat(deferred1.await()).isEqualTo("1")
+            assertThat(deferred2.await()).isEqualTo("2")
+        }
+    }*/
+
+    @Test
+    fun `create a basic DataLoader with options`() {
+
+        val dataLoader = dataLoader<Int, String> {
+            batchLoader = { keys -> keys.map { ExecutionResult.Success(it.toString()) } }
+            configure {
+                batchLoadEnabled = true
+                batchSize = 1
+                cacheEnabled = false
+                cacheExceptions = false
+            }
+        }
+
+        assertThat(dataLoader.options.batchLoadEnabled).isEqualTo(true)
+        assertThat(dataLoader.options.batchSize).isEqualTo(1)
+        assertThat(dataLoader.options.cacheEnabled).isEqualTo(false)
+        assertThat(dataLoader.options.cacheExceptions).isEqualTo(false)
 
 
     }
