@@ -5,7 +5,7 @@ import kotlinx.coroutines.*
 typealias BatchLoader<K, R> = suspend (ids: List<K>) -> List<ExecutionResult<R>>
 
 @Suppress("RedundantVisibilityModifier")
-public class DataLoader<K, R : Any>(
+public class DataLoader<K, R>(
     @Suppress("MemberVisibilityCanBePrivate") val options: DataLoaderOptions<K, R>,
     private val batchLoader: BatchLoader<K, R>
 ) {
@@ -16,7 +16,8 @@ public class DataLoader<K, R : Any>(
 
     /**
      * Loads the value for the given Key.
-     * The returned [Deferred] completes with the finish of [dispatch]
+     * The returned [Deferred] completes with the finish of [dispatch] in case of [DataLoaderOptions.batchLoadEnabled] = true.
+     * If [DataLoaderOptions.batchLoadEnabled] = false it calls the BatchLoader immediately and returns the retrieved value.
      */
     public suspend fun loadAsync(key: K): Deferred<R> {
         val block: suspend (key: K) -> CompletableDeferred<R> = {
@@ -35,7 +36,9 @@ public class DataLoader<K, R : Any>(
         }
     }
 
-
+    /**
+     * The same as [loadAsync] but for multiple Keys at once.
+     */
     public suspend fun loadManyAsync(vararg keys: K): Deferred<List<R>> {
         val deferreds = keys.map { loadAsync(it) }
 
@@ -107,32 +110,62 @@ public class DataLoader<K, R : Any>(
         }
     }
 
+    /**
+     * Removes the value of the given Key from the cache
+     */
     suspend fun clear(key: K) {
         options.cache.clear(key)
     }
 
+    /**
+     * Removes all values from the cache
+     */
     suspend fun clearAll() {
         options.cache.clear()
     }
 
+    /**
+     * Primes the cache with the given values.
+     * After priming the [BatchLoader] will not be called with this key.
+     */
     suspend fun prime(key: K, value: R) {
         options.cache.getOrCreate(key) {
             CompletableDeferred(value)
         }
     }
 
-    suspend fun prime(cacheEntry: Pair<K, R>) {
-        prime(cacheEntry.first, cacheEntry.second)
-    }
-
-    @JvmName("primeFailure")
-    suspend fun prime(cacheEntry: Pair<K, Throwable>) {
-        options.cache.getOrCreate(cacheEntry.first) {
+    /**
+     * Primes the cache with the given [Throwable].
+     * After priming the [BatchLoader] will not be called with this key, if [DataLoaderOptions.cacheExceptions] = true.
+     */
+    suspend fun prime(key: K, value: Throwable) {
+        options.cache.getOrCreate(key) {
             CompletableDeferred<R>().apply {
-                completeExceptionally(cacheEntry.second)
+                completeExceptionally(value)
             }
         }
     }
 
+    internal suspend fun prime(key: K, value: ExecutionResult<R>) =
+        when (value) {
+            is ExecutionResult.Success -> prime(key, value.value)
+            is ExecutionResult.Failure -> prime(key, value.throwable)
+        }
 
+
+}
+
+/**
+ * @see DataLoader.prime(K, R)
+ */
+suspend fun <K, R> DataLoader<K, R>.prime(cacheEntry: Pair<K, R>) {
+    prime(cacheEntry.first, cacheEntry.second)
+}
+
+/**
+ * @see DataLoader.prime(K, Throwable)
+ */
+@JvmName("primeFailure")
+suspend fun <K, R> DataLoader<K, R>.prime(cacheEntry: Pair<K, Throwable>) {
+    prime(cacheEntry.first, cacheEntry.second)
 }

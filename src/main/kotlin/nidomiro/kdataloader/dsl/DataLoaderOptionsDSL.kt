@@ -12,11 +12,30 @@ class DataLoaderOptionsDSL<K, R> {
     var batchLoadEnabled: Boolean = true
     var batchSize: Int = Int.MAX_VALUE
 
-    fun toDataLoaderOptions() = DataLoaderOptions(
+    internal fun toDataLoaderOptions() = DataLoaderOptions(
+        /**
+         * The cache implementation
+         */
         cache,
+
+        /**
+         * Cache Exceptional States?
+         */
         cacheExceptions,
+
+        /**
+         * Cache Results?
+         */
         cacheEnabled,
+
+        /**
+         * Load individually (and immediately) or in batch
+         */
         batchLoadEnabled,
+
+        /**
+         * The maximum size of one batch
+         */
         batchSize
     )
 

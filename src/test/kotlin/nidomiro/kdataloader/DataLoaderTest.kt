@@ -35,6 +35,21 @@ class DataLoaderTest {
     }
 
     @Test
+    fun `accepts nullable types as result-type`() = runBlockingWithTimeout {
+
+        val dataLoader = DataLoader(identityBatchLoaderThatReturnsNullOnOddNumber())
+
+        val deferredOne = dataLoader.loadAsync(1)
+        val deferredTwo = dataLoader.loadAsync(2)
+        assertThat(deferredOne.isCompleted).isFalse()
+        assertThat(deferredTwo.isCompleted).isFalse()
+        dataLoader.dispatch()
+
+        assertThat(deferredOne.await()).isNull()
+        assertThat(deferredTwo.await()).isEqualTo(2)
+    }
+
+    @Test
     fun `load many in one call`() = runBlockingWithTimeout {
 
         val dataLoader = DataLoader(identityBatchLoader<Int>())
