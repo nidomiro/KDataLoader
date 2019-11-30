@@ -6,36 +6,36 @@ import nidomiro.kdataloader.DataLoaderOptions
 import nidomiro.kdataloader.DefaultCacheImpl
 
 class DataLoaderOptionsDSL<K, R> {
+    /**
+     * The cache implementation
+     */
     var cache: Cache<K, CompletableDeferred<R>> = DefaultCacheImpl()
-    var cacheExceptions: Boolean = true
+
+    /**
+     * Cache Results?
+     */
     var cacheEnabled: Boolean = true
+
+    /**
+     * Cache Exceptional States?
+     */
+    var cacheExceptions: Boolean = true
+
+    /**
+     * Load individually (and immediately) or in batch
+     */
     var batchLoadEnabled: Boolean = true
+
+    /**
+     * The maximum size of one batch
+     */
     var batchSize: Int = Int.MAX_VALUE
 
     internal fun toDataLoaderOptions() = DataLoaderOptions(
-        /**
-         * The cache implementation
-         */
         cache,
-
-        /**
-         * Cache Exceptional States?
-         */
         cacheExceptions,
-
-        /**
-         * Cache Results?
-         */
         cacheEnabled,
-
-        /**
-         * Load individually (and immediately) or in batch
-         */
         batchLoadEnabled,
-
-        /**
-         * The maximum size of one batch
-         */
         batchSize
     )
 

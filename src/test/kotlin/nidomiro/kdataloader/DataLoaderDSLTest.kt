@@ -11,24 +11,21 @@ class DataLoaderDSLTest {
 
 
     @Test
-    fun `create a basic DataLoader`() {
+    fun `create a basic DataLoader`() = runBlockingWithTimeout {
 
-        val dataLoader = dataLoader<Int, String> {
-            batchLoader = { keys -> keys.map { ExecutionResult.Success(it.toString()) } }
-        }
+        val dataLoader = dataLoader({ keys: List<Int> -> keys.map { ExecutionResult.Success(it.toString()) } })
 
-        runBlockingWithTimeout {
-            val deferred1 = dataLoader.loadAsync(1)
-            dataLoader.dispatch()
-            assertThat(deferred1.await()).isEqualTo("1")
-        }
+
+        val deferred1 = dataLoader.loadAsync(1)
+        dataLoader.dispatch()
+        assertThat(deferred1.await()).isEqualTo("1")
+
     }
 
     @Test
-    fun `create DataLoader with prime`() {
+    fun `create DataLoader with prime`() = runBlockingWithTimeout {
 
-        val dataLoader = dataLoader<Int, String> {
-            batchLoader = { keys -> keys.map { ExecutionResult.Success(it.toString()) } }
+        val dataLoader = dataLoader({ keys: List<Int> -> keys.map { ExecutionResult.Success(it.toString()) } }) {
 
             prime(
                 1 to "1",
@@ -37,19 +34,18 @@ class DataLoaderDSLTest {
 
         }
 
-        runBlockingWithTimeout {
+
             val deferred1 = dataLoader.loadAsync(1)
             val deferred2 = dataLoader.loadAsync(2)
             assertThat(deferred1.await()).isEqualTo("1")
             assertThat(deferred2.await()).isEqualTo("2")
-        }
+
     }
 
     @Test
-    fun `create DataLoader with prime throwables`() {
+    fun `create DataLoader with prime throwables`() = runBlockingWithTimeout {
 
-        val dataLoader = dataLoader<Int, String> {
-            batchLoader = { keys -> keys.map { ExecutionResult.Success(it.toString()) } }
+        val dataLoader = dataLoader({ keys: List<Int> -> keys.map { ExecutionResult.Success(it.toString()) } }) {
 
             prime(
                 1 to IllegalArgumentException("1"),
@@ -58,8 +54,8 @@ class DataLoaderDSLTest {
 
         }
 
-        runBlockingWithTimeout {
-            val deferred1 = dataLoader.loadAsync(1)
+
+        val deferred1 = dataLoader.loadAsync(1)
             val deferred2 = dataLoader.loadAsync(2)
 
             assertThat { deferred1.await() }
@@ -73,14 +69,13 @@ class DataLoaderDSLTest {
                 .isInstanceOf(IllegalArgumentException::class)
                 .transform { it.message }
                 .isEqualTo("2")
-        }
+
     }
 
     @Test
-    fun `create a basic DataLoader with options`() {
+    fun `create a basic DataLoader with options`() = runBlockingWithTimeout {
 
-        val dataLoader = dataLoader<Int, String> {
-            batchLoader = { keys -> keys.map { ExecutionResult.Success(it.toString()) } }
+        val dataLoader = dataLoader({ keys: List<Int> -> keys.map { ExecutionResult.Success(it.toString()) } }) {
             configure {
                 batchLoadEnabled = true
                 batchSize = 1
