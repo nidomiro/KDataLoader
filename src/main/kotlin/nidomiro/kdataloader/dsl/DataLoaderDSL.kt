@@ -3,6 +3,7 @@ package nidomiro.kdataloader.dsl
 import nidomiro.kdataloader.BatchLoader
 import nidomiro.kdataloader.DataLoader
 import nidomiro.kdataloader.ExecutionResult
+import nidomiro.kdataloader.SimpleDataLoaderImpl
 
 class DataLoaderDSL<K, R>(
     private val batchLoader: BatchLoader<K, R>
@@ -42,7 +43,7 @@ class DataLoaderDSL<K, R>(
 
 
     internal suspend fun toDataLoader(): DataLoader<K, R> {
-        val dataLoader = DataLoader(options.toDataLoaderOptions(), batchLoader)
+        val dataLoader = SimpleDataLoaderImpl(options.toDataLoaderOptions(), batchLoader)
         primes.forEach { (key, value) -> dataLoader.prime(key, value) }
         return dataLoader
     }

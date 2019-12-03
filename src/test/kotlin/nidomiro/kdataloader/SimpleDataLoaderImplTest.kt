@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
 /**
- * Tests for [DataLoader].
+ * Tests for [SimpleDataLoaderImpl].
  *
  * The tests are a inspired by the existing tests in
  * the <a href="https://github.com/facebook/dataloader">facebook/dataloader</a> project.
@@ -20,12 +20,12 @@ import org.junit.jupiter.api.Test
  *
  * @author Niclas Roßberger
  */
-class DataLoaderTest {
+class SimpleDataLoaderImplTest {
 
     @Test
     fun `load One to test basic functionality`() = runBlockingWithTimeout {
 
-        val dataLoader = DataLoader(identityBatchLoader<Int>())
+        val dataLoader = SimpleDataLoaderImpl(identityBatchLoader<Int>())
 
         val deferredOne = dataLoader.loadAsync(1)
         assertThat(deferredOne.isCompleted).isFalse()
@@ -37,7 +37,7 @@ class DataLoaderTest {
     @Test
     fun `accepts nullable types as result-type`() = runBlockingWithTimeout {
 
-        val dataLoader = DataLoader(identityBatchLoaderThatReturnsNullOnOddNumber())
+        val dataLoader = SimpleDataLoaderImpl(identityBatchLoaderThatReturnsNullOnOddNumber())
 
         val deferredOne = dataLoader.loadAsync(1)
         val deferredTwo = dataLoader.loadAsync(2)
@@ -52,7 +52,7 @@ class DataLoaderTest {
     @Test
     fun `load many in one call`() = runBlockingWithTimeout {
 
-        val dataLoader = DataLoader(identityBatchLoader<Int>())
+        val dataLoader = SimpleDataLoaderImpl(identityBatchLoader<Int>())
 
         val items = listOf(1, 2, 3, 5, 4).toTypedArray()
         val deferredAll = dataLoader.loadManyAsync(*items)
@@ -63,7 +63,7 @@ class DataLoaderTest {
     @Test
     fun `load many with empty key-list`() = runBlockingWithTimeout {
 
-        val dataLoader = DataLoader(identityBatchLoader<Int>())
+        val dataLoader = SimpleDataLoaderImpl(identityBatchLoader<Int>())
 
         val deferredAll = dataLoader.loadManyAsync(*listOf<Int>().toTypedArray())
         dataLoader.dispatch()
@@ -73,7 +73,7 @@ class DataLoaderTest {
     @Test
     fun `completables are completed in batch with dispatch()`() = runBlockingWithTimeout {
 
-        val dataLoader = DataLoader(identityBatchLoader<Int>())
+        val dataLoader = SimpleDataLoaderImpl(identityBatchLoader<Int>())
 
         val deferredOne = dataLoader.loadAsync(1)
         val deferredTwo = dataLoader.loadAsync(2)
@@ -94,7 +94,7 @@ class DataLoaderTest {
     @Test
     fun `enqueue of same id results in same Deferred`() = runBlockingWithTimeout {
 
-        val dataLoader = DataLoader(identityBatchLoader<Int>())
+        val dataLoader = SimpleDataLoaderImpl(identityBatchLoader<Int>())
 
         val deferredOne = dataLoader.loadAsync(1)
         val deferredTwo = dataLoader.loadAsync(2)
@@ -121,7 +121,7 @@ class DataLoaderTest {
     fun `cache repeated requests`() = runBlockingWithTimeout {
 
         val loadCalls = mutableListOf<List<String>>()
-        val dataLoader = DataLoader(identityBatchLoader(loadCalls))
+        val dataLoader = SimpleDataLoaderImpl(identityBatchLoader(loadCalls))
 
         val deferredA = dataLoader.loadAsync("A")
         val deferredB = dataLoader.loadAsync("B")
@@ -161,7 +161,7 @@ class DataLoaderTest {
     fun `should not redispatch previous load`() = runBlockingWithTimeout {
 
         val loadCalls = mutableListOf<List<String>>()
-        val dataLoader = DataLoader(identityBatchLoader(loadCalls))
+        val dataLoader = SimpleDataLoaderImpl(identityBatchLoader(loadCalls))
 
         val deferredA = dataLoader.loadAsync("A")
         dataLoader.dispatch()
@@ -177,7 +177,7 @@ class DataLoaderTest {
     @Test
     fun `should cache dispatch`() = runBlockingWithTimeout {
         val loadCalls = mutableListOf<List<String>>()
-        val dataLoader = DataLoader(identityBatchLoader(loadCalls))
+        val dataLoader = SimpleDataLoaderImpl(identityBatchLoader(loadCalls))
 
         val deferredA = dataLoader.loadAsync("A")
         dataLoader.dispatch()
@@ -195,7 +195,7 @@ class DataLoaderTest {
     @Test
     fun `cleared keys are refetched`() = runBlockingWithTimeout {
         val loadCalls = mutableListOf<List<String>>()
-        val dataLoader = DataLoader(identityBatchLoader(loadCalls))
+        val dataLoader = SimpleDataLoaderImpl(identityBatchLoader(loadCalls))
 
         val deferredA = dataLoader.loadAsync("A")
         val deferredB = dataLoader.loadAsync("B")
@@ -220,7 +220,7 @@ class DataLoaderTest {
     @Test
     fun `clear all causes complete refetch`() = runBlockingWithTimeout {
         val loadCalls = mutableListOf<List<String>>()
-        val dataLoader = DataLoader(identityBatchLoader(loadCalls))
+        val dataLoader = SimpleDataLoaderImpl(identityBatchLoader(loadCalls))
 
         val deferredA = dataLoader.loadAsync("A")
         val deferredB = dataLoader.loadAsync("B")
@@ -245,7 +245,7 @@ class DataLoaderTest {
     @Test
     fun `accepts any object as key`() = runBlockingWithTimeout {
         val loadCalls = mutableListOf<List<Any>>()
-        val dataLoader = DataLoader(identityBatchLoader(loadCalls))
+        val dataLoader = SimpleDataLoaderImpl(identityBatchLoader(loadCalls))
 
         val keyA = Any()
         val keyB = Any()
@@ -265,7 +265,7 @@ class DataLoaderTest {
         @Test
         fun `prime cache is working`() = runBlockingWithTimeout {
             val loadCalls = mutableListOf<List<String>>()
-            val dataLoader = DataLoader(identityBatchLoader(loadCalls))
+            val dataLoader = SimpleDataLoaderImpl(identityBatchLoader(loadCalls))
 
             dataLoader.prime("A" to "A")
 
@@ -283,7 +283,7 @@ class DataLoaderTest {
         @Test
         fun `prime cache does not override`() = runBlockingWithTimeout {
             val loadCalls = mutableListOf<List<String>>()
-            val dataLoader = DataLoader(identityBatchLoader(loadCalls))
+            val dataLoader = SimpleDataLoaderImpl(identityBatchLoader(loadCalls))
 
             dataLoader.prime("A" to "A")
 
@@ -311,7 +311,7 @@ class DataLoaderTest {
         @Test
         fun `force prime cache does override`() = runBlockingWithTimeout {
             val loadCalls = mutableListOf<List<String>>()
-            val dataLoader = DataLoader(identityBatchLoader(loadCalls))
+            val dataLoader = SimpleDataLoaderImpl(identityBatchLoader(loadCalls))
 
             dataLoader.prime("A" to "A")
 
@@ -339,7 +339,7 @@ class DataLoaderTest {
         @Test
         fun `prime cache with error`() = runBlockingWithTimeout {
             val loadCalls = mutableListOf<List<Int>>()
-            val dataLoader = DataLoader(identityBatchLoader(loadCalls))
+            val dataLoader = SimpleDataLoaderImpl(identityBatchLoader(loadCalls))
 
             dataLoader.prime(1 to IllegalStateException("Prime"))
 
@@ -361,7 +361,7 @@ class DataLoaderTest {
         @Test
         fun `failed requests are not cached on complete failure`() = runBlockingWithTimeout {
             val loadCalls = mutableListOf<List<String>>()
-            val dataLoader = DataLoader(identityBatchLoaderThatFailsCompletly(loadCalls))
+            val dataLoader = SimpleDataLoaderImpl(identityBatchLoaderThatFailsCompletly(loadCalls))
 
             val deferredA = dataLoader.loadAsync("A")
             dataLoader.dispatch()
@@ -388,7 +388,7 @@ class DataLoaderTest {
         @Test
         fun `failed requests are not permanent if complete failure`() = runBlockingWithTimeout {
             val loadCalls = mutableListOf<List<Int>>()
-            val dataLoader = DataLoader(identityBatchLoaderThatThrowsOnOddNumber(loadCalls))
+            val dataLoader = SimpleDataLoaderImpl(identityBatchLoaderThatThrowsOnOddNumber(loadCalls))
 
             val deferred1 = dataLoader.loadAsync(1)
             dataLoader.dispatch()
@@ -409,7 +409,7 @@ class DataLoaderTest {
         @Test
         fun `failed and successful requests are returned`() = runBlockingWithTimeout {
             val loadCalls = mutableListOf<List<Int>>()
-            val dataLoader = DataLoader(identityBatchLoaderThatThrowsOnOddNumber(loadCalls))
+            val dataLoader = SimpleDataLoaderImpl(identityBatchLoaderThatThrowsOnOddNumber(loadCalls))
 
             val deferrts = (1..4).map { dataLoader.loadAsync(it) }
             dataLoader.dispatch()
@@ -432,7 +432,7 @@ class DataLoaderTest {
         @Test
         fun `failed requests are cached`() = runBlockingWithTimeout {
             val loadCalls = mutableListOf<List<Int>>()
-            val dataLoader = DataLoader(identityBatchLoaderThatThrowsOnOddNumber(loadCalls))
+            val dataLoader = SimpleDataLoaderImpl(identityBatchLoaderThatThrowsOnOddNumber(loadCalls))
 
             val deferred1 = dataLoader.loadAsync(1)
             dataLoader.dispatch()
@@ -457,7 +457,7 @@ class DataLoaderTest {
         @Test
         fun `failed requests are not cached if told not to`() = runBlockingWithTimeout {
             val loadCalls = mutableListOf<List<Int>>()
-            val dataLoader = DataLoader(
+            val dataLoader = SimpleDataLoaderImpl(
                 DataLoaderOptions(cacheExceptions = false),
                 identityBatchLoaderThatThrowsOnOddNumber(loadCalls)
             )
@@ -485,7 +485,7 @@ class DataLoaderTest {
         @Test
         fun `complete failures are propagated to every load`() = runBlockingWithTimeout {
             val loadCalls = mutableListOf<List<String>>()
-            val dataLoader = DataLoader(identityBatchLoaderThatFailsCompletly(loadCalls))
+            val dataLoader = SimpleDataLoaderImpl(identityBatchLoaderThatFailsCompletly(loadCalls))
 
             val deferredA = dataLoader.loadAsync("A")
             val deferredB = dataLoader.loadAsync("B")
@@ -512,7 +512,7 @@ class DataLoaderTest {
         @Test
         fun `caching is disableable with load`() = runBlockingWithTimeout {
             val loadCalls = mutableListOf<List<String>>()
-            val dataLoader = DataLoader(
+            val dataLoader = SimpleDataLoaderImpl(
                 DataLoaderOptions(cacheEnabled = false),
                 identityBatchLoader(loadCalls)
             )
@@ -547,7 +547,7 @@ class DataLoaderTest {
         @Test
         fun `caching is disableable with loadMany`() = runBlockingWithTimeout {
             val loadCalls = mutableListOf<List<String>>()
-            val dataLoader = DataLoader(
+            val dataLoader = SimpleDataLoaderImpl(
                 DataLoaderOptions(cacheEnabled = false),
                 identityBatchLoader(loadCalls)
             )
@@ -574,7 +574,7 @@ class DataLoaderTest {
         @Test
         fun `caching is disableable with load and duplicates`() = runBlockingWithTimeout {
             val loadCalls = mutableListOf<List<String>>()
-            val dataLoader = DataLoader(
+            val dataLoader = SimpleDataLoaderImpl(
                 DataLoaderOptions(cacheEnabled = false),
                 identityBatchLoader(loadCalls)
             )
@@ -593,7 +593,7 @@ class DataLoaderTest {
         @Test
         fun `caching is enableable with load and duplicates`() = runBlockingWithTimeout {
             val loadCalls = mutableListOf<List<String>>()
-            val dataLoader = DataLoader(
+            val dataLoader = SimpleDataLoaderImpl(
                 DataLoaderOptions(cacheEnabled = true),
                 identityBatchLoader(loadCalls)
             )
@@ -612,7 +612,7 @@ class DataLoaderTest {
         @Test
         fun `batching can be disabled`() = runBlockingWithTimeout {
             val loadCalls = mutableListOf<List<String>>()
-            val dataLoader = DataLoader(
+            val dataLoader = SimpleDataLoaderImpl(
                 DataLoaderOptions(batchLoadEnabled = false),
                 identityBatchLoader(loadCalls)
             )
@@ -630,7 +630,7 @@ class DataLoaderTest {
         @Test
         fun `batching and caching can be disabled together`() = runBlockingWithTimeout {
             val loadCalls = mutableListOf<List<String>>()
-            val dataLoader = DataLoader(
+            val dataLoader = SimpleDataLoaderImpl(
                 DataLoaderOptions(
                     batchLoadEnabled = false,
                     cacheEnabled = false
@@ -651,7 +651,7 @@ class DataLoaderTest {
         @Test
         fun `batching is honoring batchsize`() = runBlockingWithTimeout {
             val loadCalls = mutableListOf<List<String>>()
-            val dataLoader = DataLoader(
+            val dataLoader = SimpleDataLoaderImpl(
                 DataLoaderOptions(batchSize = 2),
                 identityBatchLoader(loadCalls)
             )
@@ -671,7 +671,7 @@ class DataLoaderTest {
         @Test
         fun `batching is occurring in async`() = runBlockingWithTimeout {
             val loadCalls = mutableListOf<List<String>>()
-            val dataLoader = DataLoader(
+            val dataLoader = SimpleDataLoaderImpl(
                 identityBatchLoader(loadCalls)
             )
 
@@ -690,7 +690,7 @@ class DataLoaderTest {
         @Test
         fun `parallel batching is possible`() = runBlockingWithTimeout {
             val loadCalls = mutableListOf<List<Int>>()
-            val dataLoader = DataLoader(
+            val dataLoader = SimpleDataLoaderImpl(
                 identityBatchLoader(loadCalls)
             )
 
