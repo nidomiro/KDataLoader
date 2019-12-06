@@ -1,2 +1,40 @@
-= MyIndex
-== MyABC
+// START - For IDEA Display
+ifndef::page-module[]
+:root_dir: ../
+:exampledir: {root_dir}/examples
+endif::[]
+ifdef::page-module[]
+:exampledir: example$
+endif::[]
+// END - For IDEA Display
+
+= KDataLoader
+
+A Kotlin implementation of https://github.com/graphql/dataloader[DataLoader].
+
+This library is using https://kotlinlang.org/docs/reference/coroutines-overview.html[Kotlin Coroutines], therefore `suspend functions` can only be called from `suspend functions` or a `run*`-Block (eg. `runBlocking`).
+You can find examples here: <<usage-outside-coroutines>>.
+
+== Usage
+
+.Example call
+[source,kotlin,numbered,indent=0]
+--
+include::{exampledir}/Creation.kt[lines=10..31]
+--
+
+[#usage-outside-coroutines]
+=== Usage from outside coroutines
+
+.Example call from outside coroutines (very verbose)
+[source,kotlin,numbered,indent=0]
+--
+include::{exampledir}/CreationAndCallOutsideCoroutines.kt[lines=9..17]
+--
+
+.Example call from outside coroutines
+[source,kotlin,numbered,indent=0]
+--
+include::{exampledir}/CreationAndCallOutsideCoroutinesConsolidated.kt[lines=9..19]
+--
+
