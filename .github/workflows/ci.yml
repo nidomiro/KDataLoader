@@ -5,17 +5,17 @@ on: [push]
 jobs:
     test-and-build:
         name: Test and Build
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v1
-    - name: Set up JDK 11
-      uses: actions/setup-java@v1
-      with:
-        java-version: 11
-    - name: Test
-      run: ./gradlew check
-    - name: Build
-      run: ./gradlew assemble
+        runs-on: ubuntu-latest
+        steps:
+            -   uses: actions/checkout@v1
+            -   name: Set up JDK 11
+                uses: actions/setup-java@v1
+                with:
+                    java-version: 11
+            -   name: Test
+                run: ./gradlew check
+            -   name: Build
+                run: ./gradlew assemble
 
     publish-documentation:
         needs: build
