@@ -20,7 +20,7 @@ You can find examples here: <<usage-outside-coroutines>>.
 .Example call
 [source,kotlin,numbered,indent=0]
 --
-include::{exampledir}/Creation.kt[lines=10..31]
+include::{exampledir}/Creation.kt[lines=10..30]
 --
 
 [#usage-outside-coroutines]
