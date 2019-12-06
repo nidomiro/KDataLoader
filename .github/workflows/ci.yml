@@ -3,7 +3,8 @@ name: Build test lib and publish Docs
 on: [push]
 
 jobs:
-  test:
+    test-and-build:
+        name: Test and Build
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
@@ -15,3 +16,15 @@ jobs:
       run: ./gradlew check
     - name: Build
       run: ./gradlew assemble
+
+    publish-documentation:
+        needs: build
+        runs-on: ubuntu-latest
+        steps:
+            -   uses: actions/checkout@v1
+            -   uses: actions/setup-node@v1
+                with:
+                    node-version: 12
+                    registry-url: https://registry.npmjs.org/
+            -   run: npm i -g @antora/cli@2.2 @antora/site-generator-default@2.2
+            -   run: antora antora-playbook.yml
