@@ -19,4 +19,4 @@ ui:
             contents: "static_files: [ .nojekyll ]"
 output:
     clean: true
-    dir: ./public
+#    dir: ./public
