@@ -3,22 +3,23 @@ name: Build test lib and publish Docs
 on: [push]
 
 jobs:
-#    test-and-build:
-    #        name: Test and Build
-    #        runs-on: ubuntu-latest
-    #        steps:
-    #            -   uses: actions/checkout@v1
-    #            -   name: Set up JDK 11
-    #                uses: actions/setup-java@v1
-    #                with:
-    #                    java-version: 11
-    #            -   name: Test
-    #                run: ./gradlew check
-    #            -   name: Build
-    #                run: ./gradlew assemble
+    test-and-build:
+        name: Test and Build
+        runs-on: ubuntu-latest
+        steps:
+            -   uses: actions/checkout@v1
+            -   name: Set up JDK 11
+                uses: actions/setup-java@v1
+                with:
+                    java-version: 11
+            -   name: Test
+                run: ./gradlew check
+            -   name: Build
+                run: ./gradlew assemble
 
     publish-documentation:
-        #        needs: test-and-build
+        name: Build and publish Docs
+        needs: test-and-build
         runs-on: ubuntu-latest
         steps:
             -   uses: actions/checkout@v1
@@ -28,10 +29,7 @@ jobs:
                     registry-url: https://registry.npmjs.org/
             -   run: npm i -g @antora/cli@2.2 @antora/site-generator-default@2.2
             -   run: antora antora-playbook.yml
-            #            -   uses: maxheld83/ghpages@v0.2.1
-            #                    env:
-            #                        BUILD_DIR: public/
-            #                    secrets: GH_PAT
+
             -   name: Deploy to gh-pages
                 uses: JamesIves/github-pages-deploy-action@releases/v3
                 with:

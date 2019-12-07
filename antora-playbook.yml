@@ -7,7 +7,7 @@ content:
     sources:
         # embedding empty credentials in the URL disables the Edit this Page link for any page created from this repository
         -   url: ./
-            branches: HEAD
+            branches: HEAD, master
             start_path: docs
 ui:
     bundle:
