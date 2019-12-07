@@ -1,7 +1,7 @@
 site:
     title: KDataLoader
     # the 404 page and sitemap files only get generated when the url property is set
-    #url: https://antora.gitlab.io/demo/docs-site
+    url: https://nidomiro.github.io/KDataLoader
     start_page: KDataLoader::index.adoc
 content:
     sources:
