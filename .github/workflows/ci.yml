@@ -28,7 +28,13 @@ jobs:
                     registry-url: https://registry.npmjs.org/
             -   run: npm i -g @antora/cli@2.2 @antora/site-generator-default@2.2
             -   run: antora antora-playbook.yml
-#            -   uses: maxheld83/ghpages@v0.2.1
-#                    env:
-#                        BUILD_DIR: public/
-#                    secrets: GH_PAT
+            #            -   uses: maxheld83/ghpages@v0.2.1
+            #                    env:
+            #                        BUILD_DIR: public/
+            #                    secrets: GH_PAT
+            -   name: Build and Deploy
+                uses: JamesIves/github-pages-deploy-action@releases/v3
+                with:
+                    ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+                    BRANCH: gh-pages # The branch the action should deploy to.
+                    FOLDER: public # The folder the action should deploy.
