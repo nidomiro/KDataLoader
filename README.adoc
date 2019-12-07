@@ -1,33 +1,37 @@
 :sourcedir: src/main/kotlin
 :exampledir: {sourcedir}/nidomiro/kdataloader/example
 
+https://opensource.org/licenses/MIT[image:https://img.shields.io/badge/License-MIT-yellow.svg[License: MIT]]
+
 = KDataLoader
 
 A Kotlin implementation of https://github.com/graphql/dataloader[DataLoader].
+This library is using https://kotlinlang.org/docs/reference/coroutines-overview.html[Kotlin Coroutines].
 
-This library is using https://kotlinlang.org/docs/reference/coroutines-overview.html[Kotlin Coroutines], therefore `suspend functions` can only be called from `suspend functions` or a `run*`-Block (eg. `runBlocking`).
-You can find examples here: <<usage-outside-coroutines>>.
+== Basic usage
 
-== Usage
-
-.Example call
 [source,kotlin,numbered,indent=0]
 --
-include::{exampledir}/Creation.kt[lines=10..31]
+fun main(): Unit = runBlocking { val batchLoader: BatchLoader<Int, Int> = { keys -> keys.map { ExecutionResult.Success(it) } } val dataLoader = dataLoader(batchLoader)
+
+    val value1 = dataLoader.loadAsync(1)
+    val value2 = dataLoader.loadAsync(2)
+    dataLoader.dispatch()
+
+    println("1 -> ${value1.await()}")
+    println("2 -> ${value2.await()}")
+}
 --
 
-[#usage-outside-coroutines]
-=== Usage from outside coroutines
+== Documentation
 
-.Example call from outside coroutines (very verbose)
-[source,kotlin,numbered,indent=0]
---
-include::{exampledir}/CreationAndCallOutsideCoroutines.kt[lines=9..17]
---
+For a more detailed explanation look at the https://nidomiro.github.io/KDataLoader[documentation and examples].
 
-.Example call from outside coroutines
-[source,kotlin,numbered,indent=0]
---
-include::{exampledir}/CreationAndCallOutsideCoroutinesConsolidated.kt[lines=9..19]
---
+== Versioning
+
+This Library uses https://semver.org/[Semantic Versioning]
+
+== License
+
+This Library is Licensed under the https://opensource.org/licenses/MIT[MIT License].
 
