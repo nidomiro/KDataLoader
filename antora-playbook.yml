@@ -5,6 +5,7 @@ site:
     start_page: KDataLoader::index.adoc
 content:
     tags: v*
+    branches: []
     sources:
         # embedding empty credentials in the URL disables the Edit this Page link for any page created from this repository
         -   url: https://github.com/nidomiro/KDataLoader
