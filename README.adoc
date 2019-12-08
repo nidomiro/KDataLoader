@@ -8,6 +8,20 @@ https://opensource.org/licenses/MIT[image:https://img.shields.io/badge/License-M
 A Kotlin implementation of https://github.com/graphql/dataloader[DataLoader].
 This library is using https://kotlinlang.org/docs/reference/coroutines-overview.html[Kotlin Coroutines].
 
+== Get
+
+.Maven
+[source,xml,numbered,indent=0]
+--
+<dependency> <groupId>de.nidomiro</groupId> <artifactId>KDataLoader</artifactId> <version>0.1</version> </dependency>
+--
+
+.Gradle
+[source,xml,numbered,indent=0]
+--
+repositories { jcenter() } dependencies { compile 'de.nidomiro:KDataLoader:0.1' }
+--
+
 == Basic usage
 
 [source,kotlin,numbered,indent=0]

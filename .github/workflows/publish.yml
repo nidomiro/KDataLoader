@@ -19,7 +19,7 @@ jobs:
                 run: ./gradlew check
             -   name: Build
                 run: ./gradlew assemble
-            -   name: Build
+            -   name: Publish to bintray
                 run: ./gradlew -Pbintray_user=${{secrets.bintray_user}} -Pbintray_key=${{secrets.bintray_password}} bintrayUpload
 
     publish-documentation:
