@@ -3,7 +3,7 @@ name: Build KDataLoader and publish docs
 on:
     push:
         tags:
-            - "V*"
+            - "v*"
 
 jobs:
     test-and-build:

@@ -4,10 +4,10 @@ site:
     url: https://nidomiro.github.io/KDataLoader
     start_page: KDataLoader::index.adoc
 content:
+    tags: v*
     sources:
         # embedding empty credentials in the URL disables the Edit this Page link for any page created from this repository
         -   url: https://github.com/nidomiro/KDataLoader
-            tags: V*
             start_path: docs
 ui:
     bundle:

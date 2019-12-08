@@ -5,12 +5,12 @@ on:
         branches-ignore:
             - master
         tags-ignore:
-            - "V*"
+            - "v*"
     pull_request:
         branches-ignore:
             - master
         tags-ignore:
-            - "V*"
+            - "v*"
 jobs:
     test-application:
         name: Test the Application
@@ -30,7 +30,6 @@ jobs:
 
     test-documentation-build:
         name: Test documentation build
-        needs: test-application
         runs-on: ubuntu-latest
         steps:
             -   uses: actions/checkout@v1

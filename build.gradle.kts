@@ -3,7 +3,7 @@ import java.util.*
 
 val myVcsUrl = "https://github.com/nidomiro/KDataLoader"
 val myVcsConnection = "scm:git:git://github.com/nidomiro/KDataLoader"
-val myWebsiteUrl = "https://github.com/nidomiro/KDataLoader"
+val myWebsiteUrl = "https://nidomiro.github.io/KDataLoader"
 
 plugins {
     `build-scan`
