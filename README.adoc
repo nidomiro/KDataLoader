@@ -13,13 +13,23 @@ This library is using https://kotlinlang.org/docs/reference/coroutines-overview.
 .Maven
 [source,xml,numbered,indent=0]
 --
-<dependency> <groupId>de.nidomiro</groupId> <artifactId>KDataLoader</artifactId> <version>0.1</version> </dependency>
+<dependency>
+    <groupId>de.nidomiro</groupId>
+    <artifactId>KDataLoader</artifactId>
+    <version>0.1</version>
+</dependency>
 --
 
 .Gradle
-[source,xml,numbered,indent=0]
+[source,groovy,numbered,indent=0]
 --
-repositories { jcenter() } dependencies { compile 'de.nidomiro:KDataLoader:0.1' }
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile 'de.nidomiro:KDataLoader:0.1'
+}
 --
 
 == Basic usage
