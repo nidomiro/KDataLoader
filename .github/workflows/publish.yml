@@ -2,12 +2,12 @@ name: Build KDataLoader and publish docs
 
 on:
     push:
-        branches:
-            - master
+        tags:
+            - "V*"
 
 jobs:
     test-and-build:
-        name: Test and Build
+        name: Test and Build KDataLoader
         runs-on: ubuntu-latest
         steps:
             -   uses: actions/checkout@v1
@@ -15,11 +15,13 @@ jobs:
                 uses: actions/setup-java@v1
                 with:
                     java-version: 11
+            -   name: Clean
+                run: ./gradlew clean
             -   name: Test
                 run: ./gradlew check
             -   name: Build
                 run: ./gradlew assemble
-            -   name: Build
+            -   name: Publish to bintray
                 run: ./gradlew -Pbintray_user=${{secrets.bintray_user}} -Pbintray_key=${{secrets.bintray_password}} bintrayUpload
 
     publish-documentation:
