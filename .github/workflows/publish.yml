@@ -1,4 +1,4 @@
-name: Build test lib and publish Docs
+name: Build KDataLoader and publish docs
 
 on:
     push:
