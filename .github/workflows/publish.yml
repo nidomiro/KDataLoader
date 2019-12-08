@@ -20,7 +20,7 @@ jobs:
             -   name: Build
                 run: ./gradlew assemble
             -   name: Build
-                run: ./gradlew -Pbintray_user=${{bintray_user}} -Pbintray_key=${{bintray_password}} bintrayUpload
+                run: ./gradlew -Pbintray_user=${{secrets.bintray_user}} -Pbintray_key=${{secrets.bintray_password}} bintrayUpload
 
     publish-documentation:
         name: Build and publish Docs
