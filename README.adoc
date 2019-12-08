@@ -2,6 +2,7 @@
 :exampledir: {sourcedir}/nidomiro/kdataloader/example
 
 https://opensource.org/licenses/MIT[image:https://img.shields.io/badge/License-MIT-yellow.svg[License: MIT]]
+https://bintray.com/nidomiro/maven/KDataLoader/_latestVersion[image::https://api.bintray.com/packages/nidomiro/maven/KDataLoader/images/download.svg[Latest Version]]
 
 = KDataLoader
 
