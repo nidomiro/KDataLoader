@@ -16,7 +16,7 @@ This library is using https://kotlinlang.org/docs/reference/coroutines-overview.
 <dependency>
     <groupId>de.nidomiro</groupId>
     <artifactId>KDataLoader</artifactId>
-    <version>0.1</version>
+    <version>0.0.1</version>
 </dependency>
 --
 
@@ -28,7 +28,7 @@ repositories {
 }
 
 dependencies {
-    compile 'de.nidomiro:KDataLoader:0.1'
+    compile 'de.nidomiro:KDataLoader:0.0.1'
 }
 --
 
