@@ -2,8 +2,8 @@ name: Build KDataLoader and publish docs
 
 on:
     push:
-        branches:
-            - master
+        tags:
+            - "V*"
 
 jobs:
     test-and-build:
