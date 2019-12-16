@@ -23,23 +23,3 @@ jobs:
                 run: ./gradlew assemble
             -   name: Publish to bintray
                 run: ./gradlew -Pbintray_user=${{secrets.bintray_user}} -Pbintray_key=${{secrets.bintray_password}} bintrayUpload
-
-    publish-documentation:
-        name: Build and publish Docs
-        needs: test-and-build
-        runs-on: ubuntu-latest
-        steps:
-            -   uses: actions/checkout@v1
-            -   uses: actions/setup-node@v1
-                with:
-                    node-version: 12
-                    registry-url: https://registry.npmjs.org/
-            -   run: npm i -g @antora/cli@2.2 @antora/site-generator-default@2.2
-            -   run: antora antora-playbook.yml
-
-            -   name: Deploy to gh-pages
-                uses: JamesIves/github-pages-deploy-action@releases/v3
-                with:
-                    ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-                    BRANCH: gh-pages # The branch the action should deploy to.
-                    FOLDER: public # The folder the action should deploy.
