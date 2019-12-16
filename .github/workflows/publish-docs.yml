@@ -3,7 +3,7 @@ name: Publish docs
 on:
     push:
         branches:
-            - "doc/*"
+            - "doc/**"
 
 jobs:
     publish-documentation:
