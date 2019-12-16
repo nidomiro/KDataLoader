@@ -1,8 +1,7 @@
 name: KDataLoader
-title: A DataLoader implementation in Kotlin
+title: KDataLoader
 version: 0.0.2
 start_page: index.adoc
-#nav:
-#    - modules/name-of-a-module/nav.adoc
-#    - modules/ROOT/nav.adoc
+nav:
+    - modules/ROOT/nav.adoc
 

@@ -1,0 +1,30 @@
+= Install using gradle
+
+https://bintray.com/nidomiro/maven/KDataLoader/_latestVersion[image:https://api.bintray.com/packages/nidomiro/maven/KDataLoader/images/download.svg[Latest Version]]
+
+In order to include `KDataLoader` with gradle you need to include `jcenter` as repository.
+
+[source,groovy]
+----
+repositories {
+    jcenter()
+}
+----
+
+Then you can add the dependency.
+
+.Groovy
+[source,groovy]
+----
+dependencies {
+    implementation 'de.nidomiro:KDataLoader:0.0.2'
+}
+----
+
+.kts
+[source,kotlin]
+----
+dependencies {
+    implementation("de.nidomiro:KDataLoader:0.0.2")
+}
+----

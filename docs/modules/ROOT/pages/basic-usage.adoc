@@ -1,0 +1,32 @@
+// START - For IDEA Display
+ifndef::page-module[]
+:root_dir: ../
+:exampledir: {root_dir}/examples
+endif::[]
+ifdef::page-module[]
+:exampledir: example$
+endif::[]
+// END - For IDEA Display
+
+= Basic usage
+
+[source,kotlin,numbered,indent=0]
+--
+include::{exampledir}/Creation.kt[lines=10..30]
+--
+
+[#usage-outside-coroutines]
+== Usage from outside coroutines
+
+.Example call from outside coroutines (very verbose)
+[source,kotlin,numbered,indent=0]
+--
+include::{exampledir}/CreationAndCallOutsideCoroutines.kt[lines=9..17]
+--
+
+.Example call from outside coroutines
+[source,kotlin,numbered,indent=0]
+--
+include::{exampledir}/CreationAndCallOutsideCoroutinesConsolidated.kt[lines=9..19]
+--
+

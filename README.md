@@ -6,7 +6,7 @@
 A Kotlin implementation of [DataLoader](https://github.com/graphql/dataloader).
 This library is using [Kotlin Coroutines](https://kotlinlang.org/docs/reference/coroutines-overview.html).
 
-You can find the full documentation and usage here: [https://nidomiro.github.io/KDataLoader]()
+You can find the full documentation and usage here: [https://nidomiro.github.io/KDataLoader](https://nidomiro.github.io/KDataLoader)
 
 ## What is a DataLoder?
 

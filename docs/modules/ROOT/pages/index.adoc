@@ -8,33 +8,83 @@ ifdef::page-module[]
 endif::[]
 // END - For IDEA Display
 
-= KDataLoader
+= What is KDataLoader
 
-A Kotlin implementation of https://github.com/graphql/dataloader[DataLoader].
+KDataLoader is a *pure* Kotlin implementation of https://github.com/graphql/dataloader[DataLoader].
+It uses https://kotlinlang.org/docs/reference/coroutines-overview.html[Kotlin Coroutines] for parallel tasks.
 
-This library is using https://kotlinlang.org/docs/reference/coroutines-overview.html[Kotlin Coroutines], therefore `suspend functions` can only be called from `suspend functions` or a `run*`-Block (eg. `runBlocking`).
-You can find examples here: <<usage-outside-coroutines>>.
+== Motivation
 
-== Usage
+The motivation behind a DataLoader is to save calls.
+Let's say you use https://graphql.org/[GraphQL] and want to resolve a query.
+This query can have a lot of duplicated data in its result.
+The goal of a DataLoader is to reduce these duplicated calls and batch calls together.
 
-.Example call
-[source,kotlin,numbered,indent=0]
---
-include::{exampledir}/Creation.kt[lines=10..30]
---
+== Example using GraphQL
 
-[#usage-outside-coroutines]
-=== Usage from outside coroutines
+If you have a query to fetch all projects with their members the result could look like this:
 
-.Example call from outside coroutines (very verbose)
-[source,kotlin,numbered,indent=0]
---
-include::{exampledir}/CreationAndCallOutsideCoroutines.kt[lines=9..17]
---
+[source,json]
+----
+{
+   "projects":[
+      {
+         "name":"Project A",
+         "members":[
+            {
+               "id":1,
+               "name":"John"
+            },
+            {
+               "id":2,
+               "name":"Anne"
+            }
+         ]
+      },
+      {
+         "name":"Project B",
+         "members":[
+            {
+               "id":2,
+               "name":"Anne"
+            }
+         ]
+      },
+      {
+         "name":"Project C",
+         "members":[
+            {
+               "id":1,
+               "name":"John"
+            },
+            {
+               "id":3,
+               "name":"Peter"
+            }
+         ]
+      }
+   ]
+}
+----
 
-.Example call from outside coroutines
-[source,kotlin,numbered,indent=0]
---
-include::{exampledir}/CreationAndCallOutsideCoroutinesConsolidated.kt[lines=9..19]
---
+=== Naive approach
+
+If you resolve this query naively you will have *6 requests*:
+
+. fetch all Projects
+. fetch John
+. fetch Anne
+. fetch Anne
+. fetch John
+. fetch Peter
+
+=== DataLoader approach
+Resolving the same query with a DataLoader takes *2 requests*:
+
+. fetch all Projects
+. fetch John, Anne and Peter in batch
+
+
+
+
 
