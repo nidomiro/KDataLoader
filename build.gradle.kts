@@ -5,6 +5,8 @@ val myVcsUrl = "https://github.com/nidomiro/KDataLoader"
 val myVcsConnection = "scm:git:git://github.com/nidomiro/KDataLoader"
 val myWebsiteUrl = "https://nidomiro.github.io/KDataLoader"
 
+val coroutinesVersion = "1.3.3"
+
 plugins {
     `build-scan`
     kotlin("jvm") version "1.3.60"
@@ -26,7 +28,7 @@ dependencies {
     // Use the Kotlin JDK 8 standard library.
     implementation(kotlin("stdlib-jdk8"))
     implementation(kotlin("reflect"))
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
 
 
     // # TEST
@@ -38,8 +40,9 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter:5.5.2")
 
     testImplementation("com.willowtreeapps.assertk:assertk-jvm:0.20")
+    //testImplementation("org.assertj:assertj-core:3.14.0")
 
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.3.0")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
 }
 
 tasks {

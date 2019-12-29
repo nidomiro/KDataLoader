@@ -133,7 +133,7 @@ class SimpleDataLoaderImplTest {
         assertThat(deferredA.await()).isEqualTo("A")
         assertThat(deferredB.await()).isEqualTo("B")
 
-        assertThat(loadCalls).isEqualTo(listOf(listOf("A", "B")))
+        assertThat(loadCalls).containsExactly(listOf("A", "B"))
 
 
         val deferredA1 = dataLoader.loadAsync("A")
@@ -142,7 +142,7 @@ class SimpleDataLoaderImplTest {
 
         assertThat(deferredA1.await()).isEqualTo("A")
         assertThat(deferredC.await()).isEqualTo("C")
-        assertThat(loadCalls).isEqualTo(listOf(listOf("A", "B"), listOf("C")))
+        assertThat(loadCalls).containsExactly(listOf("A", "B"), listOf("C"))
 
 
         val deferredA2 = dataLoader.loadAsync("A")
@@ -153,7 +153,7 @@ class SimpleDataLoaderImplTest {
         assertThat(deferredA2.await()).isEqualTo("A")
         assertThat(deferredB1.await()).isEqualTo("B")
         assertThat(deferredC1.await()).isEqualTo("C")
-        assertThat(loadCalls).isEqualTo(listOf(listOf("A", "B"), listOf("C")))
+        assertThat(loadCalls).containsExactly(listOf("A", "B"), listOf("C"))
 
     }
 
@@ -170,7 +170,7 @@ class SimpleDataLoaderImplTest {
         val deferredB = dataLoader.loadAsync("B")
         dataLoader.dispatch()
         assertThat(deferredB.await()).isEqualTo("B")
-        assertThat(loadCalls).isEqualTo(listOf(listOf("A"), listOf("B")))
+        assertThat(loadCalls).containsExactly(listOf("A"), listOf("B"))
 
     }
 
@@ -186,9 +186,9 @@ class SimpleDataLoaderImplTest {
 
         val deferredAB = dataLoader.loadManyAsync("A", "B")
         dataLoader.dispatch()
-        assertThat(deferredAB.await()).isEqualTo(listOf("A", "B"))
+        assertThat(deferredAB.await()).containsExactly("A", "B")
 
-        assertThat(loadCalls).isEqualTo(listOf(listOf("A"), listOf("B")))
+        assertThat(loadCalls).containsExactly(listOf("A"), listOf("B"))
     }
 
 
@@ -203,7 +203,7 @@ class SimpleDataLoaderImplTest {
 
         assertThat(deferredA.await()).isEqualTo("A")
         assertThat(deferredB.await()).isEqualTo("B")
-        assertThat(loadCalls).isEqualTo(listOf(listOf("A", "B")))
+        assertThat(loadCalls).containsExactly(listOf("A", "B"))
 
         dataLoader.clear("A")
 
@@ -213,7 +213,7 @@ class SimpleDataLoaderImplTest {
 
         assertThat(deferredA1.await()).isEqualTo("A")
         assertThat(deferredB1.await()).isEqualTo("B")
-        assertThat(loadCalls).isEqualTo(listOf(listOf("A", "B"), listOf("A")))
+        assertThat(loadCalls).containsExactly(listOf("A", "B"), listOf("A"))
 
     }
 
@@ -228,7 +228,7 @@ class SimpleDataLoaderImplTest {
 
         assertThat(deferredA.await()).isEqualTo("A")
         assertThat(deferredB.await()).isEqualTo("B")
-        assertThat(loadCalls).isEqualTo(listOf(listOf("A", "B")))
+        assertThat(loadCalls).containsExactly(listOf("A", "B"))
 
         dataLoader.clearAll()
 
@@ -238,7 +238,7 @@ class SimpleDataLoaderImplTest {
 
         assertThat(deferredA1.await()).isEqualTo("A")
         assertThat(deferredB1.await()).isEqualTo("B")
-        assertThat(loadCalls).isEqualTo(listOf(listOf("A", "B"), listOf("A", "B")))
+        assertThat(loadCalls).containsExactly(listOf("A", "B"), listOf("A", "B"))
 
     }
 
@@ -256,7 +256,7 @@ class SimpleDataLoaderImplTest {
 
         assertThat(deferredA.await()).isEqualTo(keyA)
         assertThat(deferredB.await()).isEqualTo(keyB)
-        assertThat(loadCalls).isEqualTo(listOf(listOf(keyA, keyB)))
+        assertThat(loadCalls).containsExactly(listOf(keyA, keyB))
     }
 
 
@@ -275,7 +275,7 @@ class SimpleDataLoaderImplTest {
 
             assertThat(deferredA.await()).isEqualTo("A")
             assertThat(deferredB.await()).isEqualTo("B")
-            assertThat(loadCalls).isEqualTo(listOf(listOf("B")))
+            assertThat(loadCalls).containsExactly(listOf("B"))
 
 
         }
@@ -293,7 +293,7 @@ class SimpleDataLoaderImplTest {
 
             assertThat(deferredA.await()).isEqualTo("A")
             assertThat(deferredB.await()).isEqualTo("B")
-            assertThat(loadCalls).isEqualTo(listOf(listOf("B")))
+            assertThat(loadCalls).containsExactly(listOf("B"))
 
             dataLoader.prime("A" to "X")
             dataLoader.prime("B" to "X")
@@ -303,7 +303,7 @@ class SimpleDataLoaderImplTest {
 
             assertThat(deferredA1.await()).isEqualTo("A")
             assertThat(deferredB1.await()).isEqualTo("B")
-            assertThat(loadCalls).isEqualTo(listOf(listOf("B")))
+            assertThat(loadCalls).containsExactly(listOf("B"))
 
 
         }
@@ -321,7 +321,7 @@ class SimpleDataLoaderImplTest {
 
             assertThat(deferredA.await()).isEqualTo("A")
             assertThat(deferredB.await()).isEqualTo("B")
-            assertThat(loadCalls).isEqualTo(listOf(listOf("B")))
+            assertThat(loadCalls).containsExactly(listOf("B"))
 
             dataLoader.clear("A")
             dataLoader.prime("A" to "X")
@@ -333,7 +333,7 @@ class SimpleDataLoaderImplTest {
 
             assertThat(deferredA1.await()).isEqualTo("X")
             assertThat(deferredB1.await()).isEqualTo("X")
-            assertThat(loadCalls).isEqualTo(listOf(listOf("B")))
+            assertThat(loadCalls).containsExactly(listOf("B"))
         }
 
         @Test
@@ -380,7 +380,7 @@ class SimpleDataLoaderImplTest {
                 .hasClass(IllegalStateException::class)
 
             assertThat(deferredA).isNotEqualTo(deferredA1)
-            assertThat(loadCalls).isEqualTo(listOf(listOf("A"), listOf("A")))
+            assertThat(loadCalls).containsExactly(listOf("A"), listOf("A"))
 
 
         }
@@ -403,7 +403,7 @@ class SimpleDataLoaderImplTest {
 
             assertThat(deferred2.await()).isEqualTo(2)
 
-            assertThat(loadCalls).isEqualTo(listOf(listOf(1), listOf(2)))
+            assertThat(loadCalls).containsExactly(listOf(1), listOf(2))
         }
 
         @Test
@@ -426,7 +426,7 @@ class SimpleDataLoaderImplTest {
                 }
             }
 
-            assertThat(loadCalls).isEqualTo(listOf(listOf(1, 2, 3, 4)))
+            assertThat(loadCalls).containsExactly(listOf(1, 2, 3, 4))
         }
 
         @Test
@@ -451,7 +451,7 @@ class SimpleDataLoaderImplTest {
                 .hasClass(IllegalStateException::class)
 
             assertThat(deferred1).isEqualTo(deferred1a)
-            assertThat(loadCalls).isEqualTo(listOf(listOf(1)))
+            assertThat(loadCalls).containsExactly(listOf(1))
         }
 
         @Test
@@ -479,7 +479,7 @@ class SimpleDataLoaderImplTest {
                 .hasClass(IllegalStateException::class)
 
             assertThat(deferred1).isNotEqualTo(deferred1a)
-            assertThat(loadCalls).isEqualTo(listOf(listOf(1), listOf(1)))
+            assertThat(loadCalls).containsExactly(listOf(1), listOf(1))
         }
 
         @Test
@@ -501,7 +501,7 @@ class SimpleDataLoaderImplTest {
             }.isFailure()
                 .hasClass(IllegalStateException::class)
 
-            assertThat(loadCalls).isEqualTo(listOf(listOf("A", "B")))
+            assertThat(loadCalls).containsExactly(listOf("A", "B"))
         }
 
     }
@@ -523,7 +523,7 @@ class SimpleDataLoaderImplTest {
 
             assertThat(deferredA.await()).isEqualTo("A")
             assertThat(deferredB.await()).isEqualTo("B")
-            assertThat(loadCalls).isEqualTo(listOf(listOf("A", "B")))
+            assertThat(loadCalls).containsExactly(listOf("A", "B"))
 
             val deferredA1 = dataLoader.loadAsync("A")
             val deferredC = dataLoader.loadAsync("C")
@@ -531,7 +531,7 @@ class SimpleDataLoaderImplTest {
 
             assertThat(deferredA1.await()).isEqualTo("A")
             assertThat(deferredC.await()).isEqualTo("C")
-            assertThat(loadCalls).isEqualTo(listOf(listOf("A", "B"), listOf("A", "C")))
+            assertThat(loadCalls).containsExactly(listOf("A", "B"), listOf("A", "C"))
 
             val deferredA2 = dataLoader.loadAsync("A")
             val deferredB1 = dataLoader.loadAsync("B")
@@ -541,7 +541,7 @@ class SimpleDataLoaderImplTest {
             assertThat(deferredA2.await()).isEqualTo("A")
             assertThat(deferredB1.await()).isEqualTo("B")
             assertThat(deferredC1.await()).isEqualTo("C")
-            assertThat(loadCalls).isEqualTo(listOf(listOf("A", "B"), listOf("A", "C"), listOf("A", "B", "C")))
+            assertThat(loadCalls).containsExactly(listOf("A", "B"), listOf("A", "C"), listOf("A", "B", "C"))
         }
 
         @Test
@@ -555,20 +555,20 @@ class SimpleDataLoaderImplTest {
             val deferreds1 = dataLoader.loadManyAsync("A", "B")
             dataLoader.dispatch()
 
-            assertThat(deferreds1.await()).isEqualTo(listOf("A", "B"))
-            assertThat(loadCalls).isEqualTo(listOf(listOf("A", "B")))
+            assertThat(deferreds1.await()).containsExactly("A", "B")
+            assertThat(loadCalls).containsExactly(listOf("A", "B"))
 
             val deferreds2 = dataLoader.loadManyAsync("A", "C")
             dataLoader.dispatch()
 
-            assertThat(deferreds2.await()).isEqualTo(listOf("A", "C"))
-            assertThat(loadCalls).isEqualTo(listOf(listOf("A", "B"), listOf("A", "C")))
+            assertThat(deferreds2.await()).containsExactly("A", "C")
+            assertThat(loadCalls).containsExactly(listOf("A", "B"), listOf("A", "C"))
 
             val deferreds3 = dataLoader.loadManyAsync("A", "B", "C")
             dataLoader.dispatch()
 
-            assertThat(deferreds3.await()).isEqualTo(listOf("A", "B", "C"))
-            assertThat(loadCalls).isEqualTo(listOf(listOf("A", "B"), listOf("A", "C"), listOf("A", "B", "C")))
+            assertThat(deferreds3.await()).containsExactly("A", "B", "C")
+            assertThat(loadCalls).containsExactly(listOf("A", "B"), listOf("A", "C"), listOf("A", "B", "C"))
         }
 
         @Test
@@ -587,7 +587,7 @@ class SimpleDataLoaderImplTest {
             assertThat(deferredA.await()).isEqualTo("A")
             assertThat(deferredB.await()).isEqualTo("B")
             assertThat(deferredA1.await()).isEqualTo("A")
-            assertThat(loadCalls).isEqualTo(listOf(listOf("A", "B", "A")))
+            assertThat(loadCalls).containsExactly(listOf("A", "B", "A"))
         }
 
         @Test
@@ -606,7 +606,7 @@ class SimpleDataLoaderImplTest {
             assertThat(deferredA.await()).isEqualTo("A")
             assertThat(deferredB.await()).isEqualTo("B")
             assertThat(deferredA1.await()).isEqualTo("A")
-            assertThat(loadCalls).isEqualTo(listOf(listOf("A", "B")))
+            assertThat(loadCalls).containsExactly(listOf("A", "B"))
         }
 
         @Test
@@ -624,7 +624,7 @@ class SimpleDataLoaderImplTest {
             assertThat(deferredA.await()).isEqualTo("A")
             assertThat(deferredB.await()).isEqualTo("B")
             assertThat(deferredC.await()).isEqualTo("C")
-            assertThat(loadCalls).isEqualTo(listOf(listOf("A"), listOf("B"), listOf("C")))
+            assertThat(loadCalls).containsExactly(listOf("A"), listOf("B"), listOf("C"))
         }
 
         @Test
@@ -645,7 +645,7 @@ class SimpleDataLoaderImplTest {
             assertThat(deferredA.await()).isEqualTo("A")
             assertThat(deferredB.await()).isEqualTo("B")
             assertThat(deferredA1.await()).isEqualTo("A")
-            assertThat(loadCalls).isEqualTo(listOf(listOf("A"), listOf("B"), listOf("A")))
+            assertThat(loadCalls).containsExactly(listOf("A"), listOf("B"), listOf("A"))
         }
 
         @Test
@@ -665,7 +665,7 @@ class SimpleDataLoaderImplTest {
             assertThat(deferredB.await()).isEqualTo("B")
             assertThat(deferredC.await()).isEqualTo("C")
 
-            assertThat(loadCalls).isEqualTo(listOf(listOf("A", "B"), listOf("C")))
+            assertThat(loadCalls).containsExactly(listOf("A", "B"), listOf("C"))
         }
 
         @Test
@@ -684,7 +684,7 @@ class SimpleDataLoaderImplTest {
             }.await()
             dataLoader.dispatch()
 
-            assertThat(loadCalls).isEqualTo(listOf(listOf("A", "B", "C")))
+            assertThat(loadCalls).containsExactly(listOf("A", "B", "C"))
         }
 
         @Test
