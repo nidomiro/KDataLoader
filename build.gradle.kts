@@ -24,16 +24,17 @@ repositories {
     jcenter()
 }
 
+@Suppress("UNUSED_VARIABLE")
 kotlin {
     //Targets
     jvm {
-        @Suppress("UNUSED_VARIABLE") val main by compilations.getting {
+        val main by compilations.getting {
             kotlinOptions {
                 // Setup the Kotlin compiler options for the 'main' compilation:
                 jvmTarget = "1.8"
             }
         }
-        @Suppress("UNUSED_VARIABLE") val test by compilations.getting {
+        val test by compilations.getting {
             kotlinOptions {
                 // Setup the Kotlin compiler options for the 'main' compilation:
                 jvmTarget = "1.8"
@@ -41,30 +42,30 @@ kotlin {
         }
     }
 
+    @Suppress("UNUSED_VARIABLE")
     sourceSets {
-        @Suppress("UNUSED_VARIABLE") val commonMain by getting {
+        val commonMain by getting {
             dependencies {
                 implementation(kotlin("stdlib-common"))
                 implementation(kotlin("reflect"))
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-common:$coroutinesVersion")
             }
         }
-        @Suppress("UNUSED_VARIABLE") val commonTest by getting {
+        val commonTest by getting {
             dependencies {
                 implementation(kotlin("test-common"))
                 implementation(kotlin("test-annotations-common"))
             }
         }
 
-        // Default source set for JVM-specific sources and dependencies:
-        jvm().compilations["main"].defaultSourceSet {
+        val jvmMain by getting {
             dependencies {
                 implementation(kotlin("stdlib-jdk8"))
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
             }
         }
-        // JVM-specific tests and their dependencies:
-        jvm().compilations["test"].defaultSourceSet {
+
+        val jvmTest by getting {
             dependencies {
                 implementation(kotlin("test-junit"))
                 implementation("com.willowtreeapps.assertk:assertk-jvm:0.20")
@@ -75,38 +76,6 @@ kotlin {
 
 
 }
-
-/*
-dependencies {
-    // Use the Kotlin JDK 8 standard library.
-    implementation(kotlin("stdlib-jdk8"))
-    implementation(kotlin("reflect"))
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
-
-
-    // # TEST
-    // Use the Kotlin test library.
-    testImplementation(kotlin("test"))
-    // Use the Kotlin JUnit integration.
-    testImplementation(kotlin("test-junit"))
-
-    testImplementation("org.junit.jupiter:junit-jupiter:5.5.2")
-
-    testImplementation("com.willowtreeapps.assertk:assertk-jvm:0.20")
-    //testImplementation("org.assertj:assertj-core:3.14.0")
-
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
-}
-
-tasks {
-    compileKotlin {
-        kotlinOptions.jvmTarget = "1.8"
-    }
-    compileTestKotlin {
-        kotlinOptions.jvmTarget = "1.8"
-    }
-}
- */
 
 /*
 val sourcesJar by tasks.creating(Jar::class) {
