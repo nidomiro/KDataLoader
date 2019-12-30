@@ -3,6 +3,8 @@ package nidomiro.kdataloader.dsl
 import nidomiro.kdataloader.BatchLoader
 import nidomiro.kdataloader.DataLoader
 import nidomiro.kdataloader.ExecutionResult
+import nidomiro.kdataloader.SimpleDataLoaderImpl
+import kotlin.jvm.JvmName
 import nidomiro.kdataloader.factories.DataLoaderFactory
 import nidomiro.kdataloader.factories.SimpleDataLoaderFactory
 import nidomiro.kdataloader.prime
