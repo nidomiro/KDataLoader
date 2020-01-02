@@ -22,8 +22,7 @@ class DefaultCacheImpl<K, V> : Cache<K, V> {
             cacheMap[key]
         }
 
-
-    override suspend fun getOrCreate(key: K, generator: suspend (key: K) -> V): V =
+    override suspend fun getOrCreate(key: K, generator: suspend (key: K) -> V, callOnCacheHit: () -> Unit): V =
         mutex.withLock {
             val currentVal = cacheMap[key]
             if (currentVal == null) {
@@ -31,6 +30,7 @@ class DefaultCacheImpl<K, V> : Cache<K, V> {
                 cacheMap[key] = generated
                 return@withLock generated
             } else {
+                callOnCacheHit()
                 return@withLock currentVal
             }
         }
@@ -40,7 +40,6 @@ class DefaultCacheImpl<K, V> : Cache<K, V> {
         mutex.withLock {
             cacheMap.remove(key)
         }
-
 
     override suspend fun clear() =
         mutex.withLock {

@@ -1,6 +1,7 @@
 package nidomiro.kdataloader
 
 import kotlinx.coroutines.Deferred
+import nidomiro.kdataloader.statistics.DataLoaderStatistics
 
 typealias BatchLoader<K, R> = suspend (ids: List<K>) -> List<ExecutionResult<R>>
 
@@ -47,6 +48,12 @@ interface DataLoader<K, R> {
      * After priming the [BatchLoader] will not be called with this key, if [DataLoaderOptions.cacheExceptions] = true.
      */
     suspend fun prime(key: K, value: Throwable)
+
+
+    /**
+     * Returns a snapshot of the statistics at the point of calling
+     */
+    fun createStatisticsSnapshot(): DataLoaderStatistics
 
 }
 

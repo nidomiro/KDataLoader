@@ -10,9 +10,12 @@ interface Cache<K, V> {
 
     suspend fun get(key: K): V?
 
-    suspend fun getOrCreate(key: K, generator: suspend (key: K) -> V): V
+    suspend fun getOrCreate(key: K, generator: suspend (key: K) -> V, callOnCacheHit: () -> Unit): V
 
     suspend fun clear(key: K): V?
 
     suspend fun clear()
 }
+
+suspend fun <K, V> Cache<K, V>.getOrCreate(key: K, generator: suspend (key: K) -> V): V =
+    getOrCreate(key, generator, {})
