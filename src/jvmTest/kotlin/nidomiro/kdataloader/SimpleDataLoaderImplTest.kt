@@ -706,10 +706,7 @@ class SimpleDataLoaderImplTest {
         }
 
 
-
     }
-
-
 
 
 }

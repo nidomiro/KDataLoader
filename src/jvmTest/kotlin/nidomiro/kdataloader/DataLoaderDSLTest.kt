@@ -35,10 +35,10 @@ class DataLoaderDSLTest {
         }
 
 
-            val deferred1 = dataLoader.loadAsync(1)
-            val deferred2 = dataLoader.loadAsync(2)
-            assertThat(deferred1.await()).isEqualTo("1")
-            assertThat(deferred2.await()).isEqualTo("2")
+        val deferred1 = dataLoader.loadAsync(1)
+        val deferred2 = dataLoader.loadAsync(2)
+        assertThat(deferred1.await()).isEqualTo("1")
+        assertThat(deferred2.await()).isEqualTo("2")
 
     }
 
@@ -56,19 +56,19 @@ class DataLoaderDSLTest {
 
 
         val deferred1 = dataLoader.loadAsync(1)
-            val deferred2 = dataLoader.loadAsync(2)
+        val deferred2 = dataLoader.loadAsync(2)
 
-            assertThat { deferred1.await() }
-                .isFailure()
-                .isInstanceOf(IllegalArgumentException::class)
-                .transform { it.message }
-                .isEqualTo("1")
+        assertThat { deferred1.await() }
+            .isFailure()
+            .isInstanceOf(IllegalArgumentException::class)
+            .transform { it.message }
+            .isEqualTo("1")
 
-            assertThat { deferred2.await() }
-                .isFailure()
-                .isInstanceOf(IllegalArgumentException::class)
-                .transform { it.message }
-                .isEqualTo("2")
+        assertThat { deferred2.await() }
+            .isFailure()
+            .isInstanceOf(IllegalArgumentException::class)
+            .transform { it.message }
+            .isEqualTo("2")
 
     }
 

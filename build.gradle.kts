@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import java.util.*
 
 
@@ -22,6 +23,14 @@ repositories {
     // You can declare any Maven/Ivy/file repository here.
     mavenCentral()
     jcenter()
+}
+
+sourceSets["main"].withConvention(KotlinSourceSet::class) {
+    kotlin.srcDir("src/commonMain/kotlin")
+}
+
+sourceSets["test"].withConvention(KotlinSourceSet::class) {
+    kotlin.srcDir("src/jvmTest/kotlin")
 }
 
 dependencies {
@@ -126,3 +135,4 @@ publishing {
         }
     }
 }
+
