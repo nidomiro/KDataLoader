@@ -65,8 +65,9 @@ suspend fun <K, R> SimpleDataLoaderImpl<K, R>.prime(cacheEntry: Pair<K, Throwabl
     prime(cacheEntry.first, cacheEntry.second)
 }
 
-internal suspend fun <K, R> SimpleDataLoaderImpl<K, R>.prime(key: K, value: ExecutionResult<R>) =
+internal suspend fun <K, R> DataLoader<K, R>.prime(key: K, value: ExecutionResult<R>) =
     when (value) {
         is ExecutionResult.Success -> prime(key, value.value)
         is ExecutionResult.Failure -> prime(key, value.throwable)
     }
+

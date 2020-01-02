@@ -116,11 +116,4 @@ class SimpleDataLoaderImpl<K, R>(
         }
     }
 
-    internal suspend fun prime(key: K, value: ExecutionResult<R>) =
-        when (value) {
-            is ExecutionResult.Success -> prime(key, value.value)
-            is ExecutionResult.Failure -> prime(key, value.throwable)
-        }
-
-
 }

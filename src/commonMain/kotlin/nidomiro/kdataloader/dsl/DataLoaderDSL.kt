@@ -3,14 +3,16 @@ package nidomiro.kdataloader.dsl
 import nidomiro.kdataloader.BatchLoader
 import nidomiro.kdataloader.DataLoader
 import nidomiro.kdataloader.ExecutionResult
-import nidomiro.kdataloader.SimpleDataLoaderImpl
+import nidomiro.kdataloader.factories.DataLoaderFactory
+import nidomiro.kdataloader.factories.SimpleDataLoaderFactory
+import nidomiro.kdataloader.prime
 
 class DataLoaderDSL<K, R>(
     private val batchLoader: BatchLoader<K, R>
 ) {
 
     private var options = DataLoaderOptionsDSL<K, R>()
-    private var primes = mutableMapOf<K, ExecutionResult<R>>()
+    private var cachePrimes = mutableMapOf<K, ExecutionResult<R>>()
 
 
     /**
@@ -25,7 +27,7 @@ class DataLoaderDSL<K, R>(
      */
     fun prime(vararg pairs: Pair<K, R>) {
         pairs.forEach { pair ->
-            primes[pair.first] = ExecutionResult.Success(pair.second)
+            cachePrimes[pair.first] = ExecutionResult.Success(pair.second)
         }
 
     }
@@ -36,16 +38,13 @@ class DataLoaderDSL<K, R>(
     @JvmName("primeError")
     fun prime(vararg pairs: Pair<K, Throwable>) {
         pairs.forEach { pair ->
-            primes[pair.first] = ExecutionResult.Failure(pair.second)
+            cachePrimes[pair.first] = ExecutionResult.Failure(pair.second)
         }
 
     }
 
-
-    internal suspend fun toDataLoader(): DataLoader<K, R> {
-        val dataLoader = SimpleDataLoaderImpl(options.toDataLoaderOptions(), batchLoader)
-        primes.forEach { (key, value) -> dataLoader.prime(key, value) }
-        return dataLoader
+    internal fun toDataLoaderFactory(): DataLoaderFactory<K, R> {
+        return SimpleDataLoaderFactory(options.toDataLoaderOptions(), cachePrimes, batchLoader)
     }
 }
 
@@ -54,7 +53,14 @@ suspend fun <K, R> dataLoader(
     batchLoader: BatchLoader<K, R>,
     block: (DataLoaderDSL<K, R>.() -> Unit)? = null
 ): DataLoader<K, R> {
+    return dataLoaderFactory(batchLoader, block).constructNew()
+}
+
+fun <K, R> dataLoaderFactory(
+    batchLoader: BatchLoader<K, R>,
+    block: (DataLoaderDSL<K, R>.() -> Unit)? = null
+): DataLoaderFactory<K, R> {
     val dataLoaderDSL = DataLoaderDSL(batchLoader)
     block?.let { dataLoaderDSL.apply(it) }
-    return dataLoaderDSL.toDataLoader()
+    return dataLoaderDSL.toDataLoaderFactory()
 }
