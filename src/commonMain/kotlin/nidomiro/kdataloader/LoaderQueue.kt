@@ -8,6 +8,7 @@ interface LoaderQueue<K, V> {
 
     /**
      * returns all stored Items as List and clears the queue
+     * (Coroutine-Save)
      */
     suspend fun getAllItemsAsList(): List<LoaderQueueEntry<K, CompletableDeferred<V>>>
 

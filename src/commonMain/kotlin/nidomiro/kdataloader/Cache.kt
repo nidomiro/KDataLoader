@@ -2,6 +2,7 @@ package nidomiro.kdataloader
 
 /**
  * A "Threadsave" Cache
+ * (Coroutine-Save)
  */
 interface Cache<K, V> {
 
