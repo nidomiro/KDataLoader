@@ -54,6 +54,14 @@ dependencies {
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
 }
 
+
+
+tasks.named<Test>("test") {
+    useJUnitPlatform()
+}
+
+
+
 tasks {
     compileKotlin {
         kotlinOptions.jvmTarget = "1.8"
