@@ -77,6 +77,13 @@ kotlin {
 
 }
 
+
+
+tasks.named<Test>("jvmTest") {
+    useJUnitPlatform()
+}
+
+
 /*
 val sourcesJar by tasks.creating(Jar::class) {
     archiveClassifier.set("sources")
