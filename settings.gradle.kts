@@ -8,3 +8,6 @@
  */
 
 rootProject.name = "KDataLoader"
+
+
+enableFeaturePreview("GRADLE_METADATA")
