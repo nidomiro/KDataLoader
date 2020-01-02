@@ -12,3 +12,6 @@ fun runBlockingWithTimeout(millis: Long = 1000L, block: suspend CoroutineScope.(
 
 fun Int.isEven() = this % 2 == 0
 fun Long.isEven() = this % 2 == 0L
+
+
+fun log(msg: String) = println("[${Thread.currentThread().name}] $msg")
