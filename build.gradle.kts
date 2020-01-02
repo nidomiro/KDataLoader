@@ -16,7 +16,7 @@ plugins {
 }
 
 group = "de.nidomiro"
-version = "0.0.2"
+version = "0.1.0"
 
 repositories {
     // Use jcenter for resolving your dependencies.
