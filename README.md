@@ -26,7 +26,7 @@ repositories {
 }
 
 dependencies {
-    compile 'de.nidomiro:KDataLoader:0.0.1'
+    compile 'de.nidomiro:KDataLoader:0.1.0'
 }
 ```
 
@@ -37,7 +37,7 @@ You need to setup the [`jcenter`-Repository](https://bintray.com/beta/#/bintray/
 <dependency>
     <groupId>de.nidomiro</groupId>
     <artifactId>KDataLoader</artifactId>
-    <version>0.0.1</version>
+    <version>0.1.0</version>
 </dependency>
 ```
 
