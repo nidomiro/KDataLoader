@@ -1,6 +1,6 @@
 name: KDataLoader
 title: KDataLoader
-version: 0.0.2
+version: 0.1.0
 start_page: index.adoc
 nav:
     - modules/ROOT/nav.adoc
