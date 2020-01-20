@@ -6,7 +6,7 @@ typealias DataLoaderFactoryMethod<K, R> = (options: DataLoaderOptions<K, R>, bat
 
 open class DataLoaderFactory<K, R>(
     @Suppress("MemberVisibilityCanBePrivate")
-    protected val options: DataLoaderOptions<K, R>,
+    protected val optionsFactory: () -> DataLoaderOptions<K, R>,
     @Suppress("MemberVisibilityCanBePrivate")
     protected val batchLoader: BatchLoader<K, R>,
     @Suppress("MemberVisibilityCanBePrivate")
@@ -15,7 +15,7 @@ open class DataLoaderFactory<K, R>(
 ) {
 
     suspend fun constructNew(): DataLoader<K, R> {
-        val dataLoader = factoryMethod(options, batchLoader)
+        val dataLoader = factoryMethod(optionsFactory(), batchLoader)
         cachePrimes.forEach { (key, value) -> dataLoader.prime(key, value) }
         return dataLoader
     }

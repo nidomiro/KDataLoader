@@ -11,7 +11,7 @@ class DataLoaderDSL<K, R>(
     private val batchLoader: BatchLoader<K, R>
 ) {
 
-    private var options = DataLoaderOptionsDSL<K, R>()
+    private var optionsBlock: DataLoaderOptionsDSL<K, R>.() -> Unit = {  }
     private var cachePrimes = mutableMapOf<K, ExecutionResult<R>>()
 
 
@@ -19,7 +19,7 @@ class DataLoaderDSL<K, R>(
      * Lets you configure the [DataLoader]
      */
     fun configure(block: DataLoaderOptionsDSL<K, R>.() -> Unit) {
-        options.apply(block)
+        optionsBlock = block
     }
 
     /**
@@ -44,7 +44,11 @@ class DataLoaderDSL<K, R>(
     }
 
     internal fun toDataLoaderFactory(): DataLoaderFactory<K, R> {
-        return SimpleDataLoaderFactory(options.toDataLoaderOptions(), cachePrimes, batchLoader)
+        return SimpleDataLoaderFactory(
+            { DataLoaderOptionsDSL<K, R>().apply(optionsBlock).toDataLoaderOptions() },
+            cachePrimes,
+            batchLoader
+        )
     }
 }
 
