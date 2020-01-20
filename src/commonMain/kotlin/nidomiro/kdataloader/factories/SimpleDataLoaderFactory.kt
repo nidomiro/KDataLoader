@@ -6,7 +6,7 @@ import nidomiro.kdataloader.ExecutionResult
 import nidomiro.kdataloader.SimpleDataLoaderImpl
 
 class SimpleDataLoaderFactory<K, R>(
-    options: DataLoaderOptions<K, R>,
+    optionsFactory: () -> DataLoaderOptions<K, R>,
     cachePrimes: Map<K, ExecutionResult<R>>,
     batchLoader: BatchLoader<K, R>
-) : DataLoaderFactory<K, R>(options, batchLoader, cachePrimes, ::SimpleDataLoaderImpl)
+) : DataLoaderFactory<K, R>(optionsFactory, batchLoader, cachePrimes, ::SimpleDataLoaderImpl)

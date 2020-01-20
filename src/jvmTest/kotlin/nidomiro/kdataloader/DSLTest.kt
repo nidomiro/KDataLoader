@@ -5,6 +5,7 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isFailure
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isNotEqualTo
+import kotlinx.coroutines.delay
 import nidomiro.kdataloader.dsl.dataLoader
 import nidomiro.kdataloader.dsl.dataLoaderFactory
 import org.junit.jupiter.api.Nested
@@ -156,6 +157,33 @@ class DSLTest {
                 .isEqualTo("2")
         }
 
+        @Test
+        fun `assure Factory doesn't pass cache`() = runBlockingWithTimeout {
+            val dataLoaderFactory = dataLoaderFactory(
+                { keys: List<Int> -> keys.map { ExecutionResult.Success(it.toString()) } }
+            )
+
+            val loader1 = dataLoaderFactory.constructNew()
+            val loader2 = dataLoaderFactory.constructNew()
+
+            val res1 = loader1.loadAsync(2)
+            val res2 = loader2.loadAsync(2)
+            delay(1)
+
+            assertThat(loader1.createStatisticsSnapshot().objectsRequested).isEqualTo(1)
+            assertThat(loader2.createStatisticsSnapshot().objectsRequested).isEqualTo(1)
+
+            assertThat(loader1.createStatisticsSnapshot().cacheHitCount).isEqualTo(0)
+            assertThat(loader2.createStatisticsSnapshot().cacheHitCount).isEqualTo(0)
+
+            val res3 = loader2.loadAsync(2)
+            delay(1)
+            assertThat(loader2.createStatisticsSnapshot().cacheHitCount).isEqualTo(1)
+
+            loader1.dispatch()
+            loader2.dispatch()
+            assertThat(listOf(res1.await(), res2.await(), res3.await())).isEqualTo(listOf("2", "2", "2"))
+        }
 
     }
 
