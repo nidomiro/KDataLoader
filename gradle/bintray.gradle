@@ -1,8 +1,5 @@
 
-apply plugin: 'maven'
-apply plugin: 'maven-publish'
 apply plugin: 'com.jfrog.bintray'
-
 apply from: rootProject.file("gradle/commonVariables.gradle")
 
 bintray {
@@ -31,9 +28,9 @@ bintray {
 bintrayUpload.doFirst {
     publications = publishing.publications.collect {
         it.name
-    }.findAll {
-        it != "kotlinMultiplatform"
-    }
+    }//.findAll {
+    //    it != "kotlinMultiplatform"
+    //}
 }
 
 //The task of bintrayUpload depends on publishToMavenLocal set in the previous section.
