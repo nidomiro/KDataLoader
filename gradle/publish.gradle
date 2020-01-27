@@ -11,6 +11,12 @@ afterEvaluate {
     publishing {
         def variantName = "${project.name}"
 
+        publications {
+            kotlinMultiplatform {
+                artifactId = project.name
+            }
+        }
+
         publications.all {
             def type = it.name
             logger.info("Configuring $type")
