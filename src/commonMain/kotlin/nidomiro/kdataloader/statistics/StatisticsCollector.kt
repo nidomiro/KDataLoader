@@ -1,25 +1,27 @@
 package nidomiro.kdataloader.statistics
 
+import kotlinx.coroutines.Deferred
+
 interface StatisticsCollector {
 
-    fun incLoadAsyncMethodCalled(): Long
-    fun incLoadManyAsyncMethodCalled(): Long
-    fun incDispatchMethodCalled(): Long
-    fun incClearMethodCalled(): Long
-    fun incClearAllMethodCalled(): Long
-    fun incPrimeMethodCalled(): Long
+    fun incLoadAsyncMethodCalledAsync(): Deferred<Long>
+    fun incLoadManyAsyncMethodCalledAsync(): Deferred<Long>
+    fun incDispatchMethodCalledAsync(): Deferred<Long>
+    fun incClearMethodCalledAsync(): Deferred<Long>
+    fun incClearAllMethodCalledAsync(): Deferred<Long>
+    fun incPrimeMethodCalledAsync(): Deferred<Long>
 
     /**
      * Increment by the number of requested objects
      */
-    fun incObjectsRequested(objects: Long = 1): Long
+    fun incObjectsRequestedAsync(objects: Long = 1): Deferred<Long>
 
-    fun incBatchCallsExecuted(): Long
+    fun incBatchCallsExecutedAsync(): Deferred<Long>
 
-    fun incCacheHitCount(): Long
+    fun incCacheHitCountAsync(): Deferred<Long>
 
     /**
      * returns a immutable copy of the statistics at the point of calling this method
      */
-    fun createStatisticsSnapshot(): DataLoaderStatistics
+    suspend fun createStatisticsSnapshot(): DataLoaderStatistics
 }

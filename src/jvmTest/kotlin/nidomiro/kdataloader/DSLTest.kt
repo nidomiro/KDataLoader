@@ -5,7 +5,6 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isFailure
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isNotEqualTo
-import kotlinx.coroutines.delay
 import nidomiro.kdataloader.dsl.dataLoader
 import nidomiro.kdataloader.dsl.dataLoaderFactory
 import org.junit.jupiter.api.Nested
@@ -168,7 +167,6 @@ class DSLTest {
 
             val res1 = loader1.loadAsync(2)
             val res2 = loader2.loadAsync(2)
-            delay(1)
 
             assertThat(loader1.createStatisticsSnapshot().objectsRequested).isEqualTo(1)
             assertThat(loader2.createStatisticsSnapshot().objectsRequested).isEqualTo(1)
@@ -177,7 +175,6 @@ class DSLTest {
             assertThat(loader2.createStatisticsSnapshot().cacheHitCount).isEqualTo(0)
 
             val res3 = loader2.loadAsync(2)
-            delay(1)
             assertThat(loader2.createStatisticsSnapshot().cacheHitCount).isEqualTo(1)
 
             loader1.dispatch()

@@ -18,20 +18,18 @@ class SimpleDataLoaderImpl<K, R>(
     constructor(batchLoader: BatchLoader<K, R>) : this(DataLoaderOptions(), batchLoader)
 
     private val dataLoaderScope = CoroutineScope(Dispatchers.Default)
-    private val statisticsScope = CoroutineScope(Dispatchers.Default)
+
     private val queue: LoaderQueue<K, R> = DefaultLoaderQueueImpl()
 
+    @Suppress("DeferredResultUnused")
     override suspend fun loadAsync(key: K): Deferred<R> {
-        val statisticsJob = statisticsScope.launch {
-            statisticsCollector.incLoadAsyncMethodCalled()
-            statisticsCollector.incObjectsRequested()
-        }
+        statisticsCollector.incLoadAsyncMethodCalledAsync()
+        statisticsCollector.incObjectsRequestedAsync()
 
-        val ret = internalLoadAsync(key)
-        statisticsJob.join()
-        return ret
+        return internalLoadAsync(key)
     }
 
+    @Suppress("DeferredResultUnused")
     private suspend fun internalLoadAsync(key: K): Deferred<R> {
         val block: suspend (key: K) -> CompletableDeferred<R> = {
             val newDeferred = CompletableDeferred<R>()
@@ -43,30 +41,28 @@ class SimpleDataLoaderImpl<K, R>(
         }
 
         return if (options.cacheEnabled) {
-            options.cache.getOrCreate(key, block, { statisticsScope.launch { statisticsCollector.incCacheHitCount() } })
+            options.cache.getOrCreate(key, block, { statisticsCollector.incCacheHitCountAsync() })
         } else {
             block(key)
         }
     }
 
+    @Suppress("DeferredResultUnused")
     override suspend fun loadManyAsync(vararg keys: K): Deferred<List<R>> {
-        val statisticsJob = statisticsScope.launch {
-            statisticsCollector.incLoadManyAsyncMethodCalled()
-            statisticsCollector.incObjectsRequested(keys.size.toLong())
-        }
+        statisticsCollector.incLoadManyAsyncMethodCalledAsync()
+        statisticsCollector.incObjectsRequestedAsync(keys.size.toLong())
+
         val deferreds = keys.map { internalLoadAsync(it) }
 
-        val ret = dataLoaderScope.async(Dispatchers.Default) {
+        return dataLoaderScope.async(Dispatchers.Default) {
             return@async deferreds.map { it.await() }
         }
-        statisticsJob.join()
-        return ret
     }
 
+    @Suppress("DeferredResultUnused")
     override suspend fun dispatch() {
-        val statisticsJob = statisticsScope.launch {
-            statisticsCollector.incDispatchMethodCalled()
-        }
+        statisticsCollector.incDispatchMethodCalledAsync()
+
         val queueEntries = if (options.cacheEnabled) {
             queue.getAllItemsAsList().distinctBy { it.key }
         } else {
@@ -75,7 +71,6 @@ class SimpleDataLoaderImpl<K, R>(
         queueEntries.chunked(options.batchSize).forEach {
             executeDispatchOnQueueEntries(it)
         }
-        statisticsJob.join()
     }
 
     private suspend fun executeDispatchOnQueueEntries(queueEntries: List<LoaderQueueEntry<K, CompletableDeferred<R>>>) {
@@ -85,11 +80,12 @@ class SimpleDataLoaderImpl<K, R>(
         }
     }
 
+    @Suppress("DeferredResultUnused")
     private suspend fun executeBatchLoader(
         keys: List<K>,
         queueEntries: List<LoaderQueueEntry<K, CompletableDeferred<R>>>
     ) {
-        val statisticsJob = statisticsScope.launch { statisticsCollector.incBatchCallsExecuted() }
+        statisticsCollector.incBatchCallsExecutedAsync()
         try {
             batchLoader(keys).forEachIndexed { i, result ->
                 val queueEntry = queueEntries[i]
@@ -98,7 +94,6 @@ class SimpleDataLoaderImpl<K, R>(
         } catch (e: Throwable) {
             handleCompleteBatchLoaderFailure(queueEntries, e)
         }
-        statisticsJob.join()
     }
 
     private suspend fun handleSingleBatchLoaderResult(
@@ -127,44 +122,37 @@ class SimpleDataLoaderImpl<K, R>(
         }
     }
 
+    @Suppress("DeferredResultUnused")
     override suspend fun clear(key: K) {
-        val statisticsJob = statisticsScope.launch {
-            statisticsCollector.incClearMethodCalled()
-        }
+        statisticsCollector.incClearMethodCalledAsync()
+
         options.cache.clear(key)
-        statisticsJob.join()
     }
 
+    @Suppress("DeferredResultUnused")
     override suspend fun clearAll() {
-        val statisticsJob = statisticsScope.launch {
-            statisticsCollector.incClearAllMethodCalled()
-        }
+        statisticsCollector.incClearAllMethodCalledAsync()
         options.cache.clear()
-        statisticsJob.join()
     }
 
+    @Suppress("DeferredResultUnused")
     override suspend fun prime(key: K, value: R) {
-        val statisticsJob = statisticsScope.launch {
-            statisticsCollector.incPrimeMethodCalled()
-        }
+        statisticsCollector.incPrimeMethodCalledAsync()
         options.cache.getOrCreate(key) {
             CompletableDeferred(value)
         }
-        statisticsJob.join()
     }
 
+    @Suppress("DeferredResultUnused")
     override suspend fun prime(key: K, value: Throwable) {
-        val statisticsJob = statisticsScope.launch {
-            statisticsCollector.incPrimeMethodCalled()
-        }
+        statisticsCollector.incPrimeMethodCalledAsync()
         options.cache.getOrCreate(key) {
             CompletableDeferred<R>().apply {
                 completeExceptionally(value)
             }
         }
-        statisticsJob.join()
     }
 
-    override fun createStatisticsSnapshot() = statisticsCollector.createStatisticsSnapshot()
+    override suspend fun createStatisticsSnapshot() = statisticsCollector.createStatisticsSnapshot()
 
 }

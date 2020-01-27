@@ -1,30 +1,57 @@
 package nidomiro.kdataloader.statistics
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import java.util.concurrent.atomic.AtomicLong
 
 class SimpleStatisticsCollector : StatisticsCollector {
 
     private val internalStatistics = Statistics()
 
-    override fun incLoadAsyncMethodCalled() = internalStatistics.loadAsyncMethodCalled.incrementAndGet()
+    private val statisticsScope = CoroutineScope(Dispatchers.Default)
+    private var statisticsJobs = mutableListOf<Deferred<*>>()
 
-    override fun incLoadManyAsyncMethodCalled() = internalStatistics.loadAsyncManyMethodCalled.incrementAndGet()
+    override fun incLoadAsyncMethodCalledAsync() =
+        executeInStatisticsScopeAsync { internalStatistics.loadAsyncMethodCalled.incrementAndGet() }
 
-    override fun incDispatchMethodCalled() = internalStatistics.dispatchMethodCalled.incrementAndGet()
+    override fun incLoadManyAsyncMethodCalledAsync() =
+        executeInStatisticsScopeAsync { internalStatistics.loadAsyncManyMethodCalled.incrementAndGet() }
 
-    override fun incClearMethodCalled() = internalStatistics.clearMethodCalled.incrementAndGet()
+    override fun incDispatchMethodCalledAsync() =
+        executeInStatisticsScopeAsync { internalStatistics.dispatchMethodCalled.incrementAndGet() }
 
-    override fun incClearAllMethodCalled() = internalStatistics.clearAllMethodCalled.incrementAndGet()
+    override fun incClearMethodCalledAsync() =
+        executeInStatisticsScopeAsync { internalStatistics.clearMethodCalled.incrementAndGet() }
 
-    override fun incPrimeMethodCalled() = internalStatistics.primeMethodCalled.incrementAndGet()
+    override fun incClearAllMethodCalledAsync() =
+        executeInStatisticsScopeAsync { internalStatistics.clearAllMethodCalled.incrementAndGet() }
 
-    override fun incObjectsRequested(objects: Long) = internalStatistics.objectsRequested.addAndGet(objects)
+    override fun incPrimeMethodCalledAsync() =
+        executeInStatisticsScopeAsync { internalStatistics.primeMethodCalled.incrementAndGet() }
 
-    override fun incBatchCallsExecuted() = internalStatistics.batchCallsExecuted.incrementAndGet()
+    override fun incObjectsRequestedAsync(objects: Long) =
+        executeInStatisticsScopeAsync { internalStatistics.objectsRequested.addAndGet(objects) }
 
-    override fun incCacheHitCount() = internalStatistics.cacheHitCount.incrementAndGet()
+    override fun incBatchCallsExecutedAsync() =
+        executeInStatisticsScopeAsync { internalStatistics.batchCallsExecuted.incrementAndGet() }
 
-    override fun createStatisticsSnapshot() = internalStatistics.snapshot()
+    override fun incCacheHitCountAsync() =
+        executeInStatisticsScopeAsync { internalStatistics.cacheHitCount.incrementAndGet() }
+
+    private fun <T> executeInStatisticsScopeAsync(block: () -> T): Deferred<T> {
+        val deferred = statisticsScope.async { block() }
+        statisticsJobs.add(deferred)
+        return deferred
+    }
+
+    override suspend fun createStatisticsSnapshot(): DataLoaderStatistics {
+        val currentJobs = statisticsJobs
+        statisticsJobs = mutableListOf()
+        currentJobs.forEach { it.await() }
+        return internalStatistics.snapshot()
+    }
 
 
     internal data class Statistics(

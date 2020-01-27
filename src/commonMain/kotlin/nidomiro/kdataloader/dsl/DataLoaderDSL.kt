@@ -11,7 +11,7 @@ class DataLoaderDSL<K, R>(
     private val batchLoader: BatchLoader<K, R>
 ) {
 
-    private var optionsBlock: DataLoaderOptionsDSL<K, R>.() -> Unit = {  }
+    private var optionsBlock: DataLoaderOptionsDSL<K, R>.() -> Unit = { }
     private var cachePrimes = mutableMapOf<K, ExecutionResult<R>>()
 
 

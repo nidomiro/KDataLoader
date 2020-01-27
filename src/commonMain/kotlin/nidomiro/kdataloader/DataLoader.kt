@@ -53,7 +53,7 @@ interface DataLoader<K, R> {
     /**
      * Returns a snapshot of the statistics at the point of calling
      */
-    fun createStatisticsSnapshot(): DataLoaderStatistics
+    suspend fun createStatisticsSnapshot(): DataLoaderStatistics
 
 }
 
