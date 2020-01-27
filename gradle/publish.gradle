@@ -10,7 +10,7 @@ afterEvaluate {
     }
 }
 
-publishing {
+/*publishing {
     publications {
         kotlinMultiplatform {
             artifactId = "$project.name"
@@ -18,14 +18,21 @@ publishing {
     }
 }
 
+ */
+
 afterEvaluate {
     publishing {
         def variantName = "${project.name}"
 
-        publications.all {
-            def type = it.name
+        publications.all { publication ->
+            def type = publication.name
             logger.info("Configuring $type")
-            logger.info("Artifact id = ${it.artifactId}")
+            logger.info("Artifact id = ${publication.artifactId}")
+
+            def moduleFile = new File(buildDir,"publications/${publication.name}/module.json")
+            if (moduleFile.exists()) {
+                publication.artifact {"module"}
+            }
 
             pom.withXml(configurePomData)
         }
