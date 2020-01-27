@@ -1,0 +1,5 @@
+ext {
+    myVcsUrl = "https://github.com/nidomiro/KDataLoader"
+    myVcsConnection = "scm:git:git://github.com/nidomiro/KDataLoader"
+    myWebsiteUrl = "https://nidomiro.github.io/KDataLoader"
+}
