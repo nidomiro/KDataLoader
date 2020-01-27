@@ -40,7 +40,6 @@ kotlin {
                 implementation kotlin("stdlib-common")
                 implementation kotlin("reflect")
                 implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core-common:$coroutinesVersion"
-
             }
         }
         commonTest {

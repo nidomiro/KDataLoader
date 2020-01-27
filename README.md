@@ -26,7 +26,36 @@ repositories {
 }
 
 dependencies {
-    compile 'de.nidomiro:KDataLoader:0.1.0'
+    compile 'de.nidomiro:KDataLoader-jvm:0.2.0'
+}
+```
+
+#### Kotlin Multiplatform Project
+Currently only `jvm` is supported.
+
+```groovy
+repositories {
+    jcenter()
+}
+
+kotlin {
+    // [...]
+    sourceSets {
+        commonMain {
+            dependencies {
+                // [...]
+                implementation 'de.nidomiro:KDataLoader-common:0.2.0'
+            }
+        }
+        // [...]
+        jvmMain {
+            dependencies {
+                // [...]
+                implementation 'de.nidomiro:KDataLoader-jvm:0.2.0'
+            }
+        }
+        // [...]
+    }
 }
 ```
 
@@ -36,8 +65,8 @@ You need to setup the [`jcenter`-Repository](https://bintray.com/beta/#/bintray/
 ```xml
 <dependency>
     <groupId>de.nidomiro</groupId>
-    <artifactId>KDataLoader</artifactId>
-    <version>0.1.0</version>
+    <artifactId>KDataLoader-jvm</artifactId>
+    <version>0.2.0</version>
 </dependency>
 ```
 

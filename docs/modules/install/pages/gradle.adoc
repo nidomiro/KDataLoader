@@ -13,18 +13,36 @@ repositories {
 
 Then you can add the dependency.
 
-.Groovy
 [source,groovy]
 ----
 dependencies {
-    implementation 'de.nidomiro:KDataLoader:0.1.0'
+    implementation 'de.nidomiro:KDataLoader-jvm:0.1.0'
 }
 ----
 
-.kts
-[source,kotlin]
-----
-dependencies {
-    implementation("de.nidomiro:KDataLoader:0.1.0")
+== Kotlin Multiplatform Project
+
+Currently only `jvm` is supported.
+
+```groovy
+kotlin {
+    // [...]
+    sourceSets {
+        commonMain {
+            dependencies {
+                // [...]
+                implementation 'de.nidomiro:KDataLoader-common:0.2.0'
+            }
+        }
+        // [...]
+        jvmMain {
+            dependencies {
+                // [...]
+                implementation 'de.nidomiro:KDataLoader-jvm:0.2.0'
+            }
+        }
+        // [...]
+    }
 }
-----
+```
+

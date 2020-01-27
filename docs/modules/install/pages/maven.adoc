@@ -2,44 +2,7 @@
 
 https://bintray.com/nidomiro/maven/KDataLoader/_latestVersion[image:https://api.bintray.com/packages/nidomiro/maven/KDataLoader/images/download.svg[Latest Version]]
 
-In order to include `KDataLoader` with maven you need to include `jcenter` as repository in your `settings.xml`.
-
-[source,xml]
-----
-<settings xmlns='http://maven.apache.org/SETTINGS/1.0.0'
-        xsi:schemaLocation='http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd'
-        xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>
-  <profiles>
-    <profile>
-      <repositories>
-        <repository>
-          <snapshots>
-            <enabled>false</enabled>
-          </snapshots>
-          <id>central</id>
-          <name>bintray</name>
-          <url>https://jcenter.bintray.com</url>
-        </repository>
-      </repositories>
-      <pluginRepositories>
-        <pluginRepository>
-          <snapshots>
-            <enabled>false</enabled>
-          </snapshots>
-          <id>central</id>
-          <name>bintray-plugins</name>
-          <url>https://jcenter.bintray.com</url>
-        </pluginRepository>
-      </pluginRepositories>
-      <id>bintray</id>
-    </profile>
-  </profiles>
-  <activeProfiles>
-    <activeProfile>bintray</activeProfile>
-  </activeProfiles>
-</settings>
-
-----
+In order to include `KDataLoader` with maven you need to include https://bintray.com/beta/#/bintray/jcenter?tab=packages[`jcenter` as repository].
 
 Then you can add the dependency.
 
@@ -47,7 +10,7 @@ Then you can add the dependency.
 ----
 <dependency>
     <groupId>de.nidomiro</groupId>
-    <artifactId>KDataLoader</artifactId>
-    <version>0.1.0</version>
+    <artifactId>KDataLoader-jvm</artifactId>
+    <version>0.2.0</version>
 </dependency>
 ----
