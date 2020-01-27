@@ -2,11 +2,11 @@ name: Test lib and docs
 
 on:
     push:
-        branches: "*"
+        branches: "**"
         tags-ignore:
             - "v*"
     pull_request:
-        branches: "*"
+        branches: "**"
         tags-ignore:
             - "v*"
 jobs:

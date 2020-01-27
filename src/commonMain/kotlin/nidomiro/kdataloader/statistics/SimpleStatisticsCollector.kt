@@ -4,7 +4,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import java.util.concurrent.atomic.AtomicLong
 
 class SimpleStatisticsCollector : StatisticsCollector {
 
@@ -13,34 +12,34 @@ class SimpleStatisticsCollector : StatisticsCollector {
     private val statisticsScope = CoroutineScope(Dispatchers.Default)
     private var statisticsJobs = mutableListOf<Deferred<*>>()
 
-    override fun incLoadAsyncMethodCalledAsync() =
+    override suspend fun incLoadAsyncMethodCalledAsync() =
         executeInStatisticsScopeAsync { internalStatistics.loadAsyncMethodCalled.incrementAndGet() }
 
-    override fun incLoadManyAsyncMethodCalledAsync() =
+    override suspend fun incLoadManyAsyncMethodCalledAsync() =
         executeInStatisticsScopeAsync { internalStatistics.loadAsyncManyMethodCalled.incrementAndGet() }
 
-    override fun incDispatchMethodCalledAsync() =
+    override suspend fun incDispatchMethodCalledAsync() =
         executeInStatisticsScopeAsync { internalStatistics.dispatchMethodCalled.incrementAndGet() }
 
-    override fun incClearMethodCalledAsync() =
+    override suspend fun incClearMethodCalledAsync() =
         executeInStatisticsScopeAsync { internalStatistics.clearMethodCalled.incrementAndGet() }
 
-    override fun incClearAllMethodCalledAsync() =
+    override suspend fun incClearAllMethodCalledAsync() =
         executeInStatisticsScopeAsync { internalStatistics.clearAllMethodCalled.incrementAndGet() }
 
-    override fun incPrimeMethodCalledAsync() =
+    override suspend fun incPrimeMethodCalledAsync() =
         executeInStatisticsScopeAsync { internalStatistics.primeMethodCalled.incrementAndGet() }
 
-    override fun incObjectsRequestedAsync(objects: Long) =
+    override suspend fun incObjectsRequestedAsync(objects: Long) =
         executeInStatisticsScopeAsync { internalStatistics.objectsRequested.addAndGet(objects) }
 
-    override fun incBatchCallsExecutedAsync() =
+    override suspend fun incBatchCallsExecutedAsync() =
         executeInStatisticsScopeAsync { internalStatistics.batchCallsExecuted.incrementAndGet() }
 
-    override fun incCacheHitCountAsync() =
+    override suspend fun incCacheHitCountAsync() =
         executeInStatisticsScopeAsync { internalStatistics.cacheHitCount.incrementAndGet() }
 
-    private fun <T> executeInStatisticsScopeAsync(block: () -> T): Deferred<T> {
+    private suspend fun <T> executeInStatisticsScopeAsync(block: suspend () -> T): Deferred<T> {
         val deferred = statisticsScope.async { block() }
         statisticsJobs.add(deferred)
         return deferred
