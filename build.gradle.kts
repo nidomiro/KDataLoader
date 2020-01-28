@@ -1,23 +1,12 @@
 import java.util.*
 
-buildscript {
-    repositories {
-        mavenCentral()
-        jcenter()
-    }
-    dependencies {
-        classpath("com.jfrog.bintray.gradle:gradle-bintray-plugin:${Constants.BuildLibVersions.bintray}")
-    }
-
-}
-
 val coroutinesVersion = "1.3.3"
 
 plugins {
-    kotlin("multiplatform") version Constants.BuildLibVersions.kotlin
-    id("com.jfrog.bintray") version Constants.BuildLibVersions.bintray
     maven
     `maven-publish`
+    id("com.jfrog.bintray") version Constants.BuildLibVersions.bintray
+    kotlin("multiplatform") version Constants.BuildLibVersions.kotlin
 }
 
 group = "de.nidomiro"
@@ -92,6 +81,17 @@ afterEvaluate {
         publications
             .filterIsInstance<MavenPublication>()
             .forEach { publication ->
+
+                val moduleFile = buildDir.resolve("publications/${publication.name}/module.json")
+                if (moduleFile.exists()) {
+                    publication.artifact(object :
+                        org.gradle.api.publish.maven.internal.artifact.FileBasedMavenArtifact(moduleFile) {
+                        override fun getDefaultExtension() = "module"
+                    })
+                }
+
+
+
                 publication.pom.withXml {
                     asNode().apply {
                         appendNode("name", rootProject.name)
@@ -144,7 +144,7 @@ configure<com.jfrog.bintray.gradle.BintrayExtension> {
 
 }
 
-tasks.withType<com.jfrog.bintray.gradle.tasks.BintrayUploadTask> {
+/*tasks.withType<com.jfrog.bintray.gradle.tasks.BintrayUploadTask> {
     doFirst {
         project.publishing.publications
             .filterIsInstance<MavenPublication>()
@@ -160,3 +160,4 @@ tasks.withType<com.jfrog.bintray.gradle.tasks.BintrayUploadTask> {
         //publications = project.publishing.publications.map {it.name}
     }
 }
+ */
