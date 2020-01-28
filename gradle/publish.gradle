@@ -31,6 +31,11 @@ afterEvaluate {
 
             def moduleFile = new File(buildDir,"publications/${publication.name}/module.json")
             if (moduleFile.exists()) {
+                task copyReport(type: Copy) {
+                    from moduleFile
+                    into file(new File(buildDir,"publications/${publication.name}/module"))
+                }
+
                 publication.artifact {"module"}
             }
 
