@@ -19,16 +19,16 @@ repositories {
 kotlin {
     //Targets
     jvm {
+        val javaVersion = "1.8"
+
         val main by compilations.getting {
             kotlinOptions {
-                // Setup the Kotlin compiler options for the 'main' compilation:
-                jvmTarget = "1.8"
+                jvmTarget = javaVersion
             }
         }
         val test by compilations.getting {
             kotlinOptions {
-                // Setup the Kotlin compiler options for the 'main' compilation:
-                jvmTarget = "1.8"
+                jvmTarget = javaVersion
             }
         }
     }
@@ -37,6 +37,8 @@ kotlin {
     sourceSets {
 
         val coroutinesVersion = "1.3.3"
+        val assertkVersion = "0.21"
+        val junitVersion = "5.5.2"
 
         val commonMain by getting {
             dependencies {
@@ -49,8 +51,8 @@ kotlin {
             dependencies {
                 implementation(kotlin("test-common"))
                 implementation(kotlin("test-annotations-common"))
-                implementation("com.willowtreeapps.assertk:assertk:0.21")
-                //implementation("com.willowtreeapps.assertk:assertk-common:0.21")
+
+                implementation("com.willowtreeapps.assertk:assertk:$assertkVersion")
             }
         }
 
@@ -64,9 +66,7 @@ kotlin {
         val jvmTest by getting {
             dependencies {
                 implementation(kotlin("test-junit5"))
-                implementation("org.junit.jupiter:junit-jupiter:5.5.2")
-
-                implementation("com.willowtreeapps.assertk:assertk-jvm:0.21")
+                implementation("org.junit.jupiter:junit-jupiter:$junitVersion")
             }
         }
     }
