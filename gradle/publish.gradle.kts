@@ -3,13 +3,6 @@
 apply(plugin = "maven")
 apply(plugin = "maven-publish")
 
-/*afterEvaluate {
-    tasks.register<Jar>("sourcesJar") {
-        archiveClassifier.set("sources")
-        from(kotlin.sourceSets.commonMain)
-    }
-}*/
-
 afterEvaluate {
     configure<PublishingExtension> {
         publications
@@ -39,8 +32,5 @@ afterEvaluate {
             }
     }
 }
-
-
-//apply(from = rootProject.file("gradle/bintray.gradle.kts"))
 
 

@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "de.nidomiro"
-version = "0.2.3"
+version = "0.2.4"
 
 repositories {
     mavenCentral()
@@ -74,51 +74,10 @@ tasks.named<Test>("jvmTest") {
     useJUnitPlatform()
 }
 
-//apply(from = rootProject.file("gradle/publish.gradle.kts"))
-
-afterEvaluate {
-    publishing {
-        publications
-            .filterIsInstance<MavenPublication>()
-            .forEach { publication ->
-
-                /*val moduleFile = buildDir.resolve("publications/${publication.name}/module.json")
-                if (moduleFile.exists()) {
-                    publication.artifact(object :
-                        org.gradle.api.publish.maven.internal.artifact.FileBasedMavenArtifact(moduleFile) {
-                        override fun getDefaultExtension() = "module"
-                    })
-                }*/
+apply(from = rootProject.file("gradle/publish.gradle.kts"))
 
 
-
-                publication.pom.withXml {
-                    asNode().apply {
-                        appendNode("name", rootProject.name)
-                        appendNode("url", Constants.ProjectInfo.websiteUrl)
-                        appendNode("licenses")
-                            .appendNode("license").apply {
-                                appendNode("name", "MIT")
-                                appendNode("url", "https://opensource.org/licenses/MIT")
-                                appendNode("distribution", "repo")
-                            }
-                        appendNode("developers")
-                            .appendNode("developer").apply {
-                                appendNode("id", "nidomiro")
-                                appendNode("name", "Niclas Roßberger")
-                            }
-                        appendNode("scm").apply {
-                            appendNode("url", Constants.ProjectInfo.vcsUrl)
-                            appendNode("connection", Constants.ProjectInfo.vcsConnection)
-                        }
-                    }
-                }
-            }
-    }
-}
-
-
-
+// Bintray stuff (doesn't work in a separate file right now)
 bintray {
     user = if (project.hasProperty("bintray_user")) project.property("bintray_user") as String else ""
     key = if (project.hasProperty("bintray_key")) project.property("bintray_key") as String else ""
