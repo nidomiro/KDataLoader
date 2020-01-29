@@ -1,16 +1,17 @@
-package nidomiro.kdataloader
+package nidomiro.kdataloader.statistics
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import nidomiro.kdataloader.statistics.DataLoaderStatistics
-import org.junit.jupiter.api.Test
+import nidomiro.kdataloader.*
+import kotlin.test.Test
 
 @Suppress("DeferredResultUnused")
 class DataLoaderStatisticsTest {
 
     @Test
     fun `test loadAsyncMethodCalled statistics`() = runBlockingWithTimeout {
-        val dataLoader: DataLoader<Int, Int> = SimpleDataLoaderImpl(identityBatchLoader())
+        val dataLoader: DataLoader<Int, Int> =
+            SimpleDataLoaderImpl(identityBatchLoader())
         assertThat(dataLoader.createStatisticsSnapshot()).isEqualTo(DataLoaderStatistics())
 
         dataLoader.loadAsync(1)
@@ -31,7 +32,8 @@ class DataLoaderStatisticsTest {
 
     @Test
     fun `test loadManyAsyncMethodCalled statistics`() = runBlockingWithTimeout {
-        val dataLoader = SimpleDataLoaderImpl<Int, Int>(identityBatchLoader())
+        val dataLoader =
+            SimpleDataLoaderImpl<Int, Int>(identityBatchLoader())
         assertThat(dataLoader.createStatisticsSnapshot()).isEqualTo(DataLoaderStatistics())
 
         dataLoader.loadManyAsync(1)
@@ -52,7 +54,8 @@ class DataLoaderStatisticsTest {
 
     @Test
     fun `test dispatchMethodCalled statistics`() = runBlockingWithTimeout {
-        val dataLoader = SimpleDataLoaderImpl<Int, Int>(identityBatchLoader())
+        val dataLoader =
+            SimpleDataLoaderImpl<Int, Int>(identityBatchLoader())
         assertThat(dataLoader.createStatisticsSnapshot()).isEqualTo(DataLoaderStatistics())
 
         dataLoader.loadAsync(1)
@@ -80,7 +83,8 @@ class DataLoaderStatisticsTest {
 
     @Test
     fun `test clearMethodCalled statistics`() = runBlockingWithTimeout {
-        val dataLoader = SimpleDataLoaderImpl<Int, Int>(identityBatchLoader())
+        val dataLoader =
+            SimpleDataLoaderImpl<Int, Int>(identityBatchLoader())
         assertThat(dataLoader.createStatisticsSnapshot()).isEqualTo(DataLoaderStatistics())
 
         dataLoader.clear(1)
@@ -100,7 +104,8 @@ class DataLoaderStatisticsTest {
 
     @Test
     fun `test clearAllMethodCalled statistics`() = runBlockingWithTimeout {
-        val dataLoader = SimpleDataLoaderImpl<Int, Int>(identityBatchLoader())
+        val dataLoader =
+            SimpleDataLoaderImpl<Int, Int>(identityBatchLoader())
         assertThat(dataLoader.createStatisticsSnapshot()).isEqualTo(DataLoaderStatistics())
 
         dataLoader.clearAll()
@@ -120,7 +125,8 @@ class DataLoaderStatisticsTest {
 
     @Test
     fun `test primeMethodCalled statistics`() = runBlockingWithTimeout {
-        val dataLoader = SimpleDataLoaderImpl<Int, Int>(identityBatchLoader())
+        val dataLoader =
+            SimpleDataLoaderImpl<Int, Int>(identityBatchLoader())
         assertThat(dataLoader.createStatisticsSnapshot()).isEqualTo(DataLoaderStatistics())
 
         dataLoader.prime(1, 1)
@@ -161,7 +167,8 @@ class DataLoaderStatisticsTest {
 
     @Test
     fun `test objectsRequested statistics`() = runBlockingWithTimeout {
-        val dataLoader = SimpleDataLoaderImpl<Int, Int>(identityBatchLoader())
+        val dataLoader =
+            SimpleDataLoaderImpl<Int, Int>(identityBatchLoader())
         assertThat(dataLoader.createStatisticsSnapshot()).isEqualTo(DataLoaderStatistics())
 
         dataLoader.loadManyAsync(1, 2)
@@ -183,7 +190,8 @@ class DataLoaderStatisticsTest {
 
     @Test
     fun `test batchCallsExecuted statistics`() = runBlockingWithTimeout {
-        val dataLoader = SimpleDataLoaderImpl<Int, Int>(identityBatchLoader())
+        val dataLoader =
+            SimpleDataLoaderImpl<Int, Int>(identityBatchLoader())
         assertThat(dataLoader.createStatisticsSnapshot()).isEqualTo(DataLoaderStatistics())
 
         dataLoader.loadManyAsync(1, 2, 4)
@@ -208,39 +216,41 @@ class DataLoaderStatisticsTest {
     }
 
     @Test
-    fun `test batchCallsExecuted statistics with batchSizeOption`() = runBlockingWithTimeout {
-        val dataLoader = SimpleDataLoaderImpl<Int, Int>(
-            DataLoaderOptions(batchSize = 2),
-            identityBatchLoader()
-        )
-        assertThat(dataLoader.createStatisticsSnapshot()).isEqualTo(DataLoaderStatistics())
-
-        dataLoader.loadManyAsync(1, 2, 3)
-        dataLoader.dispatch()
-        assertThat(dataLoader.createStatisticsSnapshot().loadManyAsyncMethodCalled).isEqualTo(1)
-
-        dataLoader.loadManyAsync(4, 5)
-        dataLoader.dispatch()
-        assertThat(dataLoader.createStatisticsSnapshot().loadManyAsyncMethodCalled).isEqualTo(2)
-
-        dataLoader.loadManyAsync(1, 2, 3, 4, 5, 6, 7)
-        dataLoader.dispatch()
-
-        assertThat(dataLoader.createStatisticsSnapshot()).isEqualTo(
-            DataLoaderStatistics(
-                loadManyAsyncMethodCalled = 3,
-                dispatchMethodCalled = 3,
-                objectsRequested = 12,
-                batchCallsExecuted = 4,
-                cacheHitCount = 5
+    fun `test batchCallsExecuted statistics with batchSizeOption`() =
+        runBlockingWithTimeout {
+            val dataLoader = SimpleDataLoaderImpl<Int, Int>(
+                DataLoaderOptions(batchSize = 2),
+                identityBatchLoader()
             )
-        )
-    }
+            assertThat(dataLoader.createStatisticsSnapshot()).isEqualTo(DataLoaderStatistics())
+
+            dataLoader.loadManyAsync(1, 2, 3)
+            dataLoader.dispatch()
+            assertThat(dataLoader.createStatisticsSnapshot().loadManyAsyncMethodCalled).isEqualTo(1)
+
+            dataLoader.loadManyAsync(4, 5)
+            dataLoader.dispatch()
+            assertThat(dataLoader.createStatisticsSnapshot().loadManyAsyncMethodCalled).isEqualTo(2)
+
+            dataLoader.loadManyAsync(1, 2, 3, 4, 5, 6, 7)
+            dataLoader.dispatch()
+
+            assertThat(dataLoader.createStatisticsSnapshot()).isEqualTo(
+                DataLoaderStatistics(
+                    loadManyAsyncMethodCalled = 3,
+                    dispatchMethodCalled = 3,
+                    objectsRequested = 12,
+                    batchCallsExecuted = 4,
+                    cacheHitCount = 5
+                )
+            )
+        }
 
 
     @Test
     fun `test cacheHitCount statistics`() = runBlockingWithTimeout {
-        val dataLoader = SimpleDataLoaderImpl<Int, Int>(identityBatchLoader())
+        val dataLoader =
+            SimpleDataLoaderImpl<Int, Int>(identityBatchLoader())
         assertThat(dataLoader.createStatisticsSnapshot()).isEqualTo(DataLoaderStatistics())
 
         dataLoader.loadManyAsync(1, 2, 3)

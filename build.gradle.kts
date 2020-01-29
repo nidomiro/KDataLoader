@@ -1,7 +1,5 @@
 import java.util.*
 
-val coroutinesVersion = "1.3.3"
-
 plugins {
     maven
     `maven-publish`
@@ -10,7 +8,7 @@ plugins {
 }
 
 group = "de.nidomiro"
-version = "0.2.4"
+version = "0.3.0"
 
 repositories {
     mavenCentral()
@@ -37,6 +35,9 @@ kotlin {
 
     @Suppress("UNUSED_VARIABLE")
     sourceSets {
+
+        val coroutinesVersion = "1.3.3"
+
         val commonMain by getting {
             dependencies {
                 implementation(kotlin("stdlib-common"))
@@ -48,6 +49,8 @@ kotlin {
             dependencies {
                 implementation(kotlin("test-common"))
                 implementation(kotlin("test-annotations-common"))
+                implementation("com.willowtreeapps.assertk:assertk:0.21")
+                //implementation("com.willowtreeapps.assertk:assertk-common:0.21")
             }
         }
 
@@ -60,9 +63,10 @@ kotlin {
 
         val jvmTest by getting {
             dependencies {
-                implementation(kotlin("test-junit"))
-                implementation("com.willowtreeapps.assertk:assertk-jvm:0.20")
+                implementation(kotlin("test-junit5"))
                 implementation("org.junit.jupiter:junit-jupiter:5.5.2")
+
+                implementation("com.willowtreeapps.assertk:assertk-jvm:0.21")
             }
         }
     }
