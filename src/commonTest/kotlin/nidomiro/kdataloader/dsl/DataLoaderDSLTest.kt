@@ -11,7 +11,7 @@ import kotlin.test.Test
 class DataLoaderDSLTest {
 
     @Test
-    fun `create a basic DataLoader`() = runBlockingWithTimeout {
+    fun `create_a_basic_DataLoader`() = runBlockingWithTimeout {
 
         val dataLoader = dataLoader({ keys: List<Int> ->
             keys.map {
@@ -27,7 +27,7 @@ class DataLoaderDSLTest {
     }
 
     @Test
-    fun `create DataLoader with prime`() = runBlockingWithTimeout {
+    fun `create_DataLoader_with_prime`() = runBlockingWithTimeout {
 
         val dataLoader = dataLoader({ keys: List<Int> ->
             keys.map {
@@ -51,7 +51,7 @@ class DataLoaderDSLTest {
     }
 
     @Test
-    fun `create DataLoader with prime throwables`() =
+    fun `create_DataLoader_with_prime_throwables`() =
         runBlockingWithTimeout {
 
             val dataLoader =
@@ -89,7 +89,7 @@ class DataLoaderDSLTest {
         }
 
     @Test
-    fun `create a basic DataLoader with options`() =
+    fun `create_a_basic_DataLoader_with_options`() =
         runBlockingWithTimeout {
 
             val dataLoader =

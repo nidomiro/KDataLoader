@@ -37,9 +37,7 @@ kotlin {
         nodejs {
 
         }
-        browser {
-
-        }
+        //browser { }
         val main by compilations.getting {
             kotlinOptions {
                 sourceMap = true

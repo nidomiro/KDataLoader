@@ -10,7 +10,7 @@ import kotlin.test.Test
 class DataLoaderParallelTest {
 
     @Test
-    fun `test calling dispatch in parallel`() = runBlockingWithTimeout {
+    fun test_calling_dispatch_in_parallel() = runBlockingWithTimeout {
         val loadCalls = mutableListOf<List<Int>>()
         val dataLoader = SimpleDataLoaderImpl(
             DataLoaderOptions(cacheEnabled = false),
