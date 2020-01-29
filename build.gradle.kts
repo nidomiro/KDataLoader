@@ -33,6 +33,29 @@ kotlin {
         }
     }
 
+    js {
+        nodejs {
+
+        }
+        browser {
+
+        }
+        val main by compilations.getting {
+            kotlinOptions {
+                sourceMap = true
+                moduleKind = "umd"
+            }
+        }
+        val test by compilations.getting {
+            kotlinOptions {
+                moduleKind = "umd"
+            }
+        }
+
+    }
+
+
+
     @Suppress("UNUSED_VARIABLE")
     sourceSets {
 
@@ -62,11 +85,22 @@ kotlin {
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
             }
         }
-
         val jvmTest by getting {
             dependencies {
                 implementation(kotlin("test-junit5"))
                 implementation("org.junit.jupiter:junit-jupiter:$junitVersion")
+            }
+        }
+
+        val jsMain by getting {
+            dependencies {
+                implementation(kotlin("stdlib-js"))
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-js:$coroutinesVersion")
+            }
+        }
+        val jsTest by getting {
+            dependencies {
+                implementation(kotlin("test-js"))
             }
         }
     }
