@@ -82,13 +82,13 @@ afterEvaluate {
             .filterIsInstance<MavenPublication>()
             .forEach { publication ->
 
-                val moduleFile = buildDir.resolve("publications/${publication.name}/module.json")
+                /*val moduleFile = buildDir.resolve("publications/${publication.name}/module.json")
                 if (moduleFile.exists()) {
                     publication.artifact(object :
                         org.gradle.api.publish.maven.internal.artifact.FileBasedMavenArtifact(moduleFile) {
                         override fun getDefaultExtension() = "module"
                     })
-                }
+                }*/
 
 
 
@@ -119,7 +119,7 @@ afterEvaluate {
 
 
 
-configure<com.jfrog.bintray.gradle.BintrayExtension> {
+bintray {
     user = if (project.hasProperty("bintray_user")) project.property("bintray_user") as String else ""
     key = if (project.hasProperty("bintray_key")) project.property("bintray_key") as String else ""
     //publish = true
@@ -143,8 +143,11 @@ configure<com.jfrog.bintray.gradle.BintrayExtension> {
     }
 
 }
+tasks.named("bintrayUpload") {
+    dependsOn(":publishToMavenLocal")
+}
 
-/*tasks.withType<com.jfrog.bintray.gradle.tasks.BintrayUploadTask> {
+tasks.withType<com.jfrog.bintray.gradle.tasks.BintrayUploadTask> {
     doFirst {
         project.publishing.publications
             .filterIsInstance<MavenPublication>()
@@ -157,7 +160,7 @@ configure<com.jfrog.bintray.gradle.BintrayExtension> {
                     })
                 }
             }
-        //publications = project.publishing.publications.map {it.name}
     }
 }
- */
+
+apply(from = rootProject.file("gradle/groovyTasks.gradle"))
