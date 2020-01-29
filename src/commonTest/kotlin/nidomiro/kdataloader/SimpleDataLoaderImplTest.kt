@@ -22,7 +22,7 @@ import kotlin.test.Test
 class SimpleDataLoaderImplTest {
 
     @Test
-    fun `load_One_to_test_basic_functionality`() = runBlockingWithTimeout {
+    fun load_One_to_test_basic_functionality() = runBlockingWithTimeout {
 
         val dataLoader =
             SimpleDataLoaderImpl(identityBatchLoader<Int>())
@@ -35,7 +35,7 @@ class SimpleDataLoaderImplTest {
     }
 
     @Test
-    fun `accepts_nullable_types_as_result_type`() = runBlockingWithTimeout {
+    fun accepts_nullable_types_as_result_type() = runBlockingWithTimeout {
 
         val dataLoader =
             SimpleDataLoaderImpl(identityBatchLoaderThatReturnsNullOnOddNumber())
@@ -51,7 +51,7 @@ class SimpleDataLoaderImplTest {
     }
 
     @Test
-    fun `load_many_in_one_call`() = runBlockingWithTimeout {
+    fun load_many_in_one_call() = runBlockingWithTimeout {
 
         val dataLoader =
             SimpleDataLoaderImpl(identityBatchLoader<Int>())
@@ -63,7 +63,7 @@ class SimpleDataLoaderImplTest {
     }
 
     @Test
-    fun `load_many_with_empty_key_list`() = runBlockingWithTimeout {
+    fun load_many_with_empty_key_list() = runBlockingWithTimeout {
 
         val dataLoader =
             SimpleDataLoaderImpl(identityBatchLoader<Int>())
@@ -74,7 +74,7 @@ class SimpleDataLoaderImplTest {
     }
 
     @Test
-    fun `completables_are_completed_in_batch_with_dispatch`() = runBlockingWithTimeout {
+    fun completables_are_completed_in_batch_with_dispatch() = runBlockingWithTimeout {
 
         val dataLoader =
             SimpleDataLoaderImpl(identityBatchLoader<Int>())
@@ -96,7 +96,7 @@ class SimpleDataLoaderImplTest {
     }
 
     @Test
-    fun `enqueue_of_same_id_results_in_same_Deferred`() = runBlockingWithTimeout {
+    fun enqueue_of_same_id_results_in_same_Deferred() = runBlockingWithTimeout {
 
         val dataLoader =
             SimpleDataLoaderImpl(identityBatchLoader<Int>())
@@ -123,7 +123,7 @@ class SimpleDataLoaderImplTest {
     }
 
     @Test
-    fun `cache_repeated_requests`() = runBlockingWithTimeout {
+    fun cache_repeated_requests() = runBlockingWithTimeout {
 
         val loadCalls = mutableListOf<List<String>>()
         val dataLoader = SimpleDataLoaderImpl(
@@ -165,7 +165,7 @@ class SimpleDataLoaderImplTest {
     }
 
     @Test
-    fun `should_not_redispatch_previous_load`() = runBlockingWithTimeout {
+    fun should_not_redispatch_previous_load() = runBlockingWithTimeout {
 
         val loadCalls = mutableListOf<List<String>>()
         val dataLoader = SimpleDataLoaderImpl(
@@ -184,7 +184,7 @@ class SimpleDataLoaderImplTest {
     }
 
     @Test
-    fun `should_cache_dispatch`() = runBlockingWithTimeout {
+    fun should_cache_dispatch() = runBlockingWithTimeout {
         val loadCalls = mutableListOf<List<String>>()
         val dataLoader = SimpleDataLoaderImpl(
             identityBatchLoader(loadCalls)
@@ -203,7 +203,7 @@ class SimpleDataLoaderImplTest {
     }
 
     @Test
-    fun `cleared_keys_are_refetched`() = runBlockingWithTimeout {
+    fun cleared_keys_are_refetched() = runBlockingWithTimeout {
         val loadCalls = mutableListOf<List<String>>()
         val dataLoader = SimpleDataLoaderImpl(
             identityBatchLoader(loadCalls)
@@ -230,7 +230,7 @@ class SimpleDataLoaderImplTest {
     }
 
     @Test
-    fun `clear_all_causes_complete_refetch`() = runBlockingWithTimeout {
+    fun clear_all_causes_complete_refetch() = runBlockingWithTimeout {
         val loadCalls = mutableListOf<List<String>>()
         val dataLoader = SimpleDataLoaderImpl(
             identityBatchLoader(loadCalls)
@@ -257,7 +257,7 @@ class SimpleDataLoaderImplTest {
     }
 
     @Test
-    fun `accepts_any_object_as_key`() = runBlockingWithTimeout {
+    fun accepts_any_object_as_key() = runBlockingWithTimeout {
         val loadCalls = mutableListOf<List<Any>>()
         val dataLoader = SimpleDataLoaderImpl(
             identityBatchLoader(loadCalls)
@@ -279,7 +279,7 @@ class SimpleDataLoaderImplTest {
     // Prime tests
 
     @Test
-    fun `prime_cache_is_working`() = runBlockingWithTimeout {
+    fun prime_cache_is_working() = runBlockingWithTimeout {
         val loadCalls = mutableListOf<List<String>>()
         val dataLoader = SimpleDataLoaderImpl(
             identityBatchLoader(loadCalls)
@@ -299,7 +299,7 @@ class SimpleDataLoaderImplTest {
     }
 
     @Test
-    fun `prime_cache_does_not_override`() = runBlockingWithTimeout {
+    fun prime_cache_does_not_override() = runBlockingWithTimeout {
         val loadCalls = mutableListOf<List<String>>()
         val dataLoader = SimpleDataLoaderImpl(
             identityBatchLoader(loadCalls)
@@ -329,7 +329,7 @@ class SimpleDataLoaderImplTest {
     }
 
     @Test
-    fun `force_prime_cache_does_override`() = runBlockingWithTimeout {
+    fun force_prime_cache_does_override() = runBlockingWithTimeout {
         val loadCalls = mutableListOf<List<String>>()
         val dataLoader = SimpleDataLoaderImpl(
             identityBatchLoader(loadCalls)
@@ -359,7 +359,7 @@ class SimpleDataLoaderImplTest {
     }
 
     @Test
-    fun `prime_cache_with_error`() = runBlockingWithTimeout {
+    fun prime_cache_with_error() = runBlockingWithTimeout {
         val loadCalls = mutableListOf<List<Int>>()
         val dataLoader = SimpleDataLoaderImpl(
             identityBatchLoader(loadCalls)
@@ -382,10 +382,10 @@ class SimpleDataLoaderImplTest {
     // Error Handling
 
     @Test
-    fun `failed_requests_are_not_cached_on_complete_failure`() = runBlockingWithTimeout {
+    fun failed_requests_are_not_cached_on_complete_failure() = runBlockingWithTimeout {
         val loadCalls = mutableListOf<List<String>>()
         val dataLoader = SimpleDataLoaderImpl(
-            identityBatchLoaderThatFailsCompletly(loadCalls)
+            identityBatchLoaderThatFailsCompletely(loadCalls)
         )
 
         val deferredA = dataLoader.loadAsync("A")
@@ -411,7 +411,7 @@ class SimpleDataLoaderImplTest {
     }
 
     @Test
-    fun `failed_requests_are_not_permanent_if_complete_failure`() = runBlockingWithTimeout {
+    fun failed_requests_are_not_permanent_if_complete_failure() = runBlockingWithTimeout {
         val loadCalls = mutableListOf<List<Int>>()
         val dataLoader = SimpleDataLoaderImpl(
             identityBatchLoaderThatThrowsOnOddNumber(loadCalls)
@@ -434,7 +434,7 @@ class SimpleDataLoaderImplTest {
     }
 
     @Test
-    fun `failed_and_successful_requests_are_returned`() = runBlockingWithTimeout {
+    fun failed_and_successful_requests_are_returned() = runBlockingWithTimeout {
         val loadCalls = mutableListOf<List<Int>>()
         val dataLoader = SimpleDataLoaderImpl(
             identityBatchLoaderThatThrowsOnOddNumber(loadCalls)
@@ -459,7 +459,7 @@ class SimpleDataLoaderImplTest {
     }
 
     @Test
-    fun `failed_requests_are_cached`() = runBlockingWithTimeout {
+    fun failed_requests_are_cached() = runBlockingWithTimeout {
         val loadCalls = mutableListOf<List<Int>>()
         val dataLoader = SimpleDataLoaderImpl(
             identityBatchLoaderThatThrowsOnOddNumber(loadCalls)
@@ -486,7 +486,7 @@ class SimpleDataLoaderImplTest {
     }
 
     @Test
-    fun `failed_requests_are_not_cached_if_told_not_to`() = runBlockingWithTimeout {
+    fun failed_requests_are_not_cached_if_told_not_to() = runBlockingWithTimeout {
         val loadCalls = mutableListOf<List<Int>>()
         val dataLoader = SimpleDataLoaderImpl(
             DataLoaderOptions(cacheExceptions = false),
@@ -514,10 +514,10 @@ class SimpleDataLoaderImplTest {
     }
 
     @Test
-    fun `complete_failures_are_propagated_to_every_load`() = runBlockingWithTimeout {
+    fun complete_failures_are_propagated_to_every_load() = runBlockingWithTimeout {
         val loadCalls = mutableListOf<List<String>>()
         val dataLoader = SimpleDataLoaderImpl(
-            identityBatchLoaderThatFailsCompletly(loadCalls)
+            identityBatchLoaderThatFailsCompletely(loadCalls)
         )
 
         val deferredA = dataLoader.loadAsync("A")
@@ -541,7 +541,7 @@ class SimpleDataLoaderImplTest {
     // CacheEnableFlag Test
 
     @Test
-    fun `caching_is_disableable_with_load`() = runBlockingWithTimeout {
+    fun caching_is_disableable_with_load() = runBlockingWithTimeout {
         val loadCalls = mutableListOf<List<String>>()
         val dataLoader = SimpleDataLoaderImpl(
             DataLoaderOptions(cacheEnabled = false),
@@ -576,7 +576,7 @@ class SimpleDataLoaderImplTest {
     }
 
     @Test
-    fun `caching_is_disableable_with_loadMany`() = runBlockingWithTimeout {
+    fun caching_is_disableable_with_loadMany() = runBlockingWithTimeout {
         val loadCalls = mutableListOf<List<String>>()
         val dataLoader = SimpleDataLoaderImpl(
             DataLoaderOptions(cacheEnabled = false),
@@ -603,7 +603,7 @@ class SimpleDataLoaderImplTest {
     }
 
     @Test
-    fun `caching_is_disableable_with_load_and_duplicates`() = runBlockingWithTimeout {
+    fun caching_is_disableable_with_load_and_duplicates() = runBlockingWithTimeout {
         val loadCalls = mutableListOf<List<String>>()
         val dataLoader = SimpleDataLoaderImpl(
             DataLoaderOptions(cacheEnabled = false),
@@ -622,7 +622,7 @@ class SimpleDataLoaderImplTest {
     }
 
     @Test
-    fun `caching_is_enableable_with_load_and_duplicates`() = runBlockingWithTimeout {
+    fun caching_is_enableable_with_load_and_duplicates() = runBlockingWithTimeout {
         val loadCalls = mutableListOf<List<String>>()
         val dataLoader = SimpleDataLoaderImpl(
             DataLoaderOptions(cacheEnabled = true),
@@ -641,7 +641,7 @@ class SimpleDataLoaderImplTest {
     }
 
     @Test
-    fun `batching_can_be_disabled`() = runBlockingWithTimeout {
+    fun batching_can_be_disabled() = runBlockingWithTimeout {
         val loadCalls = mutableListOf<List<String>>()
         val dataLoader = SimpleDataLoaderImpl(
             DataLoaderOptions(batchLoadEnabled = false),
@@ -659,7 +659,7 @@ class SimpleDataLoaderImplTest {
     }
 
     @Test
-    fun `batching_and_caching_can_be_disabled_together`() = runBlockingWithTimeout {
+    fun batching_and_caching_can_be_disabled_together() = runBlockingWithTimeout {
         val loadCalls = mutableListOf<List<String>>()
         val dataLoader = SimpleDataLoaderImpl(
             DataLoaderOptions(
@@ -680,7 +680,7 @@ class SimpleDataLoaderImplTest {
     }
 
     @Test
-    fun `batching_is_honoring_batchsize`() = runBlockingWithTimeout {
+    fun batching_is_honoring_batchsize() = runBlockingWithTimeout {
         val loadCalls = mutableListOf<List<String>>()
         val dataLoader = SimpleDataLoaderImpl(
             DataLoaderOptions(batchSize = 2),
@@ -700,7 +700,7 @@ class SimpleDataLoaderImplTest {
     }
 
     @Test
-    fun `batching_is_occurring_in_async`() = runBlockingWithTimeout {
+    fun batching_is_occurring_in_async() = runBlockingWithTimeout {
         val loadCalls = mutableListOf<List<String>>()
         val dataLoader = SimpleDataLoaderImpl(
             identityBatchLoader(loadCalls)
@@ -719,7 +719,7 @@ class SimpleDataLoaderImplTest {
     }
 
     @Test
-    fun `parallel_batching_is_possible`() = runBlockingWithTimeout {
+    fun parallel_batching_is_possible() = runBlockingWithTimeout {
         val loadCalls = mutableListOf<List<Int>>()
         val dataLoader = SimpleDataLoaderImpl(
             identityBatchLoader(loadCalls)

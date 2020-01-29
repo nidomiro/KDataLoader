@@ -9,7 +9,7 @@ import kotlin.test.Test
 class DataLoaderStatisticsTest {
 
     @Test
-    fun `test_loadAsyncMethodCalled_statistics`() = runBlockingWithTimeout {
+    fun test_loadAsyncMethodCalled_statistics() = runBlockingWithTimeout {
         val dataLoader: DataLoader<Int, Int> =
             SimpleDataLoaderImpl(identityBatchLoader())
         assertThat(dataLoader.createStatisticsSnapshot()).isEqualTo(DataLoaderStatistics())
@@ -31,7 +31,7 @@ class DataLoaderStatisticsTest {
     }
 
     @Test
-    fun `test_loadManyAsyncMethodCalled_statistics`() = runBlockingWithTimeout {
+    fun test_loadManyAsyncMethodCalled_statistics() = runBlockingWithTimeout {
         val dataLoader =
             SimpleDataLoaderImpl<Int, Int>(identityBatchLoader())
         assertThat(dataLoader.createStatisticsSnapshot()).isEqualTo(DataLoaderStatistics())
@@ -53,7 +53,7 @@ class DataLoaderStatisticsTest {
     }
 
     @Test
-    fun `test_dispatchMethodCalled_statistics`() = runBlockingWithTimeout {
+    fun test_dispatchMethodCalled_statistics() = runBlockingWithTimeout {
         val dataLoader =
             SimpleDataLoaderImpl<Int, Int>(identityBatchLoader())
         assertThat(dataLoader.createStatisticsSnapshot()).isEqualTo(DataLoaderStatistics())
@@ -82,7 +82,7 @@ class DataLoaderStatisticsTest {
     }
 
     @Test
-    fun `test_clearMethodCalled_statistics`() = runBlockingWithTimeout {
+    fun test_clearMethodCalled_statistics() = runBlockingWithTimeout {
         val dataLoader =
             SimpleDataLoaderImpl<Int, Int>(identityBatchLoader())
         assertThat(dataLoader.createStatisticsSnapshot()).isEqualTo(DataLoaderStatistics())
@@ -103,7 +103,7 @@ class DataLoaderStatisticsTest {
     }
 
     @Test
-    fun `test_clearAllMethodCalled_statistics`() = runBlockingWithTimeout {
+    fun test_clearAllMethodCalled_statistics() = runBlockingWithTimeout {
         val dataLoader =
             SimpleDataLoaderImpl<Int, Int>(identityBatchLoader())
         assertThat(dataLoader.createStatisticsSnapshot()).isEqualTo(DataLoaderStatistics())
@@ -124,7 +124,7 @@ class DataLoaderStatisticsTest {
     }
 
     @Test
-    fun `test_primeMethodCalled_statistics`() = runBlockingWithTimeout {
+    fun test_primeMethodCalled_statistics() = runBlockingWithTimeout {
         val dataLoader =
             SimpleDataLoaderImpl<Int, Int>(identityBatchLoader())
         assertThat(dataLoader.createStatisticsSnapshot()).isEqualTo(DataLoaderStatistics())
@@ -166,7 +166,7 @@ class DataLoaderStatisticsTest {
     }
 
     @Test
-    fun `test_objectsRequested_statistics`() = runBlockingWithTimeout {
+    fun test_objectsRequested_statistics() = runBlockingWithTimeout {
         val dataLoader =
             SimpleDataLoaderImpl<Int, Int>(identityBatchLoader())
         assertThat(dataLoader.createStatisticsSnapshot()).isEqualTo(DataLoaderStatistics())
@@ -189,7 +189,7 @@ class DataLoaderStatisticsTest {
 
 
     @Test
-    fun `test_batchCallsExecuted_statistics`() = runBlockingWithTimeout {
+    fun test_batchCallsExecuted_statistics() = runBlockingWithTimeout {
         val dataLoader =
             SimpleDataLoaderImpl<Int, Int>(identityBatchLoader())
         assertThat(dataLoader.createStatisticsSnapshot()).isEqualTo(DataLoaderStatistics())
@@ -216,7 +216,7 @@ class DataLoaderStatisticsTest {
     }
 
     @Test
-    fun `test_batchCallsExecuted_statistics_with_batchSizeOption`() =
+    fun test_batchCallsExecuted_statistics_with_batchSizeOption() =
         runBlockingWithTimeout {
             val dataLoader = SimpleDataLoaderImpl<Int, Int>(
                 DataLoaderOptions(batchSize = 2),
@@ -248,7 +248,7 @@ class DataLoaderStatisticsTest {
 
 
     @Test
-    fun `test_cacheHitCount_statistics`() = runBlockingWithTimeout {
+    fun test_cacheHitCount_statistics() = runBlockingWithTimeout {
         val dataLoader =
             SimpleDataLoaderImpl<Int, Int>(identityBatchLoader())
         assertThat(dataLoader.createStatisticsSnapshot()).isEqualTo(DataLoaderStatistics())

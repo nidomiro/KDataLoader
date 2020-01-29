@@ -5,7 +5,7 @@ fun <K> identityBatchLoader(loadCalls: MutableList<List<K>> = mutableListOf()): 
     ids.map { ExecutionResult.Success(it) }
 }
 
-fun <K> identityBatchLoaderThatFailsCompletly(loadCalls: MutableList<List<K>> = mutableListOf()): BatchLoader<K, K> =
+fun <K> identityBatchLoaderThatFailsCompletely(loadCalls: MutableList<List<K>> = mutableListOf()): BatchLoader<K, K> =
     { ids ->
         loadCalls.add(ids)
         throw IllegalStateException("Test")

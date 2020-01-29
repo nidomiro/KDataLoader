@@ -8,7 +8,7 @@ This library is using [Kotlin Coroutines](https://kotlinlang.org/docs/reference/
 
 You can find the full documentation and usage here: [https://nidomiro.github.io/KDataLoader](https://nidomiro.github.io/KDataLoader)
 
-## What is a DataLoder?
+## What is a DataLoader?
 
 In general, a DataLoader is a mechanism to batch multiple load-calls together and execute one call instead of multiple.
 The `load(<id>)` call will return a `Deferred` (Future/Promise) which will return the value after calling `dispatch()`.

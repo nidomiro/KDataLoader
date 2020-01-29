@@ -12,7 +12,7 @@ import kotlin.test.Test
 class DataLoaderFactoryDSLTest {
 
     @Test
-    fun `assure_Factory_creates_new_instances`() = runBlockingWithTimeout {
+    fun assure_Factory_creates_new_instances() = runBlockingWithTimeout {
         val dataLoaderFactory = dataLoaderFactory(
             { keys: List<Int> -> keys.map { ExecutionResult.Success(it.toString()) } }
         )
@@ -22,7 +22,7 @@ class DataLoaderFactoryDSLTest {
     }
 
     @Test
-    fun `assure_Factory_honors_options`() = runBlockingWithTimeout {
+    fun assure_Factory_honors_options() = runBlockingWithTimeout {
         val dataLoaderFactory =
             dataLoaderFactory({ keys: List<Int> ->
                 keys.map {
@@ -47,7 +47,7 @@ class DataLoaderFactoryDSLTest {
     }
 
     @Test
-    fun `assure_Factory_honors_primes`() = runBlockingWithTimeout {
+    fun assure_Factory_honors_primes() = runBlockingWithTimeout {
         val dataLoaderFactory =
             dataLoaderFactory({ keys: List<Int> ->
                 keys.map {
@@ -80,7 +80,7 @@ class DataLoaderFactoryDSLTest {
     }
 
     @Test
-    fun `assure_factory_doesnt_pass_cache`() = runBlockingWithTimeout {
+    fun assure_factory_doesnt_pass_cache() = runBlockingWithTimeout {
         val dataLoaderFactory = dataLoaderFactory(
             { keys: List<Int> -> keys.map { ExecutionResult.Success(it.toString()) } }
         )
