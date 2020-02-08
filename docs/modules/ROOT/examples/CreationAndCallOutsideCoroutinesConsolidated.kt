@@ -6,7 +6,9 @@ import nidomiro.kdataloader.ExecutionResult
 import nidomiro.kdataloader.dsl.dataLoader
 
 fun main() {
-    val batchLoader: BatchLoader<Int, Int> = { keys -> keys.map { ExecutionResult.Success(it) } }
+    val batchLoader: BatchLoader<Int, Int> =
+        { keys -> keys.map { ExecutionResult.Success(it) } }
+
     val dataLoader = runBlocking {
         dataLoader(batchLoader)
     }

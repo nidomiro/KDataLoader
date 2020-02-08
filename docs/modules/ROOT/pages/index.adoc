@@ -1,13 +1,3 @@
-// START - For IDEA Display
-ifndef::page-module[]
-:root_dir: ../
-:exampledir: {root_dir}/examples
-endif::[]
-ifdef::page-module[]
-:exampledir: example$
-endif::[]
-// END - For IDEA Display
-
 = What is KDataLoader
 
 KDataLoader is a *pure* Kotlin implementation of https://github.com/graphql/dataloader[DataLoader].

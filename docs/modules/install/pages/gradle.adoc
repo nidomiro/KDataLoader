@@ -11,38 +11,35 @@ repositories {
 }
 ----
 
-Then you can add the dependency.
+== Kotlin Multiplatform project
+
+KDataLoader supports multiplatform projects.
+Currently only `jvm` and `js` is supported.
+
+In order to use KDataLoader in a multiplatform project you just need to include one dependency in the commons-section.
+There is no need to import the platform libraries separately.
+
+[source,groovy]
+----
+kotlin {
+    sourceSets {
+        commonMain {
+            dependencies {
+                implementation 'de.nidomiro:KDataLoader:0.3.0'
+            }
+        }
+    }
+}
+----
+
+== JVM-Project
+
+For a JVM-only project you just need to include the following dependency:
 
 [source,groovy]
 ----
 dependencies {
-    implementation 'de.nidomiro:KDataLoader-jvm:0.1.0'
+    implementation 'de.nidomiro:KDataLoader-jvm:0.3.0'
 }
 ----
-
-== Kotlin Multiplatform Project
-
-Currently only `jvm` is supported.
-
-```groovy
-kotlin {
-    // [...]
-    sourceSets {
-        commonMain {
-            dependencies {
-                // [...]
-                implementation 'de.nidomiro:KDataLoader-common:0.2.0'
-            }
-        }
-        // [...]
-        jvmMain {
-            dependencies {
-                // [...]
-                implementation 'de.nidomiro:KDataLoader-jvm:0.2.0'
-            }
-        }
-        // [...]
-    }
-}
-```
 
