@@ -19,14 +19,14 @@ Therefore no additional request will be done.
 
 ## Get
 
-### Gradle
+### Gradle-JVM
 ```groovy
 repositories {
     jcenter()
 }
 
 dependencies {
-    compile 'de.nidomiro:KDataLoader-jvm:0.2.0'
+    implementation 'de.nidomiro:KDataLoader-jvm:0.3.0'
 }
 ```
 
@@ -39,22 +39,12 @@ repositories {
 }
 
 kotlin {
-    // [...]
     sourceSets {
         commonMain {
             dependencies {
-                // [...]
-                implementation 'de.nidomiro:KDataLoader-common:0.2.0'
+                implementation 'de.nidomiro:KDataLoader:0.3.0'
             }
         }
-        // [...]
-        jvmMain {
-            dependencies {
-                // [...]
-                implementation 'de.nidomiro:KDataLoader-jvm:0.2.0'
-            }
-        }
-        // [...]
     }
 }
 ```
@@ -66,7 +56,7 @@ You need to setup the [`jcenter`-Repository](https://bintray.com/beta/#/bintray/
 <dependency>
     <groupId>de.nidomiro</groupId>
     <artifactId>KDataLoader-jvm</artifactId>
-    <version>0.2.0</version>
+    <version>0.3.0</version>
 </dependency>
 ```
 
