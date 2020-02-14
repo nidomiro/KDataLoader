@@ -2,7 +2,6 @@ name: Test lib and docs
 
 on:
     push:
-        branches: "**"
         branches-ignore: "doc/**"
         tags-ignore:
             - "v*"
