@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Basic usage :: KDataLoader</title>
-    <link rel="canonical" href="https://nidomiro.github.io/KDataLoader/KDataLoader/0.3.0/basic-usage.html">
+    <title>What is KDataLoader :: KDataLoader</title>
+    <link rel="canonical" href="https://nidomiro.github.io/KDataLoader/KDataLoader/0.3.0/index.html">
     <meta name="generator" content="Antora 2.2.0">
     <link rel="stylesheet" href="../../_/css/site.css">
   </head>
@@ -56,7 +56,7 @@
   </nav>
 </header>
 <div class="body">
-<div class="nav-container" data-component="KDataLoader" data-version="0.0.2">
+<div class="nav-container" data-component="KDataLoader" data-version="0.3.0">
   <aside class="nav">
     <div class="panels">
 <div class="nav-panel-menu is-active" data-panel="menu">
@@ -65,7 +65,7 @@
 <ul class="nav-list">
   <li class="nav-item" data-depth="0">
 <ul class="nav-list">
-  <li class="nav-item" data-depth="1">
+  <li class="nav-item is-current-page" data-depth="1">
     <a class="nav-link" href="index.html">What is KDataLoader</a>
   </li>
   <li class="nav-item" data-depth="1">
@@ -80,11 +80,11 @@
   </li>
 </ul>
   </li>
-  <li class="nav-item is-current-page" data-depth="1">
+  <li class="nav-item" data-depth="1">
     <button class="nav-item-toggle"></button>
     <a class="nav-link" href="basic-usage.html">Use KDataLoader</a>
 <ul class="nav-list">
-  <li class="nav-item is-current-page" data-depth="2">
+  <li class="nav-item" data-depth="2">
     <a class="nav-link" href="basic-usage.html">Basic</a>
   </li>
 </ul>
@@ -97,20 +97,20 @@
 <div class="nav-panel-explore" data-panel="explore">
   <div class="context">
     <span class="title">KDataLoader</span>
-    <span class="version">0.0.2</span>
+    <span class="version">0.3.0</span>
   </div>
   <ul class="components">
     <li class="component is-current">
       <span class="title">KDataLoader</span>
       <ul class="versions">
-        <li class="version is-latest">
-          <a href="../0.3.0/index.html">0.3.0</a>
+        <li class="version is-current is-latest">
+          <a href="index.html">0.3.0</a>
         </li>
         <li class="version">
           <a href="../0.1.0/index.html">0.1.0</a>
         </li>
-        <li class="version is-current">
-          <a href="index.html">0.0.2</a>
+        <li class="version">
+          <a href="../0.0.2/index.html">0.0.2</a>
         </li>
       </ul>
     </li>
@@ -122,85 +122,135 @@
 <main>
 <div class="toolbar" role="navigation">
 <button class="nav-toggle"></button>
-  <a href="../0.3.0/index.html" class="home-link"></a>
+  <a href="index.html" class="home-link is-current"></a>
 <nav class="breadcrumbs" aria-label="breadcrumbs">
   <ul>
     <li><a href="index.html">KDataLoader</a></li>
-    <li><a href="basic-usage.html">Use KDataLoader</a></li>
+    <li><a href="index.html">What is KDataLoader</a></li>
   </ul>
 </nav>
 <div class="page-versions">
-  <button class="version-menu-toggle" title="Show other versions of page">0.0.2</button>
+  <button class="version-menu-toggle" title="Show other versions of page">0.3.0</button>
   <div class="version-menu">
-    <a class="version" href="../0.3.0/basic-usage.html">0.3.0</a>
-    <a class="version" href="../0.1.0/basic-usage.html">0.1.0</a>
-    <a class="version is-current" href="basic-usage.html">0.0.2</a>
+    <a class="version is-current" href="index.html">0.3.0</a>
+    <a class="version" href="../0.1.0/index.html">0.1.0</a>
+    <a class="version" href="../0.0.2/index.html">0.0.2</a>
   </div>
 </div>
-  <div class="edit-this-page"><a href="https://github.com/nidomiro/KDataLoader/edit/doc/v0.0.2/docs/modules/ROOT/pages/basic-usage.adoc">Edit this Page</a></div>
+  <div class="edit-this-page"><a href="https://github.com/nidomiro/KDataLoader/edit/doc/v0.3.x/docs/modules/ROOT/pages/index.adoc">Edit this Page</a></div>
   </div>
 <article class="doc">
-<h1 class="page">Basic usage</h1>
+<h1 class="page">What is KDataLoader</h1>
 <div id="preamble">
 <div class="sectionbody">
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">val batchLoader: BatchLoader&lt;Int, Int&gt; = { keys -&gt; keys.map { ExecutionResult.Success(it) } }
-val dataLoader = dataLoader(batchLoader) {
-
-    configure {
-        // all default-values
-        cache = DefaultCacheImpl()
-        cacheEnabled = true
-        cacheExceptions = true
-        batchLoadEnabled = true
-        batchSize = Int.MAX_VALUE
-    }
-
-    prime(1 to 1)
-}
-
-val value1 = dataLoader.loadAsync(1) // from cache
-val value2 = dataLoader.loadAsync(2) // loaded via BatchLoader
-dataLoader.dispatch()
-
-println("1 -&gt; ${value1.await()}")
-println("2 -&gt; ${value2.await()}")</code></pre>
-</div>
+<div class="paragraph">
+<p>KDataLoader is a <strong>pure</strong> Kotlin implementation of <a href="https://github.com/graphql/dataloader">DataLoader</a>.
+It uses <a href="https://kotlinlang.org/docs/reference/coroutines-overview.html">Kotlin Coroutines</a> for parallel tasks.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="usage-outside-coroutines"><a class="anchor" href="#usage-outside-coroutines"></a>Usage from outside coroutines</h2>
+<h2 id="_motivation"><a class="anchor" href="#_motivation"></a>Motivation</h2>
 <div class="sectionbody">
-<div class="listingblock">
-<div class="title">Example call from outside coroutines (very verbose)</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">val batchLoader: BatchLoader&lt;Int, Int&gt; = { keys -&gt; keys.map { ExecutionResult.Success(it) } }
-val dataLoader = runBlocking {
-    dataLoader(batchLoader)
-}
-
-val value1 = runBlocking { dataLoader.loadAsync(1) }
-runBlocking { dataLoader.dispatch() }
-
-println(runBlocking { value1.await() })</code></pre>
+<div class="paragraph">
+<p>The motivation behind a DataLoader is to save calls.
+Let&#8217;s say you use <a href="https://graphql.org/">GraphQL</a> and want to resolve a query.
+This query can have a lot of duplicated data in its result.
+The goal of a DataLoader is to reduce these duplicated calls and batch calls together.</p>
 </div>
 </div>
+</div>
+<div class="sect1">
+<h2 id="_example_using_graphql"><a class="anchor" href="#_example_using_graphql"></a>Example using GraphQL</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>If you have a query to fetch all projects with their members the result could look like this:</p>
+</div>
 <div class="listingblock">
-<div class="title">Example call from outside coroutines</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="kotlin">val batchLoader: BatchLoader&lt;Int, Int&gt; = { keys -&gt; keys.map { ExecutionResult.Success(it) } }
-val dataLoader = runBlocking {
-    dataLoader(batchLoader)
-}
-
-runBlocking {
-    val value1 = dataLoader.loadAsync(1)
-    dataLoader.dispatch()
-
-    println(value1.await())
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
+   "projects":[
+      {
+         "name":"Project A",
+         "members":[
+            {
+               "id":1,
+               "name":"John"
+            },
+            {
+               "id":2,
+               "name":"Anne"
+            }
+         ]
+      },
+      {
+         "name":"Project B",
+         "members":[
+            {
+               "id":2,
+               "name":"Anne"
+            }
+         ]
+      },
+      {
+         "name":"Project C",
+         "members":[
+            {
+               "id":1,
+               "name":"John"
+            },
+            {
+               "id":3,
+               "name":"Peter"
+            }
+         ]
+      }
+   ]
 }</code></pre>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_naive_approach"><a class="anchor" href="#_naive_approach"></a>Naive approach</h3>
+<div class="paragraph">
+<p>If you resolve this query naively you will have <strong>6 requests</strong>:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>fetch all Projects</p>
+</li>
+<li>
+<p>fetch John</p>
+</li>
+<li>
+<p>fetch Anne</p>
+</li>
+<li>
+<p>fetch Anne</p>
+</li>
+<li>
+<p>fetch John</p>
+</li>
+<li>
+<p>fetch Peter</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_dataloader_approach"><a class="anchor" href="#_dataloader_approach"></a>DataLoader approach</h3>
+<div class="paragraph">
+<p>Resolving the same query with a DataLoader takes <strong>2 requests</strong>:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>fetch all Projects</p>
+</li>
+<li>
+<p>fetch John, Anne and Peter in batch</p>
+</li>
+</ol>
 </div>
 </div>
 </div>
