@@ -3,10 +3,9 @@ package nidomiro.kdataloader
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
-class DefaultCacheImpl<K, V> : Cache<K, V> {
-
+class CoroutineMapCache<K, V>(
     private val cacheMap: MutableMap<K, V> = mutableMapOf()
-
+) : Cache<K, V> {
     private val mutex = Mutex()
 
 

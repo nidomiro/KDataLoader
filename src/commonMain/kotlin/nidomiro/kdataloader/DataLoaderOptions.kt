@@ -6,7 +6,7 @@ data class DataLoaderOptions<K, R>(
     /**
      * The cache implementation
      */
-    val cache: Cache<K, CompletableDeferred<R>> = DefaultCacheImpl(),
+    val cache: Cache<K, CompletableDeferred<R>> = CoroutineMapCache(),
 
     /**
      * Cache Exceptional States?

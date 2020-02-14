@@ -46,6 +46,7 @@ kotlin {
         }
         val test by compilations.getting {
             kotlinOptions {
+                sourceMap = true
                 moduleKind = "umd"
             }
         }
@@ -125,7 +126,7 @@ bintray {
         repo = "maven"
         name = project.name
         setLicenses("MIT")
-        setLabels("kotlin", "Kotlin", "DataLoader", "GraphQL")
+        setLabels("kotlin", "Kotlin", "Multiplatform", "DataLoader", "GraphQL")
         vcsUrl = Constants.ProjectInfo.vcsUrl
         websiteUrl = Constants.ProjectInfo.websiteUrl
         issueTrackerUrl = "${Constants.ProjectInfo.websiteUrl}/issues"
@@ -134,6 +135,7 @@ bintray {
             name = project.version.toString()
             vcsTag = project.version.toString()
             released = Date().toString()
+
         }
     }
 

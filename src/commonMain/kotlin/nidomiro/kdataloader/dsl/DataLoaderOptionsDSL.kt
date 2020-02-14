@@ -2,14 +2,14 @@ package nidomiro.kdataloader.dsl
 
 import kotlinx.coroutines.CompletableDeferred
 import nidomiro.kdataloader.Cache
+import nidomiro.kdataloader.CoroutineMapCache
 import nidomiro.kdataloader.DataLoaderOptions
-import nidomiro.kdataloader.DefaultCacheImpl
 
 class DataLoaderOptionsDSL<K, R> {
     /**
      * The cache implementation
      */
-    var cache: Cache<K, CompletableDeferred<R>> = DefaultCacheImpl()
+    var cache: Cache<K, CompletableDeferred<R>> = CoroutineMapCache()
 
     /**
      * Cache Results?
