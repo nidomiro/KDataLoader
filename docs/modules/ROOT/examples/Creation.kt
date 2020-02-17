@@ -13,12 +13,11 @@ fun main(): Unit = runBlocking {
     val dataLoader = dataLoader(batchLoader) {
 
         configure {
-            // all default-values
-            cache = enabled()
-
-            cacheExceptions = true
-            batchLoadEnabled = true
-            batchSize = Int.MAX_VALUE
+            cache {
+                enabled
+                cacheExceptions = true
+            }
+            batchMode = BatchMode.LoadInBatch()
         }
 
         prime(1 to 1)

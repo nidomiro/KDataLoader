@@ -34,7 +34,7 @@ class SimpleDataLoaderImpl<K, R>(
         val block: suspend (key: K) -> CompletableDeferred<R> = {
             val newDeferred = CompletableDeferred<R>()
             queue.enqueue(key, newDeferred)
-            if (!options.batchLoadEnabled) {
+            if (options.batchMode == BatchMode.LoadImmediately) {
                 dispatch()
             }
             newDeferred
@@ -68,10 +68,20 @@ class SimpleDataLoaderImpl<K, R>(
         } else {
             queue.getAllItemsAsList()
         }
-        queueEntries.chunked(options.batchSize).forEach {
-            executeDispatchOnQueueEntries(it)
-        }
+
+        queueEntries
+            .batchIfNeeded(options.batchMode)
+            .forEach {
+                executeDispatchOnQueueEntries(it)
+            }
     }
+
+    private fun List<LoaderQueueEntry<K, CompletableDeferred<R>>>.batchIfNeeded(batchMode: BatchMode) =
+        if (batchMode is BatchMode.LoadInBatch && batchMode.batchSize != null) {
+            this.chunked(batchMode.batchSize)
+        } else {
+            listOf(this)
+        }
 
     private suspend fun executeDispatchOnQueueEntries(queueEntries: List<LoaderQueueEntry<K, CompletableDeferred<R>>>) {
         val keys = queueEntries.map { it.key }

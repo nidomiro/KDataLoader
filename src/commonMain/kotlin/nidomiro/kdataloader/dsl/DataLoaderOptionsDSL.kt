@@ -2,6 +2,7 @@
 
 package nidomiro.kdataloader.dsl
 
+import nidomiro.kdataloader.BatchMode
 import nidomiro.kdataloader.DataLoaderOptions
 
 class DataLoaderOptionsDSL<K, R> {
@@ -9,14 +10,9 @@ class DataLoaderOptionsDSL<K, R> {
     private var cacheDefinitionDSL = CacheDefinitionDSL<K, R>()
 
     /**
-     * Load individually (and immediately) or in batch
+     * The mode of batching
      */
-    var batchLoadEnabled: Boolean = true
-
-    /**
-     * The maximum size of one batch
-     */
-    var batchSize: Int = Int.MAX_VALUE
+    var batchMode: BatchMode = BatchMode.LoadInBatch()
 
     /**
      * The cache implementation definition
@@ -27,10 +23,9 @@ class DataLoaderOptionsDSL<K, R> {
 
 
     internal fun toDataLoaderOptions() = DataLoaderOptions(
-        cache = cacheDefinitionDSL.getCacheInstance(),
+        cache = cacheDefinitionDSL.getConfiguredInstance(),
         cacheExceptions = cacheDefinitionDSL.cacheExceptions,
-        batchLoadEnabled = batchLoadEnabled,
-        batchSize = batchSize
+        batchMode = batchMode
     )
 
 }

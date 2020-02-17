@@ -2,6 +2,7 @@ package nidomiro.kdataloader.dsl
 
 import assertk.assertThat
 import assertk.assertions.*
+import nidomiro.kdataloader.BatchMode
 import nidomiro.kdataloader.CoroutineMapCache
 import nidomiro.kdataloader.ExecutionResult
 import nidomiro.kdataloader.runBlockingWithTimeout
@@ -34,15 +35,15 @@ class DataLoaderFactoryDSLTest {
                         disabled
                         cacheExceptions = false
                     }
-
-                    batchLoadEnabled = true
-                    batchSize = 1
+                    batchMode = BatchMode.LoadInBatch(1)
                 }
             }
         val dataLoader = dataLoaderFactory.constructNew()
 
-        assertThat(dataLoader.options.batchLoadEnabled).isEqualTo(true)
-        assertThat(dataLoader.options.batchSize).isEqualTo(1)
+        assertThat(dataLoader.options.batchMode).isInstanceOf(BatchMode.LoadInBatch::class)
+        assertThat(dataLoader.options.batchMode)
+            .transform { (it as? BatchMode.LoadInBatch)?.batchSize }
+            .isEqualTo(1)
         assertThat(dataLoader.options.cache).isNull()
         assertThat(dataLoader.options.cacheExceptions).isEqualTo(false)
     }
@@ -66,14 +67,15 @@ class DataLoaderFactoryDSLTest {
                         cacheExceptions = false
                     }
 
-                    batchLoadEnabled = true
-                    batchSize = 1
+                    batchMode = BatchMode.LoadInBatch(1)
                 }
             }
         val dataLoader = dataLoaderFactory.constructNew()
 
-        assertThat(dataLoader.options.batchLoadEnabled).isEqualTo(true)
-        assertThat(dataLoader.options.batchSize).isEqualTo(1)
+        assertThat(dataLoader.options.batchMode).isInstanceOf(BatchMode.LoadInBatch::class)
+        assertThat(dataLoader.options.batchMode)
+            .transform { (it as? BatchMode.LoadInBatch)?.batchSize }
+            .isEqualTo(1)
         assertThat(dataLoader.options.cache).isEqualTo(myCacheInstance)
         assertThat(dataLoader.options.cacheExceptions).isEqualTo(false)
     }

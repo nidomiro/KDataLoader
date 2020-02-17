@@ -42,6 +42,8 @@ dataLoader(batchLoader) {
 .Custom cache
 [source,kotlin]
 ----
+val myCustomCacheInstance = //...
+//...
 dataLoader(batchLoader) {
     configure {
         cache {
@@ -73,11 +75,30 @@ An Exceptional state is when the `BatchLoader` returns `ExecutionResult.Failure(
 ----
 dataLoader(batchLoader) {
     configure {
-        cacheExceptions = true
+        cache {
+            cacheExceptions = true
+        }
     }
 }
 ----
 
 == Batch load
 
-Normally
+Normally there is one batch of elements fetched per `dispatch()`-call.
+This behaviour can be modified.
+
+.Default
+[source,kotlin]
+----
+dataLoader(batchLoader) {
+    configure {
+        batchMode = BatchMode.LoadInBatch()
+    }
+}
+----
+
+Possible values are:
+
+BatchMode.LoadInBatch():: The default; one big batch per `dispatch()`-call
+BatchMode.LoadInBatch(batchSize = 5):: Load in batches of size `batchSize` (here 5)
+BatchMode.LoadImmediately:: Do not batch anything and load everything while calling `load()`

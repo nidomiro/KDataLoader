@@ -2,7 +2,7 @@
 
 [source,kotlin,numbered,indent=0]
 --
-include::example$Creation.kt[lines=10..32]
+include::example$Creation.kt[lines=10..31]
 --
 
 [#usage-outside-coroutines]

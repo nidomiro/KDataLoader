@@ -24,7 +24,7 @@ class CacheDefinitionDSL<K, R> {
      */
     var cacheExceptions: Boolean = true
 
-    fun getCacheInstance(): Cache<K, R>? {
+    fun getConfiguredInstance(): Cache<K, R>? {
         return when (val currentCacheState = cacheState) {
             is State.Default -> CoroutineMapCache()
             is State.Called -> currentCacheState.instance

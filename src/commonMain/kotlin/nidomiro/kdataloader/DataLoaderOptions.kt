@@ -12,12 +12,7 @@ data class DataLoaderOptions<K, R>(
     val cacheExceptions: Boolean = true,
 
     /**
-     * Load individually (and immediately) or in batch
+     * The batch-mode
      */
-    val batchLoadEnabled: Boolean = true,
-
-    /**
-     * The maximum size of one batch
-     */
-    val batchSize: Int = Int.MAX_VALUE
+    val batchMode: BatchMode = BatchMode.LoadInBatch()
 )

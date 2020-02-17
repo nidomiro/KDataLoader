@@ -219,7 +219,7 @@ class DataLoaderStatisticsTest {
     fun test_batchCallsExecuted_statistics_with_batchSizeOption() =
         runBlockingWithTimeout {
             val dataLoader = SimpleDataLoaderImpl<Int, Int>(
-                DataLoaderOptions(batchSize = 2),
+                DataLoaderOptions(batchMode = BatchMode.LoadInBatch(2)),
                 identityBatchLoader()
             )
             assertThat(dataLoader.createStatisticsSnapshot()).isEqualTo(DataLoaderStatistics())

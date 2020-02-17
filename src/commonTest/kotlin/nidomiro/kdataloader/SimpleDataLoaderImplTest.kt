@@ -644,7 +644,7 @@ class SimpleDataLoaderImplTest {
     fun batching_can_be_disabled() = runBlockingWithTimeout {
         val loadCalls = mutableListOf<List<String>>()
         val dataLoader = SimpleDataLoaderImpl(
-            DataLoaderOptions(batchLoadEnabled = false),
+            DataLoaderOptions(batchMode = BatchMode.LoadImmediately),
             identityBatchLoader(loadCalls)
         )
 
@@ -663,7 +663,7 @@ class SimpleDataLoaderImplTest {
         val loadCalls = mutableListOf<List<String>>()
         val dataLoader = SimpleDataLoaderImpl(
             DataLoaderOptions(
-                batchLoadEnabled = false,
+                batchMode = BatchMode.LoadImmediately,
                 cache = null
             ),
             identityBatchLoader(loadCalls)
@@ -683,7 +683,7 @@ class SimpleDataLoaderImplTest {
     fun batching_is_honoring_batchsize() = runBlockingWithTimeout {
         val loadCalls = mutableListOf<List<String>>()
         val dataLoader = SimpleDataLoaderImpl(
-            DataLoaderOptions(batchSize = 2),
+            DataLoaderOptions(batchMode = BatchMode.LoadInBatch(2)),
             identityBatchLoader(loadCalls)
         )
 

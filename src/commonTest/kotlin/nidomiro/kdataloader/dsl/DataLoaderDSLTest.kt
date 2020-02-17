@@ -5,6 +5,7 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isFailure
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isNull
+import nidomiro.kdataloader.BatchMode
 import nidomiro.kdataloader.ExecutionResult
 import nidomiro.kdataloader.runBlockingWithTimeout
 import kotlin.test.Test
@@ -106,14 +107,14 @@ class DataLoaderDSLTest {
                             disabled
                             cacheExceptions = false
                         }
-
-                        batchLoadEnabled = true
-                        batchSize = 1
+                        batchMode = BatchMode.LoadInBatch(batchSize = 1)
                     }
                 }
 
-            assertThat(dataLoader.options.batchLoadEnabled).isEqualTo(true)
-            assertThat(dataLoader.options.batchSize).isEqualTo(1)
+            assertThat(dataLoader.options.batchMode).isInstanceOf(BatchMode.LoadInBatch::class)
+            assertThat(dataLoader.options.batchMode)
+                .transform { (it as? BatchMode.LoadInBatch)?.batchSize }
+                .isEqualTo(1)
             assertThat(dataLoader.options.cache).isNull()
             assertThat(dataLoader.options.cacheExceptions).isEqualTo(false)
 
