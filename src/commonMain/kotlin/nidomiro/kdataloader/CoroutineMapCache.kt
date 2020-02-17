@@ -1,27 +1,32 @@
 package nidomiro.kdataloader
 
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
 class CoroutineMapCache<K, V>(
-    private val cacheMap: MutableMap<K, V> = mutableMapOf()
+    private val cacheMap: MutableMap<K, CompletableDeferred<V>> = mutableMapOf()
 ) : Cache<K, V> {
     private val mutex = Mutex()
 
 
-    override suspend fun store(key: K, value: V): V {
+    override suspend fun store(key: K, value: CompletableDeferred<V>): CompletableDeferred<V> {
         mutex.withLock {
             cacheMap[key] = value
         }
         return value
     }
 
-    override suspend fun get(key: K): V? =
+    override suspend fun get(key: K): CompletableDeferred<V>? =
         mutex.withLock {
             cacheMap[key]
         }
 
-    override suspend fun getOrCreate(key: K, generator: suspend (key: K) -> V, callOnCacheHit: suspend () -> Unit): V =
+    override suspend fun getOrCreate(
+        key: K,
+        generator: suspend (key: K) -> CompletableDeferred<V>,
+        callOnCacheHit: suspend () -> Unit
+    ): CompletableDeferred<V> =
         mutex.withLock {
             val currentVal = cacheMap[key]
             if (currentVal == null) {
@@ -35,7 +40,7 @@ class CoroutineMapCache<K, V>(
         }
 
 
-    override suspend fun clear(key: K): V? =
+    override suspend fun clear(key: K): CompletableDeferred<V>? =
         mutex.withLock {
             cacheMap.remove(key)
         }

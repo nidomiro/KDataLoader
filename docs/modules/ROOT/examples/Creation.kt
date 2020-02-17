@@ -14,8 +14,8 @@ fun main(): Unit = runBlocking {
 
         configure {
             // all default-values
-            cache = DefaultCacheImpl()
-            cacheEnabled = true
+            cache = enabled()
+
             cacheExceptions = true
             batchLoadEnabled = true
             batchSize = Int.MAX_VALUE

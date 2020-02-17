@@ -1,25 +1,12 @@
+@file:Suppress("MemberVisibilityCanBePrivate")
+
 package nidomiro.kdataloader.dsl
 
-import kotlinx.coroutines.CompletableDeferred
-import nidomiro.kdataloader.Cache
-import nidomiro.kdataloader.CoroutineMapCache
 import nidomiro.kdataloader.DataLoaderOptions
 
 class DataLoaderOptionsDSL<K, R> {
-    /**
-     * The cache implementation
-     */
-    var cache: Cache<K, CompletableDeferred<R>> = CoroutineMapCache()
 
-    /**
-     * Cache Results?
-     */
-    var cacheEnabled: Boolean = true
-
-    /**
-     * Cache Exceptional States?
-     */
-    var cacheExceptions: Boolean = true
+    private var cacheDefinitionDSL = CacheDefinitionDSL<K, R>()
 
     /**
      * Load individually (and immediately) or in batch
@@ -31,12 +18,19 @@ class DataLoaderOptionsDSL<K, R> {
      */
     var batchSize: Int = Int.MAX_VALUE
 
+    /**
+     * The cache implementation definition
+     */
+    fun cache(block: CacheDefinitionDSL<K, R>.() -> Unit) {
+        cacheDefinitionDSL.block()
+    }
+
+
     internal fun toDataLoaderOptions() = DataLoaderOptions(
-        cache,
-        cacheExceptions,
-        cacheEnabled,
-        batchLoadEnabled,
-        batchSize
+        cache = cacheDefinitionDSL.getCacheInstance(),
+        cacheExceptions = cacheDefinitionDSL.cacheExceptions,
+        batchLoadEnabled = batchLoadEnabled,
+        batchSize = batchSize
     )
 
 }

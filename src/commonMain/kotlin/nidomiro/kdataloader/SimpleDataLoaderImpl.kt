@@ -40,7 +40,7 @@ class SimpleDataLoaderImpl<K, R>(
             newDeferred
         }
 
-        return if (options.cacheEnabled) {
+        return if (options.cache != null) {
             options.cache.getOrCreate(key, block, { statisticsCollector.incCacheHitCountAsync() })
         } else {
             block(key)
@@ -63,7 +63,7 @@ class SimpleDataLoaderImpl<K, R>(
     override suspend fun dispatch() {
         statisticsCollector.incDispatchMethodCalledAsync()
 
-        val queueEntries = if (options.cacheEnabled) {
+        val queueEntries = if (options.cache != null) {
             queue.getAllItemsAsList().distinctBy { it.key }
         } else {
             queue.getAllItemsAsList()
@@ -126,19 +126,19 @@ class SimpleDataLoaderImpl<K, R>(
     override suspend fun clear(key: K) {
         statisticsCollector.incClearMethodCalledAsync()
 
-        options.cache.clear(key)
+        options.cache?.clear(key)
     }
 
     @Suppress("DeferredResultUnused")
     override suspend fun clearAll() {
         statisticsCollector.incClearAllMethodCalledAsync()
-        options.cache.clear()
+        options.cache?.clear()
     }
 
     @Suppress("DeferredResultUnused")
     override suspend fun prime(key: K, value: R) {
         statisticsCollector.incPrimeMethodCalledAsync()
-        options.cache.getOrCreate(key) {
+        options.cache?.getOrCreate(key) {
             CompletableDeferred(value)
         }
     }
@@ -146,7 +146,7 @@ class SimpleDataLoaderImpl<K, R>(
     @Suppress("DeferredResultUnused")
     override suspend fun prime(key: K, value: Throwable) {
         statisticsCollector.incPrimeMethodCalledAsync()
-        options.cache.getOrCreate(key) {
+        options.cache?.getOrCreate(key) {
             CompletableDeferred<R>().apply {
                 completeExceptionally(value)
             }

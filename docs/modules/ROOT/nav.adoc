@@ -6,3 +6,4 @@
 
 * xref:basic-usage.adoc[Use KDataLoader]
 ** xref:basic-usage.adoc[Basic]
+** xref:configuring-dataloader.adoc[Configuration]

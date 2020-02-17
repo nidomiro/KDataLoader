@@ -544,7 +544,7 @@ class SimpleDataLoaderImplTest {
     fun caching_is_disableable_with_load() = runBlockingWithTimeout {
         val loadCalls = mutableListOf<List<String>>()
         val dataLoader = SimpleDataLoaderImpl(
-            DataLoaderOptions(cacheEnabled = false),
+            DataLoaderOptions(cache = null),
             identityBatchLoader(loadCalls)
         )
 
@@ -579,7 +579,7 @@ class SimpleDataLoaderImplTest {
     fun caching_is_disableable_with_loadMany() = runBlockingWithTimeout {
         val loadCalls = mutableListOf<List<String>>()
         val dataLoader = SimpleDataLoaderImpl(
-            DataLoaderOptions(cacheEnabled = false),
+            DataLoaderOptions(cache = null),
             identityBatchLoader(loadCalls)
         )
 
@@ -606,7 +606,7 @@ class SimpleDataLoaderImplTest {
     fun caching_is_disableable_with_load_and_duplicates() = runBlockingWithTimeout {
         val loadCalls = mutableListOf<List<String>>()
         val dataLoader = SimpleDataLoaderImpl(
-            DataLoaderOptions(cacheEnabled = false),
+            DataLoaderOptions(cache = null),
             identityBatchLoader(loadCalls)
         )
 
@@ -625,7 +625,7 @@ class SimpleDataLoaderImplTest {
     fun caching_is_enableable_with_load_and_duplicates() = runBlockingWithTimeout {
         val loadCalls = mutableListOf<List<String>>()
         val dataLoader = SimpleDataLoaderImpl(
-            DataLoaderOptions(cacheEnabled = true),
+            DataLoaderOptions(cache = CoroutineMapCache()),
             identityBatchLoader(loadCalls)
         )
 
@@ -664,7 +664,7 @@ class SimpleDataLoaderImplTest {
         val dataLoader = SimpleDataLoaderImpl(
             DataLoaderOptions(
                 batchLoadEnabled = false,
-                cacheEnabled = false
+                cache = null
             ),
             identityBatchLoader(loadCalls)
         )

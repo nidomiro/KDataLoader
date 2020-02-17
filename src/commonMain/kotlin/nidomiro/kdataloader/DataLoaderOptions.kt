@@ -1,22 +1,15 @@
 package nidomiro.kdataloader
 
-import kotlinx.coroutines.CompletableDeferred
-
 data class DataLoaderOptions<K, R>(
     /**
      * The cache implementation
      */
-    val cache: Cache<K, CompletableDeferred<R>> = CoroutineMapCache(),
+    val cache: Cache<K, R>? = CoroutineMapCache(),
 
     /**
      * Cache Exceptional States?
      */
     val cacheExceptions: Boolean = true,
-
-    /**
-     * Cache Results?
-     */
-    val cacheEnabled: Boolean = true,
 
     /**
      * Load individually (and immediately) or in batch

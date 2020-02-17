@@ -13,7 +13,7 @@ class DataLoaderParallelTest {
     fun test_calling_dispatch_in_parallel() = runBlockingWithTimeout {
         val loadCalls = mutableListOf<List<Int>>()
         val dataLoader = SimpleDataLoaderImpl(
-            DataLoaderOptions(cacheEnabled = false),
+            DataLoaderOptions(cache = null),
             identityBatchLoader(loadCalls)
         )
 

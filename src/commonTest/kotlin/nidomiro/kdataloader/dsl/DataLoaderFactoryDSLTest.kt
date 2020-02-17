@@ -1,10 +1,8 @@
 package nidomiro.kdataloader.dsl
 
 import assertk.assertThat
-import assertk.assertions.isEqualTo
-import assertk.assertions.isFailure
-import assertk.assertions.isInstanceOf
-import assertk.assertions.isNotEqualTo
+import assertk.assertions.*
+import nidomiro.kdataloader.CoroutineMapCache
 import nidomiro.kdataloader.ExecutionResult
 import nidomiro.kdataloader.runBlockingWithTimeout
 import kotlin.test.Test
@@ -32,17 +30,51 @@ class DataLoaderFactoryDSLTest {
                 }
             }) {
                 configure {
+                    cache {
+                        disabled
+                        cacheExceptions = false
+                    }
+
                     batchLoadEnabled = true
                     batchSize = 1
-                    cacheEnabled = false
-                    cacheExceptions = false
                 }
             }
         val dataLoader = dataLoaderFactory.constructNew()
 
         assertThat(dataLoader.options.batchLoadEnabled).isEqualTo(true)
         assertThat(dataLoader.options.batchSize).isEqualTo(1)
-        assertThat(dataLoader.options.cacheEnabled).isEqualTo(false)
+        assertThat(dataLoader.options.cache).isNull()
+        assertThat(dataLoader.options.cacheExceptions).isEqualTo(false)
+    }
+
+    @Test
+    fun assure_Factory_honors_nonDefault_Cache() = runBlockingWithTimeout {
+
+        val myCacheInstance = CoroutineMapCache<Int, String>()
+
+        val dataLoaderFactory =
+            dataLoaderFactory({ keys: List<Int> ->
+                keys.map {
+                    ExecutionResult.Success(
+                        it.toString()
+                    )
+                }
+            }) {
+                configure {
+                    cache {
+                        enabled with myCacheInstance
+                        cacheExceptions = false
+                    }
+
+                    batchLoadEnabled = true
+                    batchSize = 1
+                }
+            }
+        val dataLoader = dataLoaderFactory.constructNew()
+
+        assertThat(dataLoader.options.batchLoadEnabled).isEqualTo(true)
+        assertThat(dataLoader.options.batchSize).isEqualTo(1)
+        assertThat(dataLoader.options.cache).isEqualTo(myCacheInstance)
         assertThat(dataLoader.options.cacheExceptions).isEqualTo(false)
     }
 
