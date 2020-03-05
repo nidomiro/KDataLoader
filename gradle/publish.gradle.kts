@@ -1,6 +1,5 @@
 @file:Suppress("UnstableApiUsage")
 
-apply(plugin = "maven")
 apply(plugin = "maven-publish")
 
 afterEvaluate {

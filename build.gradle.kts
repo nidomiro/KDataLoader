@@ -1,7 +1,6 @@
 import java.util.*
 
 plugins {
-    maven
     `maven-publish`
     id("com.jfrog.bintray") version Constants.BuildLibVersions.bintray
     kotlin("multiplatform") version Constants.BuildLibVersions.kotlin

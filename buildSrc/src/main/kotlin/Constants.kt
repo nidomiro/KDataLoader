@@ -17,7 +17,7 @@ object Constants {
     }
 
     object BuildLibVersions {
-        const val kotlin = "1.3.61"
+        const val kotlin = "1.3.70"
         const val bintray = "1.8.4"
     }
 
