@@ -2,7 +2,7 @@ import java.util.*
 
 plugins {
     `maven-publish`
-    id("com.jfrog.bintray") version Constants.BuildLibVersions.bintray
+    signing
     kotlin("multiplatform") version Constants.BuildLibVersions.kotlin
 }
 
@@ -11,7 +11,6 @@ version = "0.3.0"
 
 repositories {
     mavenCentral()
-    jcenter()
 }
 
 @Suppress("UNUSED_VARIABLE")
@@ -108,9 +107,90 @@ tasks.named<Test>("jvmTest") {
     useJUnitPlatform()
 }
 
-apply(from = rootProject.file("gradle/publish.gradle.kts"))
 
+// Stub secrets to let the project sync and build without the publication values set up
+ext["signing.keyId"] = null
+ext["signing.password"] = null
+ext["signing.secretKeyRingFile"] = null
+ext["ossrhUsername"] = null
+ext["ossrhPassword"] = null
 
+// Grabbing secrets from local.properties file or from environment variables, which could be used on CI
+val secretPropsFile = project.rootProject.file("local.properties")
+if (secretPropsFile.exists()) {
+    secretPropsFile.reader().use {
+        Properties().apply {
+            load(it)
+        }
+    }.onEach { (name, value) ->
+        ext[name.toString()] = value
+    }
+} else {
+    ext["signing.keyId"] = System.getenv("SIGNING_KEY_ID")
+    ext["signing.password"] = System.getenv("SIGNING_PASSWORD")
+    ext["signing.secretKeyRingFile"] = System.getenv("SIGNING_SECRET_KEY_RING_FILE")
+    ext["ossrhUsername"] = System.getenv("OSSRH_USERNAME")
+    ext["ossrhPassword"] = System.getenv("OSSRH_PASSWORD")
+}
+
+val javadocJar by tasks.registering(Jar::class) {
+    archiveClassifier.set("javadoc")
+}
+
+fun getExtraString(name: String) = ext[name]?.toString()
+
+publishing {
+    repositories {
+        maven {
+            name = "sonatype"
+            setUrl("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+            credentials {
+                username = getExtraString("ossrhUsername")
+                password = getExtraString("ossrhPassword")
+            }
+        }
+    }
+    publications.withType<MavenPublication> {
+
+        // Stub javadoc.jar artifact
+        artifact(javadocJar.get())
+
+        // Provide artifacts information requited by Maven Central
+        pom {
+            name.set("KDataLoader")
+            description.set("A Kotlin implementation of dataloader")
+            url.set(Constants.ProjectInfo.websiteUrl)
+
+            licenses {
+                license {
+                    name.set(Constants.ProjectInfo.License.name)
+                    url.set(Constants.ProjectInfo.License.url)
+                    distribution.set(Constants.ProjectInfo.License.distribution)
+                }
+            }
+            developers {
+                for (dev in Constants.ProjectInfo.developer) {
+                    developer {
+                        id.set(dev.id)
+                        name.set(dev.name)
+                        email.set(dev.email)
+                    }
+                }
+            }
+            scm {
+                url.set(Constants.ProjectInfo.vcsUrl)
+                connection.set(Constants.ProjectInfo.vcsConnection)
+            }
+
+        }
+    }
+}
+
+signing {
+    sign(publishing.publications)
+}
+
+/*
 // Bintray stuff (doesn't work in a separate file right now)
 bintray {
     user = if (project.hasProperty("bintray_user")) project.property("bintray_user") as String else ""
@@ -158,3 +238,4 @@ tasks.withType<com.jfrog.bintray.gradle.tasks.BintrayUploadTask> {
 }
 
 apply(from = rootProject.file("gradle/groovyTasks.gradle"))
+ */
