@@ -1,4 +1,5 @@
 import java.util.*
+import java.io.*
 
 plugins {
     `maven-publish`
@@ -19,36 +20,22 @@ kotlin {
     jvm {
         val javaVersion = "1.8"
 
-        val main by compilations.getting {
-            kotlinOptions {
-                jvmTarget = javaVersion
-            }
+        compilations.all {
+            kotlinOptions.jvmTarget = javaVersion
         }
-        val test by compilations.getting {
-            kotlinOptions {
-                jvmTarget = javaVersion
-            }
+        testRuns["test"].executionTask.configure {
+            useJUnitPlatform()
         }
     }
 
     js {
-        nodejs {
+        nodejs { }
+        browser { }
 
+        compilations.all {
+            kotlinOptions.sourceMap = true
+            kotlinOptions.moduleKind = "umd"
         }
-        //browser { }
-        val main by compilations.getting {
-            kotlinOptions {
-                sourceMap = true
-                moduleKind = "umd"
-            }
-        }
-        val test by compilations.getting {
-            kotlinOptions {
-                sourceMap = true
-                moduleKind = "umd"
-            }
-        }
-
     }
 
 
@@ -101,10 +88,6 @@ kotlin {
     }
 
 
-}
-
-tasks.named<Test>("jvmTest") {
-    useJUnitPlatform()
 }
 
 
@@ -189,53 +172,3 @@ publishing {
 signing {
     sign(publishing.publications)
 }
-
-/*
-// Bintray stuff (doesn't work in a separate file right now)
-bintray {
-    user = if (project.hasProperty("bintray_user")) project.property("bintray_user") as String else ""
-    key = if (project.hasProperty("bintray_key")) project.property("bintray_key") as String else ""
-    //publish = true
-    override = true
-
-
-    pkg.apply {
-        repo = "maven"
-        name = project.name
-        setLicenses("MIT")
-        setLabels("kotlin", "Kotlin", "Multiplatform", "DataLoader", "GraphQL")
-        vcsUrl = Constants.ProjectInfo.vcsUrl
-        websiteUrl = Constants.ProjectInfo.websiteUrl
-        issueTrackerUrl = "${Constants.ProjectInfo.websiteUrl}/issues"
-
-        version.apply {
-            name = project.version.toString()
-            vcsTag = project.version.toString()
-            released = Date().toString()
-
-        }
-    }
-
-}
-tasks.named("bintrayUpload") {
-    dependsOn(":publishToMavenLocal")
-}
-
-tasks.withType<com.jfrog.bintray.gradle.tasks.BintrayUploadTask> {
-    doFirst {
-        project.publishing.publications
-            .filterIsInstance<MavenPublication>()
-            .forEach { publication ->
-                val moduleFile = buildDir.resolve("publications/${publication.name}/module.json")
-                if (moduleFile.exists()) {
-                    publication.artifact(object :
-                        org.gradle.api.publish.maven.internal.artifact.FileBasedMavenArtifact(moduleFile) {
-                        override fun getDefaultExtension() = "module"
-                    })
-                }
-            }
-    }
-}
-
-apply(from = rootProject.file("gradle/groovyTasks.gradle"))
- */
