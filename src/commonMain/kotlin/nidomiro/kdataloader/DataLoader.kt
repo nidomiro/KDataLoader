@@ -1,12 +1,13 @@
 package nidomiro.kdataloader
 
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlin.jvm.JvmName
 import nidomiro.kdataloader.statistics.DataLoaderStatistics
 
 typealias BatchLoader<K, R> = suspend (ids: List<K>) -> List<ExecutionResult<R>>
 
-interface DataLoader<K, R> {
+interface DataLoader<K, R>: CoroutineScope {
 
     val options: DataLoaderOptions<K, R>
 

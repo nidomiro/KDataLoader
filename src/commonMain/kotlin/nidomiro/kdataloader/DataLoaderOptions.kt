@@ -1,6 +1,6 @@
 package nidomiro.kdataloader
 
-data class DataLoaderOptions<K, R>(
+open class DataLoaderOptions<K, R>(
     /**
      * The cache implementation
      */

@@ -4,7 +4,7 @@ import kotlinx.coroutines.*
 import nidomiro.kdataloader.statistics.SimpleStatisticsCollector
 import nidomiro.kdataloader.statistics.StatisticsCollector
 
-class SimpleDataLoaderImpl<K, R>(
+open class SimpleDataLoaderImpl<K, R>(
     override val options: DataLoaderOptions<K, R>,
     private val statisticsCollector: StatisticsCollector,
     private val batchLoader: BatchLoader<K, R>
@@ -17,7 +17,7 @@ class SimpleDataLoaderImpl<K, R>(
 
     constructor(batchLoader: BatchLoader<K, R>) : this(DataLoaderOptions(), batchLoader)
 
-    private val dataLoaderScope = CoroutineScope(Dispatchers.Default)
+    override val coroutineContext = Job()
 
     private val queue: LoaderQueue<K, R> = DefaultLoaderQueueImpl()
 
@@ -41,7 +41,7 @@ class SimpleDataLoaderImpl<K, R>(
         }
 
         return if (options.cache != null) {
-            options.cache.getOrCreate(key, block, { statisticsCollector.incCacheHitCountAsync() })
+            options.cache!!.getOrCreate(key, block, { statisticsCollector.incCacheHitCountAsync() })
         } else {
             block(key)
         }
@@ -54,7 +54,7 @@ class SimpleDataLoaderImpl<K, R>(
 
         val deferreds = keys.map { internalLoadAsync(it) }
 
-        return dataLoaderScope.async(Dispatchers.Default) {
+        return async(Dispatchers.Default) {
             return@async deferreds.map { it.await() }
         }
     }
