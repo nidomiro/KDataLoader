@@ -17,8 +17,7 @@ object Constants {
     }
 
     object BuildLibVersions {
-        const val kotlin = "1.4.0"
-        const val bintray = "1.8.5"
+        const val kotlin = "1.4.32"
     }
 
 }
@@ -28,3 +27,4 @@ data class Developer(
     val name: String? = null,
     val email: String? = null
 )
+
