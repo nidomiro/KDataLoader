@@ -28,7 +28,7 @@ jobs:
 
       - name: Configure GPG Key
         run: |
-          echo -n "$GPG_SIGNING_KEY" | gpg --import
+          echo -n "$GPG_SIGNING_KEY" | gpg --import --batch
         env:
           GPG_SIGNING_KEY: ${{ secrets.SIGNING_SECRET_KEY }}
 
