@@ -1,5 +1,6 @@
 [ ![Download](https://img.shields.io/badge/License-MIT-yellow.svg) ](https://opensource.org/licenses/MIT)
-[ ![Download](https://api.bintray.com/packages/nidomiro/maven/KDataLoader/images/download.svg) ](https://bintray.com/nidomiro/maven/KDataLoader/_latestVersion)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/de.nidomiro/KDataLoader/badge.svg)](https://maven-badges.herokuapp.com/maven-central/de.nidomiro/KDataLoader)
+
 
 # KDataLoader
 
@@ -22,11 +23,11 @@ Therefore no additional request will be done.
 ### Gradle-JVM
 ```groovy
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
 dependencies {
-    implementation 'de.nidomiro:KDataLoader-jvm:0.3.0'
+    implementation 'de.nidomiro:KDataLoader-jvm:0.4.0'
 }
 ```
 
@@ -35,14 +36,14 @@ Currently only `jvm` is supported.
 
 ```groovy
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
 kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation 'de.nidomiro:KDataLoader:0.3.0'
+                implementation 'de.nidomiro:KDataLoader:0.4.0'
             }
         }
     }
@@ -50,13 +51,12 @@ kotlin {
 ```
 
 ### Maven
-You need to setup the [`jcenter`-Repository](https://bintray.com/beta/#/bintray/jcenter?tab=packages) in order to get the lib via maven.
  
 ```xml
 <dependency>
     <groupId>de.nidomiro</groupId>
     <artifactId>KDataLoader-jvm</artifactId>
-    <version>0.3.0</version>
+    <version>0.4.0</version>
 </dependency>
 ```
 
