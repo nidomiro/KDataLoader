@@ -110,7 +110,9 @@ if (secretPropsFile.exists()) {
     }
 } else {
     ext["signing.keyId"] = System.getenv("SIGNING_KEY_ID")
+    ext["signing.gnupg.keyName"] = System.getenv("SIGNING_KEY_ID")
     ext["signing.password"] = System.getenv("SIGNING_PASSWORD")
+    ext["signing.gnupg.passphrase"] = System.getenv("SIGNING_PASSWORD")
     ext["signing.secretKeyRingFile"] = System.getenv("SIGNING_SECRET_KEY_RING_FILE")
     ext["ossrhUsername"] = System.getenv("OSSRH_USERNAME")
     ext["ossrhPassword"] = System.getenv("OSSRH_PASSWORD")
@@ -170,5 +172,8 @@ publishing {
 }
 
 signing {
+    if(System.getenv("USE_GPG")?.toBoolean() == true) {
+        useGpgCmd()
+    }
     sign(publishing.publications)
 }
