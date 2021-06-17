@@ -43,9 +43,9 @@ kotlin {
     @Suppress("UNUSED_VARIABLE")
     sourceSets {
 
-        val coroutinesVersion = "1.3.9"
-        val assertkVersion = "0.22"
-        val junitVersion = "5.6.2"
+        val coroutinesVersion = "1.5.0"
+        val assertkVersion = "0.24"
+        val junitVersion = "5.7.2"
 
         val commonMain by getting {
             dependencies {
