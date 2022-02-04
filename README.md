@@ -14,7 +14,7 @@ You can find the full documentation and usage here: [https://nidomiro.github.io/
 In general, a DataLoader is a mechanism to batch multiple load-calls together and execute one call instead of multiple.
 The `load(<id>)` call will return a `Deferred` (Future/Promise) which will return the value after calling `dispatch()`.
 
-This way you can avoid fetching every object by it's own.
+This way you can avoid fetching every object by its own.
 Calling the `load(<id>)`-Function with the same id will return the same `Deferred`.
 Therefore no additional request will be done.
 
@@ -27,12 +27,12 @@ repositories {
 }
 
 dependencies {
-    implementation 'de.nidomiro:KDataLoader-jvm:0.4.0'
+    implementation 'de.nidomiro:KDataLoader-jvm:0.5.0'
 }
 ```
 
 #### Kotlin Multiplatform Project
-Currently only `jvm` is supported.
+Currently only `jvm` and `js` is supported.
 
 ```groovy
 repositories {
@@ -43,7 +43,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation 'de.nidomiro:KDataLoader:0.4.0'
+                implementation 'de.nidomiro:KDataLoader:0.5.0'
             }
         }
     }
@@ -56,7 +56,7 @@ kotlin {
 <dependency>
     <groupId>de.nidomiro</groupId>
     <artifactId>KDataLoader-jvm</artifactId>
-    <version>0.4.0</version>
+    <version>0.5.0</version>
 </dependency>
 ```
 
