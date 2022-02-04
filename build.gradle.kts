@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "de.nidomiro"
-version = "0.4.0"
+version = "0.5.0"
 
 repositories {
     mavenCentral()
@@ -28,7 +28,8 @@ kotlin {
         }
     }
 
-    js {
+    js(BOTH) {
+        // binaries.executable()
         nodejs { }
         browser { }
 
