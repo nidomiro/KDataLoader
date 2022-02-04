@@ -1,16 +1,10 @@
 package nidomiro.kdataloader.statistics
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
+import kotlinx.coroutines.*
 
 class SimpleStatisticsCollector : StatisticsCollector {
 
     private val internalStatistics = Statistics()
-
-    private val statisticsScope = CoroutineScope(Dispatchers.Default)
-    private var statisticsJobs = mutableListOf<Deferred<*>>()
 
     override suspend fun incLoadAsyncMethodCalledAsync() =
         executeInStatisticsScopeAsync { internalStatistics.loadAsyncMethodCalled.incrementAndGet() }
@@ -40,15 +34,10 @@ class SimpleStatisticsCollector : StatisticsCollector {
         executeInStatisticsScopeAsync { internalStatistics.cacheHitCount.incrementAndGet() }
 
     private suspend fun <T> executeInStatisticsScopeAsync(block: suspend () -> T): Deferred<T> {
-        val deferred = statisticsScope.async { block() }
-        statisticsJobs.add(deferred)
-        return deferred
+        return CompletableDeferred(block())
     }
 
     override suspend fun createStatisticsSnapshot(): DataLoaderStatistics {
-        val currentJobs = statisticsJobs
-        statisticsJobs = mutableListOf()
-        currentJobs.forEach { it.await() }
         return internalStatistics.snapshot()
     }
 
