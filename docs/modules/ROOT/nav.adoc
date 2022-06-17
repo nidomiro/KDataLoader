@@ -1,9 +1,0 @@
-* xref:index.adoc[What is KDataLoader]
-
-* xref:install:gradle.adoc[Get KDataLoader]
-** xref:install:gradle.adoc[Get using Gradle]
-** xref:install:maven.adoc[Get using Maven]
-
-* xref:basic-usage.adoc[Use KDataLoader]
-** xref:basic-usage.adoc[Basic]
-** xref:configuring-dataloader.adoc[Configuration]

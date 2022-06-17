@@ -2,8 +2,6 @@ name: Test lib and docs
 
 on:
   push:
-    branches-ignore:
-      - "doc/**"
     tags-ignore:
       - "v*"
   pull_request:
@@ -28,14 +26,3 @@ jobs:
       - name: Build
         run: ./gradlew assemble
 
-  test-documentation-build:
-    name: Test documentation build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v1
-      - uses: actions/setup-node@v1
-        with:
-          node-version: 12
-          registry-url: https://registry.npmjs.org/
-      - run: npm i -g @antora/cli@2.2 @antora/site-generator-default@2.2
-      - run: antora antora-playbook.yml
