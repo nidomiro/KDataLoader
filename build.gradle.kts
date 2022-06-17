@@ -1,5 +1,4 @@
 import java.util.*
-import java.io.*
 
 plugins {
     `maven-publish`
@@ -8,7 +7,7 @@ plugins {
 }
 
 group = "de.nidomiro"
-version = "0.5.0"
+version = "0.5.1"
 
 repositories {
     mavenCentral()
@@ -44,7 +43,7 @@ kotlin {
     @Suppress("UNUSED_VARIABLE")
     sourceSets {
 
-        val coroutinesVersion = "1.6.0"
+        val coroutinesVersion = "1.6.2"
         val assertkVersion = "0.25"
         val junitVersion = "5.8.2"
 
@@ -53,6 +52,7 @@ kotlin {
                 implementation(kotlin("stdlib-common"))
                 implementation(kotlin("reflect"))
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
+                implementation("org.jetbrains.kotlin:atomicfu:1.6.21") // Workaround for https://github.com/Kotlin/kotlinx.coroutines/issues/3305
             }
         }
         val commonTest by getting {

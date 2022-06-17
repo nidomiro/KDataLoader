@@ -16,7 +16,7 @@ The `load(<id>)` call will return a `Deferred` (Future/Promise) which will retur
 
 This way you can avoid fetching every object by its own.
 Calling the `load(<id>)`-Function with the same id will return the same `Deferred`.
-Therefore no additional request will be done.
+Therefore, no additional request will be done.
 
 ## Get
 
@@ -27,12 +27,12 @@ repositories {
 }
 
 dependencies {
-    implementation 'de.nidomiro:KDataLoader-jvm:0.5.0'
+    implementation 'de.nidomiro:KDataLoader-jvm:0.5.1'
 }
 ```
 
 #### Kotlin Multiplatform Project
-Currently only `jvm` and `js` is supported.
+Currently, only `jvm` and `js` is supported.
 
 ```groovy
 repositories {
