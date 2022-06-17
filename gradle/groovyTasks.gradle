@@ -1,7 +1,0 @@
-
-
-bintrayUpload.doFirst {
-    publications = publishing.publications.collect {
-        it.name
-    }
-}
