@@ -98,37 +98,30 @@ Since calling `dataLoader.loadAsync()` with the same id will result in the same 
 
 
 
-## Get
+## Install
 
-### Gradle-JVM
-```groovy
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    implementation 'de.nidomiro:KDataLoader-jvm:0.5.1'
-}
-```
-
-#### Kotlin Multiplatform Project
+### Kotlin Multiplatform Project
 Currently, only `jvm` and `js` is supported.
 
-```groovy
+```kotlin
 repositories {
     mavenCentral()
 }
 
 kotlin {
     sourceSets {
-        commonMain {
+        val commonMain by getting {
             dependencies {
-                implementation 'de.nidomiro:KDataLoader:0.5.1'
+                implementation("de.nidomiro:KDataLoader:0.5.1")
             }
         }
     }
 }
 ```
+
+For JVM-only or js only use the following instead of `de.nidomiro:KDataLoader`:
+* JVM: `de.nidomiro:KDataLoader-jvm`
+* JS: `de.nidomiro:KDataLoader-js`
 
 ### Maven
  
@@ -140,7 +133,7 @@ kotlin {
 </dependency>
 ```
 
-## Basic usage
+## Usage
 
 Since this library uses [Kotlin Coroutines](https://kotlinlang.org/docs/reference/coroutines-overview.html) every example assumes you are in a coroutine.
 
