@@ -248,6 +248,42 @@ class DataLoaderStatisticsTest {
 
 
     @Test
+    fun test_immutable_statistics() = runBlockingWithTimeout {
+        val dataLoader =
+            SimpleDataLoaderImpl<Int, Int>(identityBatchLoader())
+        assertThat(dataLoader.createStatisticsSnapshot()).isEqualTo(DataLoaderStatistics())
+
+        dataLoader.loadManyAsync(1, 2, 3)
+        val statisticsState1 = dataLoader.createStatisticsSnapshot()
+        dataLoader.loadManyAsync(1, 2)
+        val statisticsState2 = dataLoader.createStatisticsSnapshot()
+        dataLoader.loadManyAsync(2, 3)
+        val statisticsState3 = dataLoader.createStatisticsSnapshot()
+
+
+        assertThat(statisticsState1).isEqualTo(
+            DataLoaderStatistics(
+                loadManyAsyncMethodCalled = 1,
+                objectsRequested = 3,
+                cacheHitCount = 0
+            )
+        )
+        assertThat(statisticsState2).isEqualTo(
+            DataLoaderStatistics(
+                loadManyAsyncMethodCalled = 2,
+                objectsRequested = 5,
+                cacheHitCount = 2
+            )
+        )
+        assertThat(statisticsState3).isEqualTo(
+            DataLoaderStatistics(
+                loadManyAsyncMethodCalled = 3,
+                objectsRequested = 7,
+                cacheHitCount = 4
+            )
+        )
+    }
+    @Test
     fun test_cacheHitCount_statistics() = runBlockingWithTimeout {
         val dataLoader =
             SimpleDataLoaderImpl<Int, Int>(identityBatchLoader())

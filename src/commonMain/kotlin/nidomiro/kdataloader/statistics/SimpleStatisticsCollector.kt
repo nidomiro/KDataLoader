@@ -4,65 +4,56 @@ import kotlinx.coroutines.*
 
 class SimpleStatisticsCollector : StatisticsCollector {
 
-    private val internalStatistics = Statistics()
+    private var loadAsyncMethodCalled: Long = 0
+    private var loadAsyncManyMethodCalled: Long = 0
+    private var dispatchMethodCalled: Long = 0
+    private var clearMethodCalled: Long = 0
+    private var clearAllMethodCalled: Long = 0
+    private var primeMethodCalled: Long = 0
+    private var objectsRequested: Long = 0
+    private var batchCallsExecuted: Long = 0
+    private var cacheHitCount: Long = 0
 
     override suspend fun incLoadAsyncMethodCalledAsync() =
-        executeInStatisticsScopeAsync { internalStatistics.loadAsyncMethodCalled.incrementAndGet() }
+        CompletableDeferred(++loadAsyncMethodCalled)
 
     override suspend fun incLoadManyAsyncMethodCalledAsync() =
-        executeInStatisticsScopeAsync { internalStatistics.loadAsyncManyMethodCalled.incrementAndGet() }
+        CompletableDeferred(++loadAsyncManyMethodCalled)
 
     override suspend fun incDispatchMethodCalledAsync() =
-        executeInStatisticsScopeAsync { internalStatistics.dispatchMethodCalled.incrementAndGet() }
+        CompletableDeferred(++dispatchMethodCalled)
 
     override suspend fun incClearMethodCalledAsync() =
-        executeInStatisticsScopeAsync { internalStatistics.clearMethodCalled.incrementAndGet() }
+        CompletableDeferred(++clearMethodCalled)
 
     override suspend fun incClearAllMethodCalledAsync() =
-        executeInStatisticsScopeAsync { internalStatistics.clearAllMethodCalled.incrementAndGet() }
+        CompletableDeferred(++clearAllMethodCalled)
 
     override suspend fun incPrimeMethodCalledAsync() =
-        executeInStatisticsScopeAsync { internalStatistics.primeMethodCalled.incrementAndGet() }
+        CompletableDeferred(++primeMethodCalled)
 
-    override suspend fun incObjectsRequestedAsync(objects: Long) =
-        executeInStatisticsScopeAsync { internalStatistics.objectsRequested.addAndGet(objects) }
+    override suspend fun incObjectsRequestedAsync(objectCount: Long): Deferred<Long> {
+        objectsRequested += objectCount
+        return CompletableDeferred(objectsRequested)
+    }
+
 
     override suspend fun incBatchCallsExecutedAsync() =
-        executeInStatisticsScopeAsync { internalStatistics.batchCallsExecuted.incrementAndGet() }
+        CompletableDeferred(++batchCallsExecuted)
 
     override suspend fun incCacheHitCountAsync() =
-        executeInStatisticsScopeAsync { internalStatistics.cacheHitCount.incrementAndGet() }
+        CompletableDeferred(++cacheHitCount)
 
-    private suspend fun <T> executeInStatisticsScopeAsync(block: suspend () -> T): Deferred<T> {
-        return CompletableDeferred(block())
-    }
-
-    override suspend fun createStatisticsSnapshot(): DataLoaderStatistics {
-        return internalStatistics.snapshot()
-    }
-
-
-    internal data class Statistics(
-        var loadAsyncMethodCalled: AtomicLong = AtomicLong(0),
-        val loadAsyncManyMethodCalled: AtomicLong = AtomicLong(0),
-        val dispatchMethodCalled: AtomicLong = AtomicLong(0),
-        val clearMethodCalled: AtomicLong = AtomicLong(0),
-        val clearAllMethodCalled: AtomicLong = AtomicLong(0),
-        val primeMethodCalled: AtomicLong = AtomicLong(0),
-        val objectsRequested: AtomicLong = AtomicLong(0),
-        val batchCallsExecuted: AtomicLong = AtomicLong(0),
-        val cacheHitCount: AtomicLong = AtomicLong(0)
-    ) {
-        fun snapshot() = DataLoaderStatistics(
-            loadAsyncMethodCalled = this@Statistics.loadAsyncMethodCalled.get(),
-            loadManyAsyncMethodCalled = this@Statistics.loadAsyncManyMethodCalled.get(),
-            dispatchMethodCalled = this@Statistics.dispatchMethodCalled.get(),
-            clearMethodCalled = this@Statistics.clearMethodCalled.get(),
-            clearAllMethodCalled = this@Statistics.clearAllMethodCalled.get(),
-            primeMethodCalled = this@Statistics.primeMethodCalled.get(),
-            objectsRequested = this@Statistics.objectsRequested.get(),
-            batchCallsExecuted = this@Statistics.batchCallsExecuted.get(),
-            cacheHitCount = this@Statistics.cacheHitCount.get()
+    override suspend fun createStatisticsSnapshot(): DataLoaderStatistics =
+        DataLoaderStatistics(
+            loadAsyncMethodCalled = this.loadAsyncMethodCalled,
+            loadManyAsyncMethodCalled = this.loadAsyncManyMethodCalled,
+            dispatchMethodCalled = this.dispatchMethodCalled,
+            clearMethodCalled = this.clearMethodCalled,
+            clearAllMethodCalled = this.clearAllMethodCalled,
+            primeMethodCalled = this.primeMethodCalled,
+            objectsRequested = this.objectsRequested,
+            batchCallsExecuted = this.batchCallsExecuted,
+            cacheHitCount = this.cacheHitCount
         )
-    }
 }

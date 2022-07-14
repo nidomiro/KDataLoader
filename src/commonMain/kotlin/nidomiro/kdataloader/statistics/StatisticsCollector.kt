@@ -14,7 +14,7 @@ interface StatisticsCollector {
     /**
      * Increment by the number of requested objects
      */
-    suspend fun incObjectsRequestedAsync(objects: Long = 1): Deferred<Long>
+    suspend fun incObjectsRequestedAsync(objectCount: Long = 1): Deferred<Long>
 
     suspend fun incBatchCallsExecutedAsync(): Deferred<Long>
 
