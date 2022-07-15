@@ -32,7 +32,7 @@ jobs:
           GPG_SIGNING_KEY: ${{ secrets.SIGNING_SECRET_KEY }}
 
       - name: Publish to maven central
-        if: !contains(${{ matrix.os }}, 'macos')
+        if: ${{!contains( matrix.os , 'macos')}}
         run: >
           ./gradlew
           publish
@@ -44,7 +44,7 @@ jobs:
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
 
       - name: Publish to maven central (macos)
-        if: contains(${{ matrix.os }}, 'macos')
+        if: ${{contains( matrix.os , 'macos')}}
         run: >
           ./gradlew
           publishApple
