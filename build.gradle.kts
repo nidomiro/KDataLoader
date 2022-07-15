@@ -43,7 +43,7 @@ kotlin {
     @Suppress("UNUSED_VARIABLE")
     sourceSets {
 
-        val coroutinesVersion = "1.6.2"
+        val coroutinesVersion = "1.6.4"
         val assertkVersion = "0.25"
         val junitVersion = "5.8.2"
 
@@ -52,7 +52,7 @@ kotlin {
                 implementation(kotlin("stdlib-common"))
                 implementation(kotlin("reflect"))
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
-                implementation("org.jetbrains.kotlin:atomicfu:1.6.21") // Workaround for https://github.com/Kotlin/kotlinx.coroutines/issues/3305
+                //implementation("org.jetbrains.kotlin:atomicfu:1.6.4") // Workaround for https://github.com/Kotlin/kotlinx.coroutines/issues/3305
             }
         }
         val commonTest by getting {
