@@ -6,10 +6,7 @@ on:
 jobs:
   test-and-build:
     name: Test and Build KDataLoader and publish lib
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
 
@@ -20,10 +17,10 @@ jobs:
           java-version: '11'
 
       - name: Test
-        run: ./gradlew check
+        run: ./gradlew check${{matrix.postfix}}
 
       - name: Build
-        run: ./gradlew assemble
+        run: ./gradlew assemble${{matrix.postfix}}
 
       - name: Configure GPG Key
         run: |
@@ -32,7 +29,6 @@ jobs:
           GPG_SIGNING_KEY: ${{ secrets.SIGNING_SECRET_KEY }}
 
       - name: Publish to maven central
-        if: ${{!contains( matrix.os , 'macos')}}
         run: >
           ./gradlew
           publish
@@ -43,8 +39,25 @@ jobs:
           SIGNING_KEY_ID: ${{ secrets.SIGNING_KEY_ID }}
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
 
-      - name: Publish to maven central (macos)
-        if: ${{contains( matrix.os , 'macos')}}
+  test-and-build-macos:
+    name: Publish macOS
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'adopt'
+          java-version: '11'
+
+      - name: Configure GPG Key
+        run: |
+          echo -n "$GPG_SIGNING_KEY" | gpg --import --batch
+        env:
+          GPG_SIGNING_KEY: ${{ secrets.SIGNING_SECRET_KEY }}
+
+      - name: Publish to maven central
         run: >
           ./gradlew
           publishApple
