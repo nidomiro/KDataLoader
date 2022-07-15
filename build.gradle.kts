@@ -38,6 +38,25 @@ kotlin {
         }
     }
 
+    val nativeTargets = arrayOf(
+        "linuxX64",
+        "macosX64", "macosArm64",
+        "iosArm32", "iosArm64", "iosX64", "iosSimulatorArm64",
+        "tvosArm64", "tvosX64", "tvosSimulatorArm64",
+        "watchosArm32", "watchosArm64", "watchosX86", "watchosX64", "watchosSimulatorArm64",
+
+        // Not supported by assertk
+        // "mingwX64",
+
+        // Not supported by coroutines
+        // "wasm32", "linuxArm64", "linuxMips32", "linuxMipsel32",
+    )
+
+    for (target in nativeTargets) {
+        targets.add(presets.getByName(target).createTarget(target))
+    }
+
+
 
 
     @Suppress("UNUSED_VARIABLE")
@@ -86,6 +105,23 @@ kotlin {
                 implementation(kotlin("test-js"))
             }
         }
+
+        val nativeMain = create("nativeMain") {
+            dependsOn(commonMain)
+        }
+        val nativeTest = create("nativeTest") {
+            dependsOn(commonTest)
+        }
+        for (sourceSet in nativeTargets) {
+            getByName("${sourceSet}Main") {
+                dependsOn(nativeMain)
+            }
+            getByName("${sourceSet}Test") {
+                dependsOn(nativeTest)
+            }
+        }
+
+
     }
 
 
