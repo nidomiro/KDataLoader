@@ -59,7 +59,7 @@ jobs:
 
       - name: Publish to maven central
         run: >
-          ./gradlew --stacktrace --info
+          ./gradlew --stacktrace --info -Dsigning.gnupg.useLegacyGpg=true
           publishApple
         env:
           USE_GPG: 'true'
