@@ -59,7 +59,7 @@ jobs:
 
       - name: Publish to maven central
         run: >
-          ./gradlew
+          ./gradlew --stacktrace --info
           publishApple
         env:
           USE_GPG: 'true'
