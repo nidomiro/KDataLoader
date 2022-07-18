@@ -58,13 +58,13 @@ jobs:
 
       - name: Configure GPG Key
         run: |
-          echo -n "$GPG_SIGNING_KEY" | gpg2 --import --batch
+          echo -n "$GPG_SIGNING_KEY" | gpg --import --batch
         env:
           GPG_SIGNING_KEY: ${{ secrets.SIGNING_SECRET_KEY }}
 
       - name: Publish to maven central
         run: >
-          ./gradlew --stacktrace --info
+          ./gradlew --stacktrace --info  -Psigning.gnupg.useLegacyGpg=true
           publishApple
         env:
           USE_GPG: 'true'
