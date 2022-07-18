@@ -2,6 +2,8 @@ on:
   push:
     tags:
       - "v*"
+    branches:
+      - native-builds-macos
 
 jobs:
   test-and-build:
@@ -51,15 +53,18 @@ jobs:
           distribution: 'adopt'
           java-version: '11'
 
+      - name: install gpg2
+        run: brew install gpg2
+
       - name: Configure GPG Key
         run: |
-          echo -n "$GPG_SIGNING_KEY" | gpg --import --batch
+          echo -n "$GPG_SIGNING_KEY" | gpg2 --import --batch
         env:
           GPG_SIGNING_KEY: ${{ secrets.SIGNING_SECRET_KEY }}
 
       - name: Publish to maven central
         run: >
-          ./gradlew --stacktrace --info -Psigning.gnupg.useLegacyGpg=true
+          ./gradlew --stacktrace --info
           publishApple
         env:
           USE_GPG: 'true'
