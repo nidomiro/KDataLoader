@@ -54,7 +54,7 @@ jobs:
           java-version: '11'
 
       - name: install gpg2
-        run: brew install gpg2
+        run: brew install gpg
 
       - name: Configure GPG Key
         run: |
