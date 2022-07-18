@@ -43,7 +43,7 @@ jobs:
 
   test-and-build-macos:
     name: Publish macOS
-    runs-on: macos-latest
+    runs-on: macos-12
     steps:
       - uses: actions/checkout@v3
 
