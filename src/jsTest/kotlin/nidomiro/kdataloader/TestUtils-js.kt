@@ -3,6 +3,7 @@ package nidomiro.kdataloader
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.promise
+import kotlinx.coroutines.test.TestResult
 
 
 actual fun log(msg: String) = println(" $msg")
@@ -10,5 +11,5 @@ actual fun log(msg: String) = println(" $msg")
 /**
  * Workaround for suspending functions in tests
  */
-actual fun runCoroutineTest(block: suspend (scope: CoroutineScope) -> Unit): dynamic =
-    GlobalScope.promise { block(this) }
+actual fun runCoroutineTest(block: suspend (scope: CoroutineScope) -> Unit): TestResult =
+    GlobalScope.promise { block(this) }.unsafeCast<TestResult>()

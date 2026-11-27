@@ -3,6 +3,7 @@
  */
 package nidomiro.kdataloader
 
+import assertk.assertFailure
 import assertk.assertThat
 import assertk.assertions.*
 import kotlinx.coroutines.Dispatchers
@@ -370,9 +371,7 @@ class SimpleDataLoaderImplTest {
         val deferred1 = dataLoader.loadAsync(1)
         dataLoader.dispatch()
 
-        assertThat {
-            deferred1.await()
-        }.isFailure()
+        assertFailure { deferred1.await() }
             .hasClass(IllegalStateException::class)
 
         assertThat(loadCalls).isEqualTo(listOf<List<Int>>())
@@ -391,17 +390,13 @@ class SimpleDataLoaderImplTest {
         val deferredA = dataLoader.loadAsync("A")
         dataLoader.dispatch()
 
-        assertThat {
-            deferredA.await()
-        }.isFailure()
+        assertFailure { deferredA.await() }
             .hasClass(IllegalStateException::class)
 
         val deferredA1 = dataLoader.loadAsync("A")
         dataLoader.dispatch()
 
-        assertThat {
-            deferredA1.await()
-        }.isFailure()
+        assertFailure { deferredA1.await() }
             .hasClass(IllegalStateException::class)
 
         assertThat(deferredA).isNotEqualTo(deferredA1)
@@ -420,9 +415,7 @@ class SimpleDataLoaderImplTest {
         val deferred1 = dataLoader.loadAsync(1)
         dataLoader.dispatch()
 
-        assertThat {
-            deferred1.await()
-        }.isFailure()
+        assertFailure { deferred1.await() }
             .hasClass(IllegalStateException::class)
 
         val deferred2 = dataLoader.loadAsync(2)
@@ -448,9 +441,7 @@ class SimpleDataLoaderImplTest {
             if (num.isEven()) {
                 assertThat(deferred.await()).isEqualTo(num)
             } else {
-                assertThat {
-                    deferred.await()
-                }.isFailure()
+                assertFailure { deferred.await() }
                     .hasClass(IllegalStateException::class)
             }
         }
@@ -468,17 +459,13 @@ class SimpleDataLoaderImplTest {
         val deferred1 = dataLoader.loadAsync(1)
         dataLoader.dispatch()
 
-        assertThat {
-            deferred1.await()
-        }.isFailure()
+        assertFailure { deferred1.await() }
             .hasClass(IllegalStateException::class)
 
         val deferred1a = dataLoader.loadAsync(1)
         dataLoader.dispatch()
 
-        assertThat {
-            deferred1a.await()
-        }.isFailure()
+        assertFailure { deferred1a.await() }
             .hasClass(IllegalStateException::class)
 
         assertThat(deferred1).isEqualTo(deferred1a)
@@ -496,17 +483,13 @@ class SimpleDataLoaderImplTest {
         val deferred1 = dataLoader.loadAsync(1)
         dataLoader.dispatch()
 
-        assertThat {
-            deferred1.await()
-        }.isFailure()
+        assertFailure { deferred1.await() }
             .hasClass(IllegalStateException::class)
 
         val deferred1a = dataLoader.loadAsync(1)
         dataLoader.dispatch()
 
-        assertThat {
-            deferred1a.await()
-        }.isFailure()
+        assertFailure { deferred1a.await() }
             .hasClass(IllegalStateException::class)
 
         assertThat(deferred1).isNotEqualTo(deferred1a)
@@ -524,14 +507,10 @@ class SimpleDataLoaderImplTest {
         val deferredB = dataLoader.loadAsync("B")
         dataLoader.dispatch()
 
-        assertThat {
-            deferredA.await()
-        }.isFailure()
+        assertFailure { deferredA.await() }
             .hasClass(IllegalStateException::class)
 
-        assertThat {
-            deferredB.await()
-        }.isFailure()
+        assertFailure { deferredB.await() }
             .hasClass(IllegalStateException::class)
 
         assertThat(loadCalls).containsExactly(listOf("A", "B"))

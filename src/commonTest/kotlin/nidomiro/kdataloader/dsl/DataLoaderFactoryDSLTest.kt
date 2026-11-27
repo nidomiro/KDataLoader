@@ -1,5 +1,6 @@
 package nidomiro.kdataloader.dsl
 
+import assertk.assertFailure
 import assertk.assertThat
 import assertk.assertions.*
 import nidomiro.kdataloader.BatchMode
@@ -16,7 +17,7 @@ class DataLoaderFactoryDSLTest {
             { keys: List<Int> -> keys.map { ExecutionResult.Success(it.toString()) } }
         )
 
-        assertThat { dataLoaderFactory.constructNew() }
+        assertThat(dataLoaderFactory.constructNew())
             .isNotEqualTo(dataLoaderFactory.constructNew())
     }
 
@@ -100,14 +101,12 @@ class DataLoaderFactoryDSLTest {
         val deferred1 = dataLoader.loadAsync(1)
         val deferred2 = dataLoader.loadAsync(2)
 
-        assertThat { deferred1.await() }
-            .isFailure()
+        assertFailure { deferred1.await() }
             .isInstanceOf(IllegalArgumentException::class)
             .transform { it.message }
             .isEqualTo("1")
 
-        assertThat { deferred2.await() }
-            .isFailure()
+        assertFailure { deferred2.await() }
             .isInstanceOf(IllegalArgumentException::class)
             .transform { it.message }
             .isEqualTo("2")

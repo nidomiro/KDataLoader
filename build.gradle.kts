@@ -16,34 +16,31 @@ repositories {
 @Suppress("UNUSED_VARIABLE")
 kotlin {
     //Targets
-    jvm {
-        val javaVersion = "1.8"
+    jvmToolchain(25)
 
-        compilations.all {
-            kotlinOptions.jvmTarget = javaVersion
-        }
+    jvm {
         testRuns["test"].executionTask.configure {
             useJUnitPlatform()
         }
     }
 
-    js(BOTH) {
+    js {
         // binaries.executable()
         nodejs { }
         browser { }
 
-        compilations.all {
-            kotlinOptions.sourceMap = true
-            kotlinOptions.moduleKind = "umd"
+        compilerOptions {
+            sourceMap.set(true)
+            moduleKind.set(org.jetbrains.kotlin.gradle.dsl.JsModuleKind.MODULE_UMD)
         }
     }
 
     val nativeTargets = arrayOf(
         "linuxX64",
         "macosX64", "macosArm64",
-        "iosArm32", "iosArm64", "iosX64", "iosSimulatorArm64",
+        "iosArm64", "iosX64", "iosSimulatorArm64",
         "tvosArm64", "tvosX64", "tvosSimulatorArm64",
-        "watchosArm32", "watchosArm64", "watchosX86", "watchosX64", "watchosSimulatorArm64",
+        "watchosArm32", "watchosArm64", "watchosX64", "watchosSimulatorArm64",
 
         // Not supported by assertk
         // "mingwX64",
@@ -53,7 +50,21 @@ kotlin {
     )
 
     for (target in nativeTargets) {
-        targets.add(presets.getByName(target).createTarget(target))
+        when (target) {
+            "linuxX64" -> linuxX64()
+            "macosX64" -> macosX64()
+            "macosArm64" -> macosArm64()
+            "iosArm64" -> iosArm64()
+            "iosX64" -> iosX64()
+            "iosSimulatorArm64" -> iosSimulatorArm64()
+            "tvosArm64" -> tvosArm64()
+            "tvosX64" -> tvosX64()
+            "tvosSimulatorArm64" -> tvosSimulatorArm64()
+            "watchosArm32" -> watchosArm32()
+            "watchosArm64" -> watchosArm64()
+            "watchosX64" -> watchosX64()
+            "watchosSimulatorArm64" -> watchosSimulatorArm64()
+        }
     }
 
 
@@ -62,13 +73,12 @@ kotlin {
     @Suppress("UNUSED_VARIABLE")
     sourceSets {
 
-        val coroutinesVersion = "1.6.4"
-        val assertkVersion = "0.25"
-        val junitVersion = "5.8.2"
+        val coroutinesVersion = "1.11.0"
+        val assertkVersion = "0.28.1"
+        val junitVersion = "5.14.0"
 
         val commonMain by getting {
             dependencies {
-                implementation(kotlin("stdlib-common"))
                 implementation(kotlin("reflect"))
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
                 //implementation("org.jetbrains.kotlin:atomicfu:1.6.4") // Workaround for https://github.com/Kotlin/kotlinx.coroutines/issues/3305
@@ -76,18 +86,13 @@ kotlin {
         }
         val commonTest by getting {
             dependencies {
-                implementation(kotlin("test-common"))
-                implementation(kotlin("test-annotations-common"))
+                implementation(kotlin("test"))
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
 
                 implementation("com.willowtreeapps.assertk:assertk:$assertkVersion")
             }
         }
 
-        val jvmMain by getting {
-            dependencies {
-                implementation(kotlin("stdlib-jdk8"))
-            }
-        }
         val jvmTest by getting {
             dependencies {
                 implementation(kotlin("test-junit5"))
@@ -95,31 +100,12 @@ kotlin {
             }
         }
 
-        val jsMain by getting {
-            dependencies {
-                implementation(kotlin("stdlib-js"))
-            }
-        }
         val jsTest by getting {
             dependencies {
                 implementation(kotlin("test-js"))
             }
         }
 
-        val nativeMain = create("nativeMain") {
-            dependsOn(commonMain)
-        }
-        val nativeTest = create("nativeTest") {
-            dependsOn(commonTest)
-        }
-        for (sourceSet in nativeTargets) {
-            getByName("${sourceSet}Main") {
-                dependsOn(nativeMain)
-            }
-            getByName("${sourceSet}Test") {
-                dependsOn(nativeTest)
-            }
-        }
 
 
     }
@@ -212,7 +198,7 @@ publishing {
     val publishApple by tasks.registering {
         publications.all {
             if (name.contains(Regex("macos|ios|tvos|watchos"))) {
-                dependsOn("publish${name.capitalize(Locale.ROOT)}PublicationToSonatypeRepository")
+                dependsOn("publish${name.replaceFirstChar { it.titlecase(Locale.ROOT) }}PublicationToSonatypeRepository")
             }
         }
     }
