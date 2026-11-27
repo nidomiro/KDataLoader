@@ -8,3 +8,4 @@ build
 public/
 /.directory
 local.properties
+test.out

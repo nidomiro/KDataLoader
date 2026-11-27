@@ -75,7 +75,7 @@ kotlin {
 
         val coroutinesVersion = "1.11.0"
         val assertkVersion = "0.28.1"
-        val junitVersion = "5.14.0"
+        val junitVersion = "6.1.3"
 
         val commonMain by getting {
             dependencies {
