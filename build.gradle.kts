@@ -70,21 +70,20 @@ kotlin {
 
 
 
-    @Suppress("UNUSED_VARIABLE")
     sourceSets {
 
         val coroutinesVersion = "1.11.0"
         val assertkVersion = "0.28.1"
         val junitVersion = "6.1.3"
 
-        val commonMain by getting {
+        commonMain {
             dependencies {
                 implementation(kotlin("reflect"))
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
                 //implementation("org.jetbrains.kotlin:atomicfu:1.6.4") // Workaround for https://github.com/Kotlin/kotlinx.coroutines/issues/3305
             }
         }
-        val commonTest by getting {
+        commonTest {
             dependencies {
                 implementation(kotlin("test"))
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
@@ -93,14 +92,14 @@ kotlin {
             }
         }
 
-        val jvmTest by getting {
+        jvmTest {
             dependencies {
                 implementation(kotlin("test-junit5"))
                 implementation("org.junit.jupiter:junit-jupiter:$junitVersion")
             }
         }
 
-        val jsTest by getting {
+        jsTest {
             dependencies {
                 implementation(kotlin("test-js"))
             }
@@ -141,7 +140,7 @@ if (secretPropsFile.exists()) {
     ext["ossrhPassword"] = System.getenv("OSSRH_PASSWORD")
 }
 
-val javadocJar by tasks.registering(Jar::class) {
+val javadocJar = tasks.register<Jar>("javadocJar") {
     archiveClassifier.set("javadoc")
 }
 
@@ -194,8 +193,7 @@ publishing {
     }
 
     // create task to publish all apple (macos, ios, tvos, watchos) artifacts
-    @Suppress("UNUSED_VARIABLE")
-    val publishApple by tasks.registering {
+    tasks.register("publishApple") {
         publications.all {
             if (name.contains(Regex("macos|ios|tvos|watchos"))) {
                 dependsOn("publish${name.replaceFirstChar { it.titlecase(Locale.ROOT) }}PublicationToSonatypeRepository")
