@@ -16,10 +16,6 @@ object Constants {
 
     }
 
-    object BuildLibVersions {
-        const val kotlin = "2.4.21"
-    }
-
 }
 
 data class Developer(

@@ -3,7 +3,7 @@ import java.util.*
 plugins {
     `maven-publish`
     signing
-    kotlin("multiplatform") version Constants.BuildLibVersions.kotlin
+    alias(libs.plugins.kotlin.multiplatform)
 }
 
 group = "de.nidomiro"
@@ -72,30 +72,26 @@ kotlin {
 
     sourceSets {
 
-        val coroutinesVersion = "1.11.0"
-        val assertkVersion = "0.28.1"
-        val junitVersion = "6.1.3"
-
         commonMain {
             dependencies {
                 implementation(kotlin("reflect"))
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
+                implementation(libs.kotlinx.coroutines.core)
                 //implementation("org.jetbrains.kotlin:atomicfu:1.6.4") // Workaround for https://github.com/Kotlin/kotlinx.coroutines/issues/3305
             }
         }
         commonTest {
             dependencies {
                 implementation(kotlin("test"))
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
+                implementation(libs.kotlinx.coroutines.test)
 
-                implementation("com.willowtreeapps.assertk:assertk:$assertkVersion")
+                implementation(libs.assertk)
             }
         }
 
         jvmTest {
             dependencies {
                 implementation(kotlin("test-junit5"))
-                implementation("org.junit.jupiter:junit-jupiter:$junitVersion")
+                implementation(libs.junit.jupiter)
             }
         }
 
